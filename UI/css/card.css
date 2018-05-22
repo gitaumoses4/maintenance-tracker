@@ -6,7 +6,7 @@
     The card may contain an image, content, title and some text description, footer and meta text
 
  */
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,500');
 
 .mg.card {
     display: flex;
@@ -14,7 +14,7 @@
     max-width: 100%;
     width: 300px;
     background: #ffffff;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Dosis', sans-serif;
     border-radius: 0.3em;
     transition: box-shadow 0.1s ease, transform 0.1s ease;
     margin: 1em;
@@ -31,11 +31,12 @@
 
 .mg.card > .content {
     padding: 1em;
-    font-weight: lighter;
+    font-weight: normal;
+    font-size: 1.1em;
 }
 
 .mg.card > .content > .title {
-    font-weight: normal;
+    font-weight: bold;
     font-size: 1.2em;
     line-height: 1.2em;
     margin-bottom: 0.5em;

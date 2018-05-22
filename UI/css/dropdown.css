@@ -8,7 +8,7 @@
     Drop down component with menu, use this component to create simple menus
 
  */
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,500');
 
 .mg.dropdown {
     display: inline-block;
@@ -50,7 +50,7 @@
     display: block;
     line-height: 1em;
     white-space: nowrap;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Dosis', sans-serif;
     padding: 0.7em 1.1em !important;
     font-size: 1em;
     transition: background-color 0.5s ease;
@@ -73,7 +73,7 @@
     border: none;
     background: rgba(0, 0, 0, .1) none;
     color: rgba(0, 0, 0, 0.6);
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Dosis', sans-serif;
     padding: 0.6em 1.2em 0.6em;
     font-weight: normal;
     text-decoration: none;
