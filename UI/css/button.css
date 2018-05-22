@@ -5,7 +5,7 @@
 
 
  */
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
 
 .mg.button {
     cursor: pointer;
@@ -15,7 +15,7 @@
     color: rgba(0, 0, 0, 0.6);
     font-family: 'Roboto', sans-serif;
     padding: 0.8em 1.5em 0.8em;
-    font-weight: bold;
+    font-weight: normal;
     text-decoration: none;
     border-radius: 0.3em;
     transition: background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease;
