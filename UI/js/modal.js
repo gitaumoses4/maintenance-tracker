@@ -45,6 +45,7 @@ for (let i = 0; i < modals.length; i++) {
 function hideModal(modal, modalBody) {
     modal.style.backgroundColor = "rgba(0,0,0,0)";
     modalBody.style.transform = "translate(-50%, -100px)";
+    document.body.style.overflow = "auto";
     modalBody.style.opacity = "0";
     window.setTimeout(function () {
         modal.style.display = "none";
@@ -53,6 +54,7 @@ function hideModal(modal, modalBody) {
 
 function showModal(modal, modalBody) {
     modal.style.display = "block";
+    document.body.style.overflow = "hidden";
     window.setTimeout(function () {
         modal.style.backgroundColor = "rgba(0,0,0,.9)";
         modalBody.style.transform = "translate(-50%, -50%)";
