@@ -229,7 +229,9 @@
 
 /** Focused **/
 
-.mg.form .field input:focus {
+.mg.form .field input:focus,
+.mg.form .field select:focus,
+.mg.form .field textarea:focus{
     border-color: #1ca9ff !important;
     box-shadow: 0 0 0 0 rgba(34, 36, 38, 0.35) inset;
 }
