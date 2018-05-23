@@ -24,7 +24,7 @@
     position: absolute;
     min-width: max-content;
     background: #ffffff;
-    margin-top: 0.1em !important;
+    margin-top: 0.3em !important;
     border-radius: 0.3em;
     left: 0;
     opacity: 0;
@@ -32,7 +32,7 @@
     right: auto;
     display: block;
     text-align: left;
-    box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+    box-shadow: 1px 2px 3px 1px rgba(30, 30, 30, 0.15);
     z-index: 10;
     transition: opacity 0.2s ease-in, max-height 0.2s ease-out;
 }
@@ -71,7 +71,6 @@
     cursor: pointer;
     display: inline-block;
     border: none;
-    background: rgba(0, 0, 0, .1) none;
     color: rgba(0, 0, 0, 0.6);
     font-family: 'Dosis', sans-serif;
     padding: 0.6em 1.2em 0.6em;
