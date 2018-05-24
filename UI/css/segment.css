@@ -7,7 +7,6 @@
 
     Helps contain content into a single container with a header, body and a footer.
  */
-@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,500');
 
 .mg.segment {
     width: 100%;

@@ -8,7 +8,6 @@
     Drop down component with menu, use this component to create simple menus
 
  */
-@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,500');
 
 .mg.dropdown {
     display: inline-block;

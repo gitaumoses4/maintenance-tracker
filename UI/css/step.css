@@ -8,7 +8,6 @@
     A step shows the completion of an activity in a series of activities
 
  */
-@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,500');
 
 .mg.steps {
     display: inline-flex;

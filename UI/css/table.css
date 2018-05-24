@@ -9,7 +9,6 @@
 
     The table should be in a container in order to allow scrolling during overflow
  */
-@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,500');
 
 .mg.table {
     overflow: auto;

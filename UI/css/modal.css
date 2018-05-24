@@ -8,7 +8,6 @@
     Dialog component, displays above any other content, has a dimmed background,
     a title, content, a footer and buttons.
  */
-@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,500');
 
 .mg.modal {
     background-color: rgba(0, 0, 0, .8);
