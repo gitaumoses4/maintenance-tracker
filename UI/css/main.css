@@ -33,18 +33,22 @@ a {
 
 .purple.button {
     background-color: #673AB7;
+    color: white;
 }
 
 .teal.button {
     background-color: #009688;
+    color: white;
 }
 
 .blue-grey.button {
     background-color: #607D8B;
+    color: white;
 }
 
 .pink.button {
     background-color: #E91E63;
+    color: white;
 }
 
 .request.button {
@@ -96,6 +100,22 @@ table img {
     margin: auto;
 }
 
+.account-options{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.account-options img{
+    width: 2em !important;
+    margin-left: 1em;
+}
+
+
+.mg.very.tiny.circle.button{
+    font-size: 0.5em;
+    font-weight: bold;
+}
 /* Responsiveness */
 /* For Mobile */
 @media only screen and (max-width: 767px) {
