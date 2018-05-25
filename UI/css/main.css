@@ -1,0 +1,30 @@
+/**
+    @author Moses Gitau
+
+    Main styles for the Maintenance Tracker App
+ */
+
+body {
+    background: #fafbfc;
+}
+
+.padded {
+    padding: 2em;
+}
+
+.center.aligned {
+    width: 100%;
+    text-align: center;
+}
+
+.center {
+    margin: auto;
+}
+
+a {
+    text-decoration: none;
+}
+
+.padded.left {
+    padding: 0 0 0 2em;
+}
