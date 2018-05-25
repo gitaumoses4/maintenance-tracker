@@ -23,8 +23,107 @@ body {
 
 a {
     text-decoration: none;
+    font-weight: normal;
+    font-size: 1em;
 }
 
 .padded.left {
     padding: 0 0 0 2em;
+}
+
+.purple.button {
+    background-color: #673AB7;
+    color: white;
+}
+
+.teal.button {
+    background-color: #009688;
+    color: white;
+}
+
+.blue-grey.button {
+    background-color: #607D8B;
+    color: white;
+}
+
+.pink.button {
+    background-color: #E91E63;
+    color: white;
+}
+
+.request.button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1em;
+    font-weight: bold;
+    color: rgba(0, 0, 0, .8);
+}
+
+.request.button > button {
+    color: white;
+}
+
+.divider {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+table {
+    width: 100%;
+    text-align: center;
+}
+
+table img {
+    margin: auto;
+}
+
+.mg.card .image img {
+    height: 250px;
+    object-position: center;
+    object-fit: cover;
+}
+
+.mg.card .content > .meta img {
+    display: inline-block;
+    margin-right: 1em;
+    vertical-align: middle;
+}
+
+.mg.card .content > .meta a {
+    float: right;
+    margin-top: 0.5em;
+}
+
+.mg.card.fluid {
+    width: 95%;
+    margin: auto;
+}
+
+.account-options{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.account-options img{
+    width: 2em !important;
+    margin-left: 1em;
+}
+
+
+.mg.very.tiny.circle.button{
+    font-size: 0.5em;
+    font-weight: bold;
+}
+/* Responsiveness */
+/* For Mobile */
+@media only screen and (max-width: 767px) {
+    .request.button > button {
+        font-size: 1.2em !important;
+    }
+
+    .request.button .title {
+        font-weight: normal;
+    }
 }
