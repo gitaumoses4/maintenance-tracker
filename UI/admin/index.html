@@ -10,31 +10,57 @@
 <body>
 <div class="mg sidebar" data-trigger="openSidebar">
     <div class="menu">
-        <div class="item">
+        <a class="item active" href="index.html">
             <i class="icon fas fa-tachometer-alt"></i>
             <div class="title center aligned">My Dashboard</div>
-        </div>
-        <div class="item active">
+        </a>
+        <a class="item" href="requests.html">
             <i class="icon fas fa-cogs"></i>
             <div class="title center aligned">
-                Repair Requests
+                <div class="title">Repair Requests</div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 <div class="mg pushable">
     <div class="mg navbar">
         <i class="open fas fa-bars" id="openSidebar"></i>
-        <div class="header padded left">Maintenance Tracker</div>
+        <div class="header">Maintenance Tracker</div>
         <div class="menu">
             <div class="item right aligned">
                 <i class="fas fa-phone"></i>
-                <span class="padded left">+254705045048</span>
+                <span style="margin-left: 10px">+254705045048</span>
             </div>
         </div>
     </div>
     <div class="mg content">
-
+        <h2>Requests</h2>
+        <div class="mg row">
+            <a class="request button" href="requests.html">
+                <button class="mg teal circle small button">
+                    <i class="fas fa-cogs"></i>
+                </button>
+                <div class="title">Resolved</div>
+            </a>
+            <a class="request button" href="requests.html">
+                <button class="mg danger circle small button">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="title">Rejected</div>
+            </a>
+            <a class="request button" href="requests.html">
+                <button class="mg success circle small button">
+                    <i class="fas fa-check"></i>
+                </button>
+                <div class="title">Approved</div>
+            </a>
+            <a class="request button" href="requests.html">
+                <button class="mg blue-grey circle small button">
+                    <i class="fas fa-clock"></i>
+                </button>
+                <div class="title">Pending</div>
+            </a>
+        </div>
     </div>
 </div>
 <script src="../js/mg-framework/mg-framework.js"></script>

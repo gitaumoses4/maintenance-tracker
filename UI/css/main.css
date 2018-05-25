@@ -28,3 +28,43 @@ a {
 .padded.left {
     padding: 0 0 0 2em;
 }
+
+.purple.button {
+    background-color: #673AB7;
+}
+
+.teal.button {
+    background-color: #009688;
+}
+
+.blue-grey.button {
+    background-color: #607D8B;
+}
+
+.pink.button {
+    background-color: #E91E63;
+}
+
+.request.button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1em;
+    font-weight: bold;
+    color: rgba(0, 0, 0, .8);
+}
+
+.request.button > button {
+    color: white;
+}
+
+/* Responsiveness */
+/* For Mobile */
+@media only screen and (max-width: 767px) {
+    .request.button  > button{
+        font-size: 1.2em !important;
+    }
+    .request.button .title {
+        font-weight: normal;
+    }
+}
