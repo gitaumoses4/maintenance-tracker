@@ -8,6 +8,9 @@ body {
     background: #fafbfc;
 }
 
+.margined.left{
+    margin: 0 0 0 2em;
+}
 .padded {
     padding: 2em;
 }
@@ -125,5 +128,9 @@ table img {
 
     .request.button .title {
         font-weight: normal;
+    }
+
+    .feedback-profile{
+        display: none !important;
     }
 }
