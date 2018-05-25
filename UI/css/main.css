@@ -74,6 +74,28 @@ table img {
     margin: auto;
 }
 
+.mg.card .image img {
+    height: 250px;
+    object-position: center;
+    object-fit: cover;
+}
+
+.mg.card .content > .meta img {
+    display: inline-block;
+    margin-right: 1em;
+    vertical-align: middle;
+}
+
+.mg.card .content > .meta a {
+    float: right;
+    margin-top: 0.5em;
+}
+
+.mg.card.fluid {
+    width: 95%;
+    margin: auto;
+}
+
 /* Responsiveness */
 /* For Mobile */
 @media only screen and (max-width: 767px) {
