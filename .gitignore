@@ -1,5 +1,0 @@
-.idea
-*.json
-node_modules
-*.log
-server.js
