@@ -83,7 +83,8 @@ a {
 .request.button > button {
     color: white;
 }
-.count{
+
+.count {
     font-size: 4em;
     text-align: center;
     font-weight: bolder;
@@ -141,6 +142,32 @@ table img {
     font-weight: bold;
 }
 
+/** Feedback **/
+.feedback-container > .feedback:last-child{
+    border-bottom: none;
+}
+.feedback {
+    color: rgba(0, 0, 0, .8);
+    display: flex;
+    border-bottom: 1px solid rgba(30, 30, 30, .15);
+    align-items: center;
+    margin-top: 0.6em;
+    flex-direction: row;
+}
+
+.feedback > .content .date{
+    font-size: 0.8em;
+    color: rgba(0,0,0,.5)
+}
+.feedback > .content {
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback > .content .title {
+    font-weight: bold;
+}
+
 /* Responsiveness */
 /* For Mobile */
 @media only screen and (max-width: 767px) {
@@ -154,5 +181,9 @@ table img {
 
     .feedback-profile {
         display: none !important;
+    }
+    .count{
+        font-size: 3em;
+        padding: 0;
     }
 }
