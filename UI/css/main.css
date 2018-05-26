@@ -8,9 +8,10 @@ body {
     background: #fafbfc;
 }
 
-.margined.left{
+.margined.left {
     margin: 0 0 0 2em;
 }
+
 .padded {
     padding: 2em;
 }
@@ -39,9 +40,17 @@ a {
     color: white;
 }
 
+.purple.button:hover {
+    background-color: #5e35a7;
+}
+
 .teal.button {
     background-color: #009688;
     color: white;
+}
+
+.teal.button:hover {
+    background-color: #008074;
 }
 
 .blue-grey.button {
@@ -49,9 +58,17 @@ a {
     color: white;
 }
 
+.blue-grey.button:hover {
+    background-color: #536c78;
+}
+
 .pink.button {
     background-color: #E91E63;
     color: white;
+}
+
+.pink.button:hover {
+    background-color: #d31b5a;
 }
 
 .request.button {
@@ -103,22 +120,22 @@ table img {
     margin: auto;
 }
 
-.account-options{
+.account-options {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.account-options img{
+.account-options img {
     width: 2em !important;
     margin-left: 1em;
 }
 
-
-.mg.very.tiny.circle.button{
+.mg.very.tiny.circle.button {
     font-size: 0.5em;
     font-weight: bold;
 }
+
 /* Responsiveness */
 /* For Mobile */
 @media only screen and (max-width: 767px) {
@@ -130,7 +147,7 @@ table img {
         font-weight: normal;
     }
 
-    .feedback-profile{
+    .feedback-profile {
         display: none !important;
     }
 }
