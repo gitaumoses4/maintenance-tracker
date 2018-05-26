@@ -2,10 +2,30 @@
 Andela Maintenance Tracker Web Project Challenge 1
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/gitaumoses4/maintenance-tracker/develop.svg)
-![GitHub top language](https://img.shields.io/github/languages/top/gitaumoses4/maintenance-tracker.svg)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gitaumoses4/maintenance-tracker.svg)
+![GitHub top language](https://img.shields.io/github/languages/top/gitaumoses4/maintenance-tracker/develop.svg)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gitaumoses4/maintenance-tracker/develop.svg)
 ![GitHub contributors](https://img.shields.io/github/contributors/gitaumoses4/maintenance-tracker.svg)
 
+# Table of Contents
+   * [Maintenance Tracker <g-emoji class="g-emoji" alias="wrench" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f527.png">🔧</g-emoji>](#maintenance-tracker-wrench)
+      * [UI Template](#ui-template)
+      * [Pivotal Tracker Project](#pivotal-tracker-project)
+      * [Introduction](#introduction)
+         * [Project Overview](#project-overview)
+         * [Required Features](#required-features)
+         * [Images](#images)
+         * [Fonts](#fonts)
+         * [Wireframes](#wireframes)
+      * [Login page](#login-page)
+      * [Signup page](#signup-page)
+      * [User Home Page](#user-home-page)
+      * [User Create Request Page](#user-create-request-page)
+      * [User View Previous Requests](#user-view-previous-requests)
+      * [User Track Request Status](#user-track-request-status)
+      * [Admin Home Page](#admin-home-page)
+      * [Admin Change Request Status](#admin-change-request-status)
+      * [Admin can view all requests and filter them.](#admin-can-view-all-requests-and-filter-them)
+         * [UI Inspiration](#ui-inspiration)
 ## UI Template
 You can view the UI template on [Github Pages](https://gitaumoses4.github.io/maintenance-tracker)
 
