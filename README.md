@@ -37,13 +37,13 @@ You can view the [Pivotal Tracker stories](https://www.pivotaltracker.com/n/proj
 Maintenance Tracker App is an application that provides users with the ability to reach out to operations or repairs department regarding repair or maintenance requests and monitor the status of their request.
 
 ### Required Features
-1. Users can [create an account](https://gitaumoses4.github.io/maintenance-tracker/register.html) and [log in](https://gitaumoses4.github.io/maintenance-tracker/login.html) 
-2. Users should be able to [make maintenance or repair requests](https://gitaumoses4.github.io/maintenance-tracker/user/new-request.html).
-3. An admin should be able to [approve/reject](https://gitaumoses4.github.io/maintenance-tracker/admin/request.html) a repair/maintenance request.
-4. The admin should be able to [mark a request as resolved](https://gitaumoses4.github.io/maintenance-tracker/admin/request.html) once it is done.
-5. The admin should be able to [view all maintenance/repair requests](https://gitaumoses4.github.io/maintenance-tracker/admin/requests.html) on the application.
-6. The admin should be able to [filter](https://gitaumoses4.github.io/maintenance-tracker/admin/requests.html) requests.
-7. A user can [view all](https://gitaumoses4.github.io/maintenance-tracker/user/requests.html) of his/her requests
+1. Users can [create an account](https://gitaumoses4.github.io/maintenance-tracker/UI/register.html) and [log in](https://gitaumoses4.github.io/maintenance-tracker/UI/login.html) 
+2. Users should be able to [make maintenance or repair requests](https://gitaumoses4.github.io/maintenance-tracker/UI/user/new-request.html).
+3. An admin should be able to [approve/reject](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/request.html) a repair/maintenance request.
+4. The admin should be able to [mark a request as resolved](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/request.html) once it is done.
+5. The admin should be able to [view all maintenance/repair requests](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/requests.html) on the application.
+6. The admin should be able to [filter](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/requests.html) requests.
+7. A user can [view all](https://gitaumoses4.github.io/maintenance-tracker/UI/user/requests.html) of his/her requests
 
 ### Images
 The following images are used in this project.
