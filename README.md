@@ -2,8 +2,8 @@
 Andela Maintenance Tracker Web Project Challenge 1
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/gitaumoses4/maintenance-tracker/develop.svg)
-![GitHub top language](https://img.shields.io/github/languages/top/gitaumoses4/maintenance-tracker/develop.svg)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gitaumoses4/maintenance-tracker/develop.svg)
+![GitHub top language](https://img.shields.io/github/languages/top/gitaumoses4/maintenance-tracker.svg)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gitaumoses4/maintenance-tracker.svg)
 ![GitHub contributors](https://img.shields.io/github/contributors/gitaumoses4/maintenance-tracker.svg)
 
 # Table of Contents
