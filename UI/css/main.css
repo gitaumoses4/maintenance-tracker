@@ -83,6 +83,11 @@ a {
 .request.button > button {
     color: white;
 }
+.count{
+    font-size: 4em;
+    text-align: center;
+    font-weight: bolder;
+}
 
 .divider {
     margin-top: 1em;
