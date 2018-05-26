@@ -52,6 +52,7 @@ The following images are used in this project.
 3. [Desktop Wireless Keyboard](https://www.pexels.com/photo/black-desktop-wireless-keyboard-on-the-note-6184/) by Kaboompics.com on [Pexels](https://pexels.com)
 4. [Camera](https://www.pexels.com/photo/black-camera-226243/) by Gourav Ahir on [Pexels](https://pexels.com)
 5. [Yahama Keyboard Piano](https://www.pexels.com/photo/black-yamaha-piano-164743/) by [Pixabay](https://pixabay.com) on [Pexels](https://pexels.com)
+6. [Auomobile Repair](https://www.pexels.com/photo/adult-auto-automobile-automotive-558375/) by Fancycrave on [Pexels](https://pexels.com)
 
 ### Fonts
 The following font are used for this project.
