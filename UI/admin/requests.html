@@ -5,16 +5,16 @@
     <link rel="stylesheet" href="../css/mg-framework/mg-framework.css"/>
     <link rel="stylesheet" href="../css/main.css"/>
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Maintenance Tracker - Request</title>
+    <title>Maintenance Tracker - Requests</title>
 </head>
 <body>
 <div class="mg sidebar" data-trigger="openSidebar">
     <div class="menu">
-        <a class="item active" href="index.html">
+        <a class="item" href="index.html">
             <i class="icon fas fa-tachometer-alt"></i>
             <div class="title center aligned">My Dashboard</div>
         </a>
-        <a class="item" href="requests.html">
+        <a class="item active" href="requests.html">
             <i class="icon fas fa-cogs"></i>
             <div class="title center aligned">
                 <div class="title">Repair Requests</div>
@@ -74,8 +74,174 @@
             </a>
         </div>
         <div class="mg vertical divider"></div>
-        <div class="mg container">
+        <div class="mg row centered">
+            <h2>All Maintenance /Repair Requests</h2>
+            <button class="mg button right aligned" id="filter"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+        <div class="mg row">
+            <div class="twelve-large twelve-medium twelve-small column">
+                <div class="mg table">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Request Date</th>
+                            <th>Product Name</th>
+                            <th>Product Image</th>
+                            <th>Repair/Maintenance Request Description</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><a href="request.html">#123456</a></td>
+                            <td>1st January 2012</td>
+                            <td>I Phone 8</td>
+                            <td><img src="../images/product_4.jpeg" class="mg small image"/></td>
+                            <td>Unable to charge</td>
+                            <td>
+                                <button class="mg teal circle tiny button">
+                                    <i class="fas fa-cogs"></i>
+                                </button>
+                                <div class="title">Resolved</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#232312</a></td>
+                            <td>5th December 2012</td>
+                            <td>Macbook Pro</td>
+                            <td><img src="../images/product_1.jpeg" class="mg small image"/></td>
+                            <td>Spilled coffee on keyboard</td>
+                            <td>
+                                <button class="mg blue-grey circle tiny button">
+                                    <i class="fas fa-clock"></i>
+                                </button>
+                                <div class="title">Pending</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#134234</a></td>
+                            <td>3rd December 2012</td>
+                            <td>Yamaha Keyboard</td>
+                            <td><img src="../images/product_2.jpeg" class="mg small image"/></td>
+                            <td>Sustain pedal not working</td>
+                            <td>
+                                <button class="mg success circle tiny button">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <div class="title">Approved</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#123456</a></td>
+                            <td>1st January 2012</td>
+                            <td>I Phone 8</td>
+                            <td><img src="../images/product_4.jpeg" class="mg small image"/></td>
+                            <td>Unable to charge</td>
+                            <td>
+                                <button class="mg teal circle tiny button">
+                                    <i class="fas fa-cogs"></i>
+                                </button>
+                                <div class="title">Resolved</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#232312</a></td>
+                            <td>5th December 2012</td>
+                            <td>Macbook Pro</td>
+                            <td><img src="../images/product_1.jpeg" class="mg small image"/></td>
+                            <td>Spilled coffee on keyboard</td>
+                            <td>
+                                <button class="mg blue-grey circle tiny button">
+                                    <i class="fas fa-clock"></i>
+                                </button>
+                                <div class="title">Pending</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#134234</a></td>
+                            <td>3rd December 2012</td>
+                            <td>Yamaha Keyboard</td>
+                            <td><img src="../images/product_2.jpeg" class="mg small image"/></td>
+                            <td>Sustain pedal not working</td>
+                            <td>
+                                <button class="mg success circle tiny button">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <div class="title">Approved</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#123123</a></td>
+                            <td>4th December 2012</td>
+                            <td>Nikon Camera 230 DSLR</td>
+                            <td><img src="../images/product_3.jpeg" class="mg small image"/></td>
+                            <td>Broken Lens</td>
+                            <td>
+                                <button class="mg danger circle tiny button">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <div class="title">Rejected</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#123456</a></td>
+                            <td>6th December 2012</td>
+                            <td>HP Desktop Keyboard</td>
+                            <td><img src="../images/product_5.jpg" class="mg small image"/></td>
+                            <td>Caps Lock not working</td>
+                            <td>
+                                <button class="mg teal circle tiny button">
+                                    <i class="fas fa-cogs"></i>
+                                </button>
+                                <div class="title">Resolved</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#123123</a></td>
+                            <td>4th December 2012</td>
+                            <td>Nikon Camera 230 DSLR</td>
+                            <td><img src="../images/product_3.jpeg" class="mg small image"/></td>
+                            <td>Broken Lens</td>
+                            <td>
+                                <button class="mg danger circle tiny button">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <div class="title">Rejected</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="request.html">#123456</a></td>
+                            <td>6th December 2012</td>
+                            <td>HP Desktop Keyboard</td>
+                            <td><img src="../images/product_5.jpg" class="mg small image"/></td>
+                            <td>Caps Lock not working</td>
+                            <td>
+                                <button class="mg teal circle tiny button">
+                                    <i class="fas fa-cogs"></i>
+                                </button>
+                                <div class="title">Resolved</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mg row">
+                    <div class="mg paginator center">
 
+                        <div class="item"><i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left"></i></div>
+                        <div class="item"><i class="fas fa-chevron-left"></i></div>
+                        <div class="item">1</div>
+                        <div class="item active">2</div>
+                        <div class="item">3</div>
+                        <div class="item">4</div>
+                        <div class="item">5</div>
+                        <div class="item disabled">6</div>
+                        <div class="item"><i class="fas fa-chevron-right"></i></div>
+                        <div class="item"><i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
