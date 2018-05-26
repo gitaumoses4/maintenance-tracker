@@ -246,6 +246,13 @@ table img {
     color: white;
 }
 
+
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .card {
     margin-bottom: 1em !important;
 }
