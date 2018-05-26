@@ -202,6 +202,53 @@ table img {
     padding: 0.5em 0;
 }
 
+.card.ribbon {
+    position: relative;
+    overflow: hidden;
+}
+
+.ribbon:not(.card) {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    transform: rotate(45deg) translate(17%,  -60%) ;
+    top: 0;
+    right: 0;
+    background: white;
+}
+
+.ribbon:not(.card) > .content {
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    left: 50%;
+    font-weight: bold;
+    transform: translateX(-50%);
+}
+
+.pending.ribbon {
+    background: #607D8B;
+    color: white;
+}
+
+.approved.ribbon{
+    background: #4CAF50;
+    color: white;
+}
+
+.resolved.ribbon{
+    background:  #008074;
+    color: white;
+}
+
+.rejected.ribbon{
+    background: #F44336;
+    color: white;
+}
+
+.card{
+    margin-bottom: 1em !important;
+}
 /* Responsiveness */
 /* For Mobile */
 @media only screen and (max-width: 767px) {
