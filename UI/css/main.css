@@ -211,7 +211,7 @@ table img {
     position: absolute;
     width: 200px;
     height: 100px;
-    transform: rotate(45deg) translate(17%,  -60%) ;
+    transform: rotate(45deg) translate(17%, -60%);
     top: 0;
     right: 0;
     background: white;
@@ -231,24 +231,31 @@ table img {
     color: white;
 }
 
-.approved.ribbon{
+.approved.ribbon {
     background: #4CAF50;
     color: white;
 }
 
-.resolved.ribbon{
-    background:  #008074;
+.resolved.ribbon {
+    background: #008074;
     color: white;
 }
 
-.rejected.ribbon{
+.rejected.ribbon {
     background: #F44336;
     color: white;
 }
 
-.card{
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
     margin-bottom: 1em !important;
 }
+
 /* Responsiveness */
 /* For Mobile */
 @media only screen and (max-width: 767px) {
