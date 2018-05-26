@@ -142,11 +142,28 @@ table img {
     font-weight: bold;
 }
 
-/** Feedback **/
-.feedback-container > .feedback:last-child{
+/** Feedback and notification **/
+.feedback-container > .feedback:last-child {
     border-bottom: none;
 }
-.feedback {
+
+.notifications .notification {
+    border-bottom: none !important;
+}
+
+.notifications .item {
+    border-bottom: 1px solid rgba(30, 30, 30, .15) !important;
+}
+
+.notification .close {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    cursor: pointer;
+}
+
+.feedback,
+.notification {
     color: rgba(0, 0, 0, .8);
     display: flex;
     border-bottom: 1px solid rgba(30, 30, 30, .15);
@@ -155,16 +172,20 @@ table img {
     flex-direction: row;
 }
 
-.feedback > .content .date{
+.feedback > .content .date,
+.notification > .content .date {
     font-size: 0.8em;
-    color: rgba(0,0,0,.5)
+    color: rgba(0, 0, 0, .5)
 }
-.feedback > .content {
+
+.feedback > .content,
+.notification > .content {
     display: flex;
     flex-direction: column;
 }
 
-.feedback > .content .title {
+.feedback > .content .title,
+.notification > .content . title {
     font-weight: bold;
 }
 
@@ -182,7 +203,8 @@ table img {
     .feedback-profile {
         display: none !important;
     }
-    .count{
+
+    .count {
         font-size: 3em;
         padding: 0;
     }
