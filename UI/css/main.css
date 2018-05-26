@@ -182,11 +182,24 @@ table img {
 .notification > .content {
     display: flex;
     flex-direction: column;
+    margin-left: 0.5em;
 }
 
 .feedback > .content .title,
 .notification > .content . title {
     font-weight: bold;
+}
+
+#mobileNotifications {
+    display: none;
+}
+
+.notifications > .item:last-child {
+    border-bottom: none !important;
+}
+
+.notifications > .item {
+    padding: 0.5em 0;
 }
 
 /* Responsiveness */
@@ -207,5 +220,18 @@ table img {
     .count {
         font-size: 3em;
         padding: 0;
+    }
+
+    .notifications .menu {
+        position: absolute;
+        left: 0;
+    }
+
+    #largeScreenNotifications {
+        display: none;
+    }
+
+    #mobileNotifications {
+        display: flex;
     }
 }
