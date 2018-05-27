@@ -1,6 +1,9 @@
 # Maintenance Tracker :wrench:
 Andela Maintenance Tracker Web Project Challenge 1
 
+![Mock Up](https://image.ibb.co/gmP8vy/Mock_Up.jpg)
+
+
 ![GitHub last commit](https://img.shields.io/github/last-commit/gitaumoses4/maintenance-tracker/develop.svg)
 ![GitHub top language](https://img.shields.io/github/languages/top/gitaumoses4/maintenance-tracker.svg)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gitaumoses4/maintenance-tracker.svg)
