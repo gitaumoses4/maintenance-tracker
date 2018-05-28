@@ -83,7 +83,7 @@ The user will be provided with this dashboard when they successfully sign up and
 ## User Create Request Page
 The user can create a Maintenance Request and submit it.
 
-![User Create Request](https://image.ibb.co/d0waMT/user_create_request.png)
+![User Create Request](https://image.ibb.co/jKmQsd/user_request.png)
 
 ## User View Previous Requests
 The user can view their request history.
@@ -92,7 +92,7 @@ The user can view their request history.
 
 ## User Track Request Status
 The user can track the status of their request.
-![User Request](https://image.ibb.co/geVfo8/user_request.png)
+![User Request](https://image.ibb.co/d0waMT/user_create_request.png)
 
 ## Admin Home Page
 The admin will be provided with this dashboard when they successfully sign up and log in.
@@ -104,7 +104,7 @@ The admin can view a request and set it as approved or rejected.
 ![Admin Request](https://image.ibb.co/mP2t88/admin_request.png)
 
 ## Admin can view all requests and filter them.
-![Admin Requests](https://image.ibb.co/mP2t88/admin_requests.png)
+![Admin Requests](https://image.ibb.co/deV8ao/admin_requests.png)
 
 ### UI Inspiration
 
