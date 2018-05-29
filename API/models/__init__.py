@@ -9,8 +9,14 @@ class BaseModel:
         self.created_at = created_at
         self.updated_at = updated_at
 
-    def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+    def to_json_object(self):
+        return json.loads(self.to_json_str())
+
+    def to_json_str(self):
+        return json.dumps(self,
+                          default=lambda o: o.strftime("%Y-%m-%d %H:%M:%S") if isinstance(o, datetime)
+                          else o.__dict__,
+                          sort_keys=True, indent=4)
 
 
 class User(BaseModel):
