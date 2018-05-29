@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+import json
 from models import BaseModel, Admin, User
 from passlib.hash import bcrypt
 
@@ -32,7 +33,7 @@ class NonPersistentCollection:
     def query_all_where_field_eq(self, field, value):
         result = []
         for item in self.data.values():
-            if item[field] == value:
+            if item.to_json_object()[field] == value:
                 result.append(item)
 
         return result
@@ -53,7 +54,7 @@ class NonPersistentCollection:
 
     def query_by_field(self, field, value):
         for item in self.data.values():
-            if item[field] == value:
+            if item.to_json_object()[field] == value:
                 return item
 
     def delete(self, item_id):
@@ -91,7 +92,7 @@ class UserCollection(NonPersistentCollection):
 
         if not item.get("email"):
             errors['email'] = "Email is required"
-        elif re.match(item.get("email"), '^.+@([?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$') is None:
+        elif re.match(item.get("email"), '^.+@([?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$') is not None:
             errors["email"] = "Not a valid email"
         elif self.query_by_field(field="email", value=item.get("email")) is not None:
             errors["email"] = "Email already in use"
