@@ -77,58 +77,58 @@ class UserCollection(NonPersistentCollection):
         super().insert(item)
 
     def is_valid(self, item):
-        errors = []
+        errors = {}
         if not item.get("firstname"):
-            errors.append({"firstname": "First name is required"})
+            errors['firstname'] = "First name is required"
 
         if not item.get("lastname"):
-            errors.append({"lastname": "Last name is required"})
+            errors['lastname'] = "Last name is required"
 
         if not item.get("username"):
-            errors.append({"username": "Username is required"})
+            errors['username'] = "Username is required"
         elif self.query_by_field(field="username", value=item.get("username")) is not None:
-            errors.append({"username": "Username already in use"})
+            errors['username'] = "Username is already in use"
 
         if not item.get("email"):
-            errors.append({"email": "Email is required"})
+            errors['email'] = "Email is required"
         elif re.match(item.get("email"), '^.+@([?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$') is None:
-            errors.append({"email": "Not a valid email"})
+            errors["email"] = "Not a valid email"
         elif self.query_by_field(field="email", value=item.get("email")) is not None:
-            errors.append({"email": "Email already in use"})
+            errors["email"] = "Email already in use"
 
         if not item.get("password"):
-            errors.append({"password": "Password is required"})
+            errors["password"] = "Password is required"
         elif len(item.get("password")) < 8:
-            errors.append({"password": "Password must be more than 8 characters long"})
+            errors["password"] = "Password must be more than 8 characters long"
 
         return len(errors) == 0, errors
 
 
 class RequestCollection(NonPersistentCollection):
     def is_valid(self, item):
-        errors = []
+        errors = {}
         if not item.get("product_name"):
-            errors.append({"product_name": "Product name must be provided"})
+            errors["product_name"] = "Product name must be provided"
 
         if not item.get("description"):
-            errors.append({"description": "Maintenance/Repair request description must be provided"})
+            errors["description"] = "Maintenance/Repair request description must be provided"
 
         return len(errors) == 0, errors
 
 
 class NotificationCollection(NonPersistentCollection):
     def is_valid(self, item):
-        errors = []
+        errors = {}
         if not item.get("message"):
-            errors.append({"message": "Notification message must be provided"})
+            errors["message"] = "Notification message must be provided"
 
         return len(errors) == 0, errors
 
 
 class FeedbackCollection(NonPersistentCollection):
     def is_valid(self, item):
-        errors = []
+        errors = {}
         if not item.get("message"):
-            errors.append({"message": "Feedback message must be provided"})
+            errors["message"] = "Feedback message must be provided"
 
         return len(errors) == 0, errors
