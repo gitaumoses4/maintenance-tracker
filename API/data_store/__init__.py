@@ -92,7 +92,7 @@ class UserCollection(NonPersistentCollection):
 
         if not item.get("email"):
             errors['email'] = "Email is required"
-        elif re.match(item.get("email"), '^.+@([?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$') is not None:
+        elif re.match(r'^.+@([?)[a-zA-Z0-9-.])+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$', item.get("email")) is None:
             errors["email"] = "Not a valid email"
         elif self.query_by_field(field="email", value=item.get("email")) is not None:
             errors["email"] = "Email already in use"
