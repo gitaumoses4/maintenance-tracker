@@ -10,11 +10,11 @@ class FeedbackTestCase(AuthenticatedTestCase):
         }
 
     def test_admin_can_provide_feedback(self):
-        result = self.client().post(self.full_endpoint("users/requests/feedback"), self.feedback, self.headers)
+        result = self.client().post(self.full_endpoint("users/requests/1/feedback"), self.feedback, self.headers)
         self.assertEqual(result.status_code, 201)
 
     def test_user_can_get_feedback_for_request(self):
-        result = self.client().post(self.full_endpoint("users/requests/feedback"), self.feedback, self.headers)
+        result = self.client().post(self.full_endpoint("users/requests/1/feedback"), self.feedback, self.headers)
         self.assertEqual(result.status_code, 201)
 
         result = self.client().get(self.full_endpoint("users/requests/1/feedback"))
