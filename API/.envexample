@@ -12,3 +12,9 @@ DEFAULT_ADMIN_PASSWORD = "admin"
 
 # default admin email address
 DEFAULT_ADMIN_EMAIL = "gitaumoses4@gmail.com"
+
+# path for profile picture
+DEFAULT_ADMIN_PROFILE_PICTURE = ""
+
+# JWT secret key
+JWT_SECRET_KEY = "my_awesome_key"
