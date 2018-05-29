@@ -26,7 +26,7 @@ class LoginTestCase(BaseTestCase):
         self.assertEqual(result.status_code, 200)
 
     def test_user_can_logout(self):
-        result = self.client.post(self.full_endpoint('users/signup'), self.user, self.headers)
+        result = self.client().post(self.full_endpoint('users/signup'), self.user, self.headers)
         self.assertEqual(result.status_code, 201)
 
         result = self.client().post(self.full_endpoint('users/login'), self.user, self.headers)

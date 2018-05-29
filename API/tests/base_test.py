@@ -17,6 +17,7 @@ class BaseTestCase(TestCase):
 class AuthenticatedTestCase(BaseTestCase):
 
     def setUp(self):
+        super().setUp()
         """Create access token for the test cases"""
 
     def tearDown(self):
