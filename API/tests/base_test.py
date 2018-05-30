@@ -2,7 +2,7 @@ from unittest import TestCase
 from dotenv import load_dotenv
 
 load_dotenv()
-from app import initialize_app
+from app import initialize_app, clear
 
 
 class BaseTestCase(TestCase):
@@ -15,6 +15,9 @@ class BaseTestCase(TestCase):
 
     def full_endpoint(self, path=""):
         return self.api_prefix + path
+
+    def tearDown(self):
+        clear()
 
 
 class AuthenticatedTestCase(BaseTestCase):

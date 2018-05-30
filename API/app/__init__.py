@@ -21,3 +21,7 @@ def initialize_app(config_name="DEVELOPMENT"):
         return token['jti'] in db.blacklist
 
     return app
+
+
+def clear():
+    db.clear()
