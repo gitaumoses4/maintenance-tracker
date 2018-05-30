@@ -1,4 +1,7 @@
 from unittest import TestCase
+from dotenv import load_dotenv
+
+load_dotenv()
 from app import initialize_app
 
 

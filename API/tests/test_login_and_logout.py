@@ -15,10 +15,10 @@ class LoginTestCase(BaseTestCase):
         }
 
     def test_user_can_login(self):
-        result = self.client().post(self.full_endpoint('users/signup'), self.user, self.headers)
+        result = self.client().post(self.full_endpoint('users/signup'), data=self.user, headers=self.headers)
         self.assertEqual(result.status_code, 201)
 
-        result = self.client().post(self.full_endpoint('users/login'), self.user, self.headers)
+        result = self.client().post(self.full_endpoint('users/login'), data=self.user, headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
     def test_admin_can_login(self):
@@ -26,20 +26,20 @@ class LoginTestCase(BaseTestCase):
         self.assertEqual(result.status_code, 200)
 
     def test_user_can_logout(self):
-        result = self.client().post(self.full_endpoint('users/signup'), self.user, self.headers)
+        result = self.client().post(self.full_endpoint('users/signup'), data=self.user, headers=self.headers)
         self.assertEqual(result.status_code, 201)
 
-        result = self.client().post(self.full_endpoint('users/login'), self.user, self.headers)
+        result = self.client().post(self.full_endpoint('users/login'), data=self.user, headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
         result = self.client().delete(self.full_endpoint('users/logout'), self.headers)
         self.assertEqual(result.status_code, 200)
 
     def test_admin_can_logout(self):
-        result = self.client().post(self.full_endpoint('admin/login'), self.admin, self.headers)
+        result = self.client().post(self.full_endpoint('admin/login'), data=self.admin, headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
-        result = self.client().delete(self.full_endpoint('admin/logout'), self.headers)
+        result = self.client().delete(self.full_endpoint('admin/logout'), headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
     def tearDown(self):
