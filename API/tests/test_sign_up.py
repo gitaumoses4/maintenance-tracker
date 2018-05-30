@@ -1,20 +1,25 @@
 from tests.base_test import BaseTestCase
+from models.user import User
+import json
 
 
 class SignupTestCase(BaseTestCase):
     def setUp(self):
-        self.user = {
-            "firstname": "Moses",
-            "lastname": "Gitau",
-            "email": "gitaumoses4@gmail.com",
-            "username": "gitaumoses4",
-            "password": "andela"
-        }
         super().setUp()
+        self.user = User()
+        self.user.firstname = "Moses"
+        self.user.lastname = "Gitau"
+        self.user.username = "gitaumoses"
+        self.user.email = "gitaumoses@gmail.com"
+        self.user.password = "password"
 
     def test_user_can_sign_up(self):
-        result = self.client().post(self.full_endpoint('user/signup'), self.user, self.headers)
+        result = self.client().post(self.full_endpoint('users/signup'), data=self.user.to_json_str(),
+                                    headers=self.headers)
+        json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(result.status_code, 201)  # Resource created
+
+        self.assertEqual(json_result['status'], "success")
 
     def tearDown(self):
         super().tearDown()

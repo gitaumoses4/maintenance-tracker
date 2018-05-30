@@ -4,10 +4,10 @@ from routes.user import user_routes
 from routes.admin import admin_routes
 from flask_jwt_extended import JWTManager
 from app.config import config
-app = Flask(__name__, instance_relative_config=True)
 
 
 def initialize_app(config_name="DEVELOPMENT"):
+    app = Flask(__name__, instance_relative_config=True)
     """ Load the app configuration"""
     app.config.from_object(config[config_name])
     app.register_blueprint(user_routes, url_prefix="/api/v1/users")
@@ -21,3 +21,7 @@ def initialize_app(config_name="DEVELOPMENT"):
         return token['jti'] in db.blacklist
 
     return app
+
+
+def clear():
+    db.clear()
