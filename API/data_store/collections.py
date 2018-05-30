@@ -8,8 +8,10 @@ from models.user import User
 
 
 class NonPersistentCollection:
-    data = {}
-    index = 1
+
+    def __init__(self):
+        self.data = {}
+        self.index = 1
 
     def query_all(self):
         return self.data
