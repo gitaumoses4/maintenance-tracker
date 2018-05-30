@@ -1,3 +1,6 @@
+import json
+
+from models.user import User
 from tests.base_test import AuthenticatedTestCase
 
 
@@ -5,17 +8,19 @@ class UserTestCase(AuthenticatedTestCase):
 
     def setUp(self):
         super().setUp()
-        self.user = {
-            "username": "gitaumoses",
-            "password": "andela"
-        }
+        self.user = User()
+        self.user.firstname = "Moses"
+        self.user.lastname = "Gitau"
+        self.user.username = "gitaumoses"
+        self.user.email = "gitaumoses@gmail.com"
+        self.user.password = "password"
 
     def test_get_user_details(self):
-        result = self.client().post(self.full_endpoint("users/login"), data=self.user, headers=self.headers)
-        self.assertEqual(result.status_code, 200)
-
         result = self.client().get(self.full_endpoint("users/details"), headers=self.headers)
         self.assertEqual(result.status_code, 200)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['status'], "success")
 
     def tearDown(self):
         super().tearDown()
