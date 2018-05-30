@@ -37,7 +37,7 @@ class RequestsTestCase(AuthenticatedTestCase):
         json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(json_result['status'], "success")
 
-        result = self.client().put(self.full_endpoint("users/requests/1"),
+        result = self.client().put(self.full_endpoint("users/requests/{}".format(json_result['data']['request']['id'])),
                                    data=self.request.to_json_str(),
                                    headers=self.headers)
         self.assertEqual(result.status_code, 200)
@@ -45,7 +45,7 @@ class RequestsTestCase(AuthenticatedTestCase):
         json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(json_result['status'], "success")
 
-        result = self.client().get(self.full_endpoint("users/requests/1"),
+        result = self.client().get(self.full_endpoint("users/requests/{}".format(json_result['data']['request']['id'])),
                                    headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
@@ -53,8 +53,18 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
     def test_admin_can_modify_request(self):
-        result = self.client().patch(self.full_endpoint("admin/requests/1"),
-                                     headers=self.headers)
+        result = self.client().post(self.full_endpoint("users/requests"),
+                                    data=self.request.to_json_str(),
+                                    headers=self.headers)
+        self.assertEqual(result.status_code, 201)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['status'], "success")
+
+        result = self.client().put(
+            self.full_endpoint("admin/requests/{}".format(json_result['data']['request']['id'])),
+            data=json.dumps({"status": "Approved"}),
+            headers=self.admin_headers)
         self.assertEqual(result.status_code, 200)
 
         json_result = json.loads(result.get_data(as_text=True))
@@ -69,7 +79,7 @@ class RequestsTestCase(AuthenticatedTestCase):
         json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(json_result['status'], "success")
 
-        result = self.client().get(self.full_endpoint("users/requests/1"),
+        result = self.client().get(self.full_endpoint("users/requests/{}".format(json_result['data']['request']['id'])),
                                    headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
