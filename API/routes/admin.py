@@ -2,14 +2,12 @@ from models.user import User
 from models.admin import Admin
 from routes import is_json, db
 from flask import jsonify, request, Blueprint
-from data_store.db import MaintenanceTrackerDB
 import json
 from passlib.hash import bcrypt
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
     create_access_token,
-    get_jwt_identity,
     get_raw_jwt)
 
 admin_routes = Blueprint("routes.admin", __name__)
@@ -56,3 +54,14 @@ def login_admin():
                 "token": access_token
             }
         }), 200
+
+
+@admin_routes.route("/logout", methods=["DELETE"])
+@jwt_required
+def logout_admin():
+    jti = get_raw_jwt()['jti']
+    db.blacklist.add(jti)
+    return jsonify({
+        "status": "success",
+        "message": "Successfully logged out"
+    }), 200

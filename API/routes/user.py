@@ -74,3 +74,14 @@ def login_user():
                 "token": access_token
             }
         }), 200
+
+
+@user_routes.route("/logout", methods=["DELETE"])
+@jwt_required
+def logout_user():
+    jti = get_raw_jwt()['jti']
+    db.blacklist.add(jti)
+    return jsonify({
+        "status": "success",
+        "message": "Successfully logged out"
+    }), 200
