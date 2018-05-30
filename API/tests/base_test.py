@@ -68,4 +68,4 @@ class AuthenticatedTestCase(BaseTestCase):
         self.admin_headers['Authorization'] = 'Bearer {}'.format(json_result['data']['token'])
 
     def tearDown(self):
-        pass
+        super().tearDown()
