@@ -6,3 +6,4 @@ server.js
 venv
 .env
 __pycache__/
+.coverage
