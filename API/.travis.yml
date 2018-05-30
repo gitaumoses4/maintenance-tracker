@@ -1,0 +1,11 @@
+language: python
+python:
+    - "2.7"
+    - "3.6"
+install:
+    - pip install -r requirements.txt
+script:
+    - nosetests --with-coverage --cover-package=routes tests/*
+# run coverage tests
+after_success:
+- coveralls
