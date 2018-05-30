@@ -1,5 +1,6 @@
+from models.feedback import Feedback
 from models.user import User
-from routes import is_json, db, validate
+from routes import is_json, db, validate, get_current_user
 from flask import jsonify, request, Blueprint
 from passlib.hash import bcrypt
 from flask_jwt_extended import (
@@ -90,11 +91,41 @@ def modify_request(_id):
             }), 404
         else:
             if request.method == "PUT":
-                if validate({"status": "Maintenance Status is required"}):
+                valid, response, response_code = validate({"status": "Maintenance status is required"})
+                if valid:
                     result = request.json
                     maintenance_request.status = result['status']
+                else:
+                    return response, response_code
 
             return jsonify({
                 "status": "success",
                 "data": maintenance_request.to_json_object()
             }), 200
+
+
+@admin_routes.route('/requests/<int:_id>/feedback', methods=['POST'])
+@jwt_required
+def write_feedback_for_request(_id):
+    if is_json():
+        maintenance_request = db.requests.query(_id)
+        if maintenance_request is None:
+            return jsonify({
+                "status": "error",
+                "message": "Maintenance request does not exist"
+            }), 404
+        else:
+            valid, errors = db.feedback.is_valid(request.json)
+            if not valid:
+                return jsonify({
+                    "status": "error",
+                    "data": errors
+                }), 400
+            else:
+                feedback = Feedback(admin=get_current_user(), request=maintenance_request,
+                                    message=request.json.get("message"))
+                db.feedback.insert(feedback)
+                return jsonify({
+                    "status": "success",
+                    "data": feedback.to_json_object()
+                }), 200

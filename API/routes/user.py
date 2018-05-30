@@ -161,3 +161,28 @@ def modify_request(_id):
                 "status": "success",
                 "data": maintenance_request.to_json_object()
             }), 200
+
+
+@user_routes.route("/requests/<int:_id>/feedback", methods=['GET'])
+@jwt_required
+def get_feedback_for_request(_id):
+    maintenance_request = db.requests.query(_id)
+    print(get_jwt_identity())
+    if maintenance_request is None:
+        return jsonify({
+            "status": "error",
+            "message": "Maintenance request does not exist"
+        }), 404
+    elif maintenance_request.created_by.username != get_jwt_identity():
+        return jsonify({
+            "status": "error",
+            "message": "You are not allowed to modify or view this maintenance request"
+        }), 401
+    else:
+        feedback = [x.to_json_object() for x in db.feedback.query_all().values() if x.request.id == _id]
+        return jsonify({
+            "status": "success",
+            "data": {
+                "feedback": feedback
+            }
+        }), 200

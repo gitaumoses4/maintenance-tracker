@@ -26,9 +26,9 @@ def validate(validator):
         if not request.json.get(key):
             errors[key] = validator[key]
     if len(errors) > 0:
-        return True
-    else:
-        return jsonify({
+        return False, jsonify({
             "status": "error",
             "data": errors
         }), 400
+    else:
+        return True, None, None
