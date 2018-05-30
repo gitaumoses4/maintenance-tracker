@@ -1,4 +1,5 @@
 from models.feedback import Feedback
+from models.notification import Notification
 from models.user import User
 from routes import is_json, db, validate, get_current_user
 from flask import jsonify, request, Blueprint
@@ -100,7 +101,9 @@ def modify_request(_id):
 
             return jsonify({
                 "status": "success",
-                "data": maintenance_request.to_json_object()
+                "data": {
+                    "request": maintenance_request.to_json_object()
+                }
             }), 200
 
 
@@ -127,5 +130,35 @@ def write_feedback_for_request(_id):
                 db.feedback.insert(feedback)
                 return jsonify({
                     "status": "success",
-                    "data": feedback.to_json_object()
+                    "data": {
+                        "feedback": feedback.to_json_object()
+                    }
+                }), 201
+
+
+@admin_routes.route('/users/<int:_id>/notifications', methods=['POST'])
+@jwt_required
+def send_notification(_id):
+    if is_json():
+        user = db.users.query(_id)
+        if user is None:
+            return jsonify({
+                "status": "error",
+                "message": "User does not exist"
+            }), 404
+        else:
+            valid, errors = db.notifications.is_valid(request.json)
+            if not valid:
+                return jsonify({
+                    "status": "error",
+                    "data": errors
+                }), 400
+            else:
+                notification = Notification(admin=get_current_user(), user=user, message=request.json.get("message"))
+                db.notifications.insert(notification)
+                return jsonify({
+                    "status": "success",
+                    "data": {
+                        "notification": notification.to_json_object()
+                    }
                 }), 201

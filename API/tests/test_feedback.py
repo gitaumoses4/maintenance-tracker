@@ -40,8 +40,9 @@ class FeedbackTestCase(AuthenticatedTestCase):
         json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(json_result['status'], "success")
 
+        request_id = json_result['data']['request']['id']
         result = self.client().post(
-            self.full_endpoint("admin/requests/{}/feedback".format(json_result['data']['request']['id'])),
+            self.full_endpoint("admin/requests/{}/feedback".format(request_id)),
             data=self.feedback.to_json_str(),
             headers=self.admin_headers)
         self.assertEqual(result.status_code, 201)
@@ -50,7 +51,7 @@ class FeedbackTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
         result = self.client().get(
-            self.full_endpoint("users/requests/{}/feedback".format(json_result['data']['request']['id'])),
+            self.full_endpoint("users/requests/{}/feedback".format(request_id)),
             headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
