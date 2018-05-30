@@ -32,7 +32,7 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(result.status_code, 200)
 
     def test_admin_can_modify_request(self):
-        result = self.client().patch(self.full_endpoint("users/requests/1"), headers=self.headers)
+        result = self.client().patch(self.full_endpoint("admin/requests/1"), headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
     def test_can_get_request_by_id(self):
