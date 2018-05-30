@@ -1,0 +1,14 @@
+# default admin first name
+DEFAULT_ADMIN_FIRST_NAME = "Moses"
+
+# default admin lastname
+DEFAULT_ADMIN_LAST_NAME = "Gitau"
+
+# default admin login username
+DEFAULT_ADMIN_USER_NAME = "admin"
+
+# default admin password
+DEFAULT_ADMIN_PASSWORD = "admin"
+
+# default admin email address
+DEFAULT_ADMIN_EMAIL = "gitaumoses4@gmail.com"
