@@ -1,12 +1,9 @@
 from models.user import User
 from models.request import Request
 from flask import jsonify, request, Blueprint
-from data_store.db import MaintenanceTrackerDB
-import json
 from routes import is_json, db, validate, get_current_user
 from passlib.hash import bcrypt
 from flask_jwt_extended import (
-    JWTManager,
     jwt_required,
     create_access_token,
     get_jwt_identity,
@@ -168,7 +165,6 @@ def modify_request(_id):
 @jwt_required
 def get_feedback_for_request(_id):
     maintenance_request = db.requests.query(_id)
-    print(get_jwt_identity())
     if maintenance_request is None:
         return jsonify({
             "status": "error",
@@ -198,3 +194,55 @@ def get_user_details():
             "user": get_current_user().to_json_object()
         }
     }), 200
+
+
+@user_routes.route('/notifications/<int:_id>', methods=['GET'])
+@jwt_required
+def get_user_notification(_id):
+    if is_json():
+        notification = db.notifications.query(_id)
+        if not notification:
+            return jsonify({
+                "status": "error",
+                "message": "Notification not found"
+            }), 404
+        else:
+            return jsonify({
+                "status": "success",
+                "data": {
+                    "notification": notification.to_json_object()
+                }
+            }), 200
+
+
+@user_routes.route('/notifications', methods=['GET'])
+@jwt_required
+def get_all_notifications():
+    if is_json():
+        notifications = [x.to_json_object() for x in db.notifications.query_all().values() if
+                         x.user.username == get_jwt_identity()]
+        return jsonify({
+            "status": "success",
+            "data": {
+                "notification_count": len(notifications),
+                "notifications": notifications
+            }
+        }), 200
+
+
+@user_routes.route('/notifications/<int:_id>', methods=['PUT'])
+@jwt_required
+def mark_as_read(_id):
+    if is_json():
+        notification = db.notifications.query(_id)
+        if not notification:
+            return jsonify({
+                "status": "error",
+                "message": "Notification not found"
+            }), 404
+        else:
+            notification.read = True
+            return jsonify({
+                "status": "success",
+                "message": "Successfully marked as read"
+            }), 200

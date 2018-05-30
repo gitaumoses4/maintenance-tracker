@@ -9,3 +9,4 @@ class Notification(BaseModel):
         self.admin = admin
         self.user = user
         self.message = message
+        self.read = False
