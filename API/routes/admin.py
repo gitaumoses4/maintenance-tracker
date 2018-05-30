@@ -47,8 +47,8 @@ def login_admin():
         elif not user.role == User.ROLE_ADMINISTRATOR:
             return jsonify({
                 "status": "error",
-                "message": "Only admins can access "
-            })
+                "message": "User is not an admin"
+            }), 401
         access_token = create_access_token(identity=user.username)
         return jsonify({
             "status": "success",
