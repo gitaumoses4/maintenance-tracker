@@ -159,7 +159,8 @@ def modify_request(_id):
 
             return jsonify({
                 "status": "success",
-                "data": maintenance_request.to_json_object()
+                "data": {
+                    "request": maintenance_request.to_json_object()}
             }), 200
 
 
