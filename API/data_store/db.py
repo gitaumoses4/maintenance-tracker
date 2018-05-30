@@ -9,6 +9,7 @@ class MaintenanceTrackerDB:
         self.feedback = FeedbackCollection()
         self.notifications = NonPersistentCollection()
         self.blacklist = set()
+        self.users.insert(Admin.default())
 
     def clear(self):
         self.users.clear()

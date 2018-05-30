@@ -1,6 +1,10 @@
+import os
+
+
 class Configuration:
     DEBUG = False
     TESTING = False
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 
 class Development(Configuration):

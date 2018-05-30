@@ -16,6 +16,7 @@ class Admin(User):
         admin.firstname = os.getenv("DEFAULT_ADMIN_FIRST_NAME")
         admin.lastname = os.getenv("DEFAULT_ADMIN_LAST_NAME")
         admin.email = os.getenv("DEFAULT_ADMIN_EMAIL")
+        admin.username = os.getenv("DEFAULT_ADMIN_USER_NAME")
         admin.password = os.getenv("DEFAULT_ADMIN_PASSWORD")
         admin.profile_picture = os.getenv("DEFAULT_ADMIN_PROFILE_PICTURE")
 
