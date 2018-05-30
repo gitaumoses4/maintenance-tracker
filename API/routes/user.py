@@ -187,3 +187,14 @@ def get_feedback_for_request(_id):
                 "feedback": feedback
             }
         }), 200
+
+
+@user_routes.route("/details", methods=['GET'])
+@jwt_required
+def get_user_details():
+    return jsonify({
+        "status": "success",
+        "data": {
+            "user": get_current_user().to_json_object()
+        }
+    }), 200
