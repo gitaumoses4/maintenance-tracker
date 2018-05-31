@@ -31,6 +31,20 @@ Andela Maintenance Tracker Web Project Challenge 1
       * [Admin Change Request Status](#admin-change-request-status)
       * [Admin can view all requests and filter them.](#admin-can-view-all-requests-and-filter-them)
          * [UI Inspiration](#ui-inspiration)
+         
+## Installation
+To have the API running you will need to install the requirements
+```bash
+    $ pip install -r requirements.txt
+```
+Then navigate to the `/API` directory where the API is located.
+
+## Configuration
+
+```bash
+    $ ./travis.sh
+```
+
 ## UI Template
 You can view the UI template on [Github Pages](https://gitaumoses4.github.io/maintenance-tracker)
 
