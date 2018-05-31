@@ -22,7 +22,6 @@ def initialize_app(config_name="DEVELOPMENT"):
         """check if the token is blacklisted"""
         return token['jti'] in db.blacklist
 
-    check_token("")
     return app
 
 
