@@ -33,16 +33,22 @@ Andela Maintenance Tracker Web Project Challenge 1
          * [UI Inspiration](#ui-inspiration)
          
 ## Installation
-To have the API running you will need to install the requirements
+To have the API running you will need to create a virtual environment and install the requirements
+So navigate to the `/API` directory where the API is located.
+
+### Create a virtual environment
 ```bash
-    $ pip install -r requirements.txt
+$ python3 -m venv venv;
+$ source venv/bin/activate
 ```
-Then navigate to the `/API` directory where the API is located.
-
-## Configuration
-
+#### Install requirements
 ```bash
-    $ ./travis.sh
+$ pip install -r requirements.txt
+```
+## Configuration
+You will need to initialize the environment variables
+```bash
+$ ./travis.sh
 ```
 
 ## UI Template
