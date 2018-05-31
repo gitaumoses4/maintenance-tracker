@@ -1,4 +1,4 @@
-MAT: 1A
+FORMAT: 1A
 HOST: https://maintenance-tracker-api.herokuapp.com/
 
 # Maintenance Tracker
@@ -15,39 +15,38 @@ Maintenance Tracker App is an application that provides users with the ability t
 7. The user can view all his/her requests
 
 
-## Users [/api/v1/users/]
+## Users [/api/v1/users]
 
-### Register [POST]
+### Register [POST users/register]
+
+Creates a new user account.
 
 + Request (application/json)
+
         {
-            "firstname" : "John"
-            "lastname:  : "Doe"
-            "email"     : "johndoe@gmail.com"
-            "password"  : "password"
+            "firstname": "Moses",
+            "lastname": "Gitau",
+            "email": "gitaumoses@gmail.com",
+            "username": "gitaumoses",
+            "password": "password"
         }
         
 + Response 201 (application/json)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
+        {
+            "data": {
+                "user": {
+                    "created_at": "2018-05-31 13:59:28",
+                    "email": "gitaumoses@gmail.com",
+                    "firstname": "Moses",
+                    "id": 2,
+                    "lastname": "Gitau",
+                    "password": "$2b$12$B00kFlpaioHeBNBD1/AIkOQKgKIQQ6aAQIN.VDJ../H4mwDYz8dcG",
+                    "profile_picture": "",
+                    "role": "User",
+                    "updated_at": "2018-05-31 13:59:09",
+                    "username": "gitaumoses"
+                }
+            },
+            "status": "success"
+        }
