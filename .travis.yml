@@ -5,7 +5,7 @@ python:
 before_script:
     - cd API
 install:
-    - pip install -r requirements.txt
+    - pip install -r API/requirements.txt
 script:
     - cp .envexample .env
     - nosetests --with-coverage --cover-package=routes tests/*
