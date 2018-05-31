@@ -1,13 +1,14 @@
 # Maintenance Tracker :wrench:
 Andela Maintenance Tracker Web Project Challenge 1
 
-![Mock Up](https://image.ibb.co/gmP8vy/Mock_Up.jpg)
-
-
 ![GitHub last commit](https://img.shields.io/github/last-commit/gitaumoses4/maintenance-tracker/develop.svg)
 ![GitHub top language](https://img.shields.io/github/languages/top/gitaumoses4/maintenance-tracker.svg)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gitaumoses4/maintenance-tracker.svg)
 ![GitHub contributors](https://img.shields.io/github/contributors/gitaumoses4/maintenance-tracker.svg)
+[![Coverage Status](https://coveralls.io/repos/github/gitaumoses4/maintenance-tracker/badge.svg?branch=develop)](https://coveralls.io/github/gitaumoses4/maintenance-tracker?branch=develop)
+
+![Mock Up](https://image.ibb.co/gmP8vy/Mock_Up.jpg)
+
 
 # Table of Contents
    * [Maintenance Tracker <g-emoji class="g-emoji" alias="wrench" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f527.png">🔧</g-emoji>](#maintenance-tracker-wrench)
