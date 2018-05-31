@@ -7,10 +7,9 @@ from routes.admin import admin_routes
 from routes.web import web
 from app.config import config
 
-app = Flask(__name__, instance_relative_config=True)
-
 
 def initialize_app(config_name="DEVELOPMENT"):
+    app = Flask(__name__, instance_relative_config=True)
     """ Load the app configuration"""
     app.config.from_object(config[config_name])
     app.register_blueprint(user_routes, url_prefix="/api/v1/users")

@@ -45,11 +45,6 @@ $ source venv/bin/activate
 ```bash
 $ pip install -r requirements.txt
 ```
-## Configuration
-You will need to initialize the environment variables
-```bash
-$ cp .envexample .env
-```
 
 ## Running the application
 After the configuration, you will run the app 
