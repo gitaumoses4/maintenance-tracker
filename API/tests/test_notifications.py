@@ -1,6 +1,6 @@
 import json
 
-from models.notification import Notification
+from app.models import Notification
 from tests.base_test import AuthenticatedTestCase
 
 

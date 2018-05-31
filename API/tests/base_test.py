@@ -1,11 +1,7 @@
 import json
 from unittest import TestCase
-from dotenv import load_dotenv
+from app.models import Admin, User
 
-from models.admin import Admin
-from models.user import User
-
-load_dotenv()
 from app import initialize_app, clear
 
 
