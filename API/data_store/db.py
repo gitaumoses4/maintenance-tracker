@@ -1,9 +1,11 @@
+"""The main data structure"""
 from data_store.collections import UserCollection, RequestCollection, FeedbackCollection, NonPersistentCollection
-from models.admin import Admin
+from app.models import Admin
 
 
 class MaintenanceTrackerDB:
     def __init__(self):
+        """Create collections for each model"""
         self.users = UserCollection()
         self.requests = RequestCollection()
         self.feedback = FeedbackCollection()
@@ -12,6 +14,7 @@ class MaintenanceTrackerDB:
         self.users.insert(Admin.default())
 
     def clear(self):
+        """Clear the data in the collections"""
         self.users.clear()
         self.requests.clear()
         self.feedback.clear()

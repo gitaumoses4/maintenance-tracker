@@ -1,6 +1,4 @@
-from models.feedback import Feedback
-from models.notification import Notification
-from models.user import User
+from app.models import Feedback, Notification, User
 from routes import is_json, db, validate, get_current_user
 from flask import jsonify, request, Blueprint
 from passlib.hash import bcrypt

@@ -1,10 +1,10 @@
+""" Initializes and runs the application"""
 from dotenv import load_dotenv
 
 load_dotenv()
-import app
-
-
-maintenance_tracker = app.initialize_app()
 
 if __name__ == '__main__':
-    maintenance_tracker.run()
+    import app
+
+    APP = app.initialize_app()
+    APP.run()

@@ -1,7 +1,6 @@
 import json
 
-from models.feedback import Feedback
-from models.request import Request
+from app.models import Feedback, Request
 from tests.base_test import AuthenticatedTestCase
 import unittest
 
