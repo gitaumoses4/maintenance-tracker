@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-if __name__ == '__main__':
-    import app
+import app
 
-    APP = app.initialize_app()
+APP = app.initialize_app()
+if __name__ == '__main__':
     APP.run()

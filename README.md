@@ -48,8 +48,41 @@ $ pip install -r requirements.txt
 ## Configuration
 You will need to initialize the environment variables
 ```bash
-$ ./travis.sh
+$ cp .envexample .env
 ```
+
+## Running the application
+After the configuration, you will run the app 
+```bash
+$ export FLASK_APP=run.py
+$ flask run
+```
+### Endpoints
+All endpoints can be now accessed from the following url on your local computer
+```http://localhost:5000/api/v1/```
+
+### Available endpoints
+|  Endpoint  | Task  |
+|  ---  | --- |
+| `POST api/v1/users/signup` | Users can sign up |
+| `POST api/v1/users/login`  | Users can log in |
+| `POST api/v1/admin/login` | Admin can login in |
+| `DELETE api/v1/admin/logout` | Admin can logout |
+| `DELETE api/v1/users/lgout` | Users can logout |
+| `POST api/v1/users/requests` | User can create a maintenance request | 
+| `GET api/v1/users/requests` | User can get all their requests |
+| `PUT api/v1/users/requests/<requestId>` | User can edit a request |
+| `GET api/v1/users/requests/<requestId>` | User can get a request details|
+| `GET api/v1/admin/requests` | Admin can get all the requests |
+| `GET api/v1/admin/requests/<requestId>` | Admin can get a request by id |
+| `PUT api/v1/admin/requests/<requestId>` | Admin can edit a request |
+| `POST api/v1/admin/requests/<requestId>/feedback` | Admin can create a feedback for request |
+| `GET api/v1/users/requests/<requestId>/feedback` | User can get feedback for request |
+| `POST api/v1/admin/users/<userId>/notifications` | Admin can send a notification to a user |
+| `GET api/v1/users/notifications/<notificationId>` | User can get notification by id |
+| `GET api/v1/users/notifications` | User can get all notifications |
+| `PUT api/v1/users/notifications/<notificationId>` | Set a notification as read |
+| `GET api/v1/users/details` | Get user details |
 
 ## UI Template
 You can view the UI template on [Github Pages](https://gitaumoses4.github.io/maintenance-tracker)
