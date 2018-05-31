@@ -5,6 +5,6 @@ load_dotenv()
 
 import app
 
-APP = app.initialize_app()
+app = app.initialize_app()
 if __name__ == '__main__':
-    APP.run()
+    app.run()

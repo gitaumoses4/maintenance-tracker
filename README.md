@@ -59,7 +59,13 @@ $ flask run
 ```
 ### Endpoints
 All endpoints can be now accessed from the following url on your local computer
-```http://localhost:5000/api/v1/```
+```
+http://localhost:5000/api/v1/
+```
+Or from Heroku
+```
+https://maintenance-tracker-api.herokuapp.com/api/v1/
+```
 
 ### Available endpoints
 |  Endpoint  | Task  |
