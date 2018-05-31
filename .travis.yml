@@ -10,4 +10,4 @@ script:
     - nosetests --with-coverage --cover-package=routes tests/*
 # run coverage tests
 after_success:
-- coveralls
+    - coveralls
