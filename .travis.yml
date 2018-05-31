@@ -2,10 +2,11 @@ language: python
 python:
     - "2.7"
     - "3.6"
+before_script:
+    - cd API
 install:
     - pip install -r requirements.txt
 script:
-    - cd API
     - cp .envexample .env
     - nosetests --with-coverage --cover-package=routes tests/*
 # run coverage tests
