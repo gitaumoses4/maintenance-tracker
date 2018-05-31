@@ -13,3 +13,4 @@ PyJWT==1.6.4
 python-dotenv==0.8.2
 six==1.11.0
 Werkzeug==0.14.1
+coverage-4.5.1
