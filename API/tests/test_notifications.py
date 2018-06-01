@@ -33,8 +33,16 @@ class NotificationsTestCase(AuthenticatedTestCase):
         self.assertEqual(result.status_code, 201)
         self.assertEqual(json_result['status'], "success")
 
+        notification_id = json_result['data']['notification']['id']
         result = self.client().get(
-            self.full_endpoint("users/notifications/{}".format(json_result['data']['notification']['id'])),
+            self.full_endpoint('users/notifications/{}'.format(notification_id)), headers=self.no_json_headers)
+        self.assertEqual(result.status_code, 400)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['message'], "Request should be in JSON")
+
+        result = self.client().get(
+            self.full_endpoint("users/notifications/{}".format(notification_id)),
             headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
@@ -42,6 +50,13 @@ class NotificationsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
     def test_can_create_notification(self):
+        result = self.client().post(self.full_endpoint('admin/users/{}/notifications'.format(self.user.id))
+                                    , headers=self.admin_no_json_headers)
+        self.assertEqual(result.status_code, 400)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['message'], "Request should be in JSON")
+
         result = self.client().post(
             self.full_endpoint("admin/users/{}/notifications".format(self.user.id)),
             data=self.notification.to_json_str(False),
@@ -85,8 +100,17 @@ class NotificationsTestCase(AuthenticatedTestCase):
         self.assertEqual(result.status_code, 201)
         self.assertEqual(json_result['status'], "success")
 
+        result = self.client().get(self.full_endpoint('users/notifications'),
+                                   headers=self.no_json_headers)
+        self.assertEqual(result.status_code, 400)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['message'], "Request should be in JSON")
+
         result = self.client().get(self.full_endpoint("users/notifications"), headers=self.headers)
         self.assertEqual(result.status_code, 200)
+
+        json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(json_result['status'], "success")
 
     def test_can_mark_notification_as_read(self):
@@ -100,8 +124,17 @@ class NotificationsTestCase(AuthenticatedTestCase):
         self.assertEqual(result.status_code, 201)
         self.assertEqual(json_result['status'], "success")
 
+        notification_id = json_result['data']['notification']['id']
+
+        result = self.client().put(self.full_endpoint('users/notifications/{}'.format(notification_id)),
+                                   headers=self.no_json_headers)
+        self.assertEqual(result.status_code, 400)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['message'], "Request should be in JSON")
+
         result = self.client().put(
-            self.full_endpoint("users/notifications/{}".format(json_result['data']['notification']['id'])),
+            self.full_endpoint("users/notifications/{}".format(notification_id)),
             headers=self.headers)
 
         self.assertEqual(result.status_code, 200)

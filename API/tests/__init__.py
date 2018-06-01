@@ -1,6 +1,7 @@
 import unittest
 
 from app import initialize_app
+from tests.base_test import BaseTestCase, AuthenticatedTestCase
 
 
 class DocsTestCase(unittest.TestCase):
