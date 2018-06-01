@@ -30,6 +30,20 @@ class LoginTestCase(BaseTestCase):
         return self.client().post(self.full_endpoint('admin/login'), data=self.admin.to_json_str(False),
                                   headers=self.headers)
 
+    def test_user_cannot_login_as_admin(self):
+        result = self.sign_up()
+        self.assertEqual(result.status_code, 201)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['status'], "success")
+
+        result = self.client().post(self.full_endpoint('admin/login'), data=self.user.to_json_str(False),
+                                    headers=self.headers)
+        self.assertEqual(result.status_code, 200)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['status'], "success")
+
     def test_user_can_login(self):
         result = self.sign_up()
         self.assertEqual(result.status_code, 201)
