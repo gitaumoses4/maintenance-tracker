@@ -5,7 +5,7 @@ Andela Maintenance Tracker Web Project Challenge 1
 ![GitHub top language](https://img.shields.io/github/languages/top/gitaumoses4/maintenance-tracker.svg)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/gitaumoses4/maintenance-tracker.svg)
 ![GitHub contributors](https://img.shields.io/github/contributors/gitaumoses4/maintenance-tracker.svg)
-[![Coverage Status](https://coveralls.io/repos/github/gitaumoses4/maintenance-tracker/badge.svg?branch=develop)](https://coveralls.io/github/gitaumoses4/maintenance-tracker?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/gitaumoses4/maintenance-tracker/badge.svg)](https://coveralls.io/github/gitaumoses4/maintenance-tracker)
 [![Build Status](https://travis-ci.org/gitaumoses4/maintenance-tracker.svg?branch=develop)](https://travis-ci.org/gitaumoses4/maintenance-tracker)
 
 ![Mock Up](https://image.ibb.co/gmP8vy/Mock_Up.jpg)
