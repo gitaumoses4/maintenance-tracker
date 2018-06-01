@@ -35,13 +35,6 @@ class NotificationsTestCase(AuthenticatedTestCase):
 
         notification_id = json_result['data']['notification']['id']
         result = self.client().get(
-            self.full_endpoint('users/notifications/{}'.format(notification_id)), headers=self.no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
-
-        result = self.client().get(
             self.full_endpoint("users/notifications/{}".format(notification_id)),
             headers=self.headers)
         self.assertEqual(result.status_code, 200)
@@ -100,13 +93,6 @@ class NotificationsTestCase(AuthenticatedTestCase):
         self.assertEqual(result.status_code, 201)
         self.assertEqual(json_result['status'], "success")
 
-        result = self.client().get(self.full_endpoint('users/notifications'),
-                                   headers=self.no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
-
         result = self.client().get(self.full_endpoint("users/notifications"), headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
@@ -125,13 +111,6 @@ class NotificationsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
         notification_id = json_result['data']['notification']['id']
-
-        result = self.client().put(self.full_endpoint('users/notifications/{}'.format(notification_id)),
-                                   headers=self.no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
 
         result = self.client().put(
             self.full_endpoint("users/notifications/{}".format(notification_id)),

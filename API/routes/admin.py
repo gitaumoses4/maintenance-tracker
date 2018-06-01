@@ -73,34 +73,28 @@ def logout_admin():
 @admin_routes.route("/requests", methods=["GET"])
 @jwt_required
 def get_all_requests():
-    if request.is_json:
-        requests = [x.to_json_object() for x in db.requests.query_all().values()]
-        return jsonify({
-            "status": "success",
-            "data": {
-                "total_requests": len(requests),
-                "requests": requests
-            }
-        }), 200
-    else:
-        return jsonify({
-            "message": "Request should be in JSON",
-            "status": "error"
-        }), 400
+    requests = [x.to_json_object() for x in db.requests.query_all().values()]
+    return jsonify({
+        "status": "success",
+        "data": {
+            "total_requests": len(requests),
+            "requests": requests
+        }
+    }), 200
 
 
 @admin_routes.route("/requests/<int:_id>", methods=["PUT", "GET"])
 @jwt_required
 def modify_request(_id):
-    if request.is_json:
-        maintenance_request = db.requests.query(_id)
-        if maintenance_request is None:
-            return jsonify({
-                "status": "error",
-                "message": "Maintenance request does not exist"
-            }), 404
-        else:
-            if request.method == "PUT":
+    maintenance_request = db.requests.query(_id)
+    if maintenance_request is None:
+        return jsonify({
+            "status": "error",
+            "message": "Maintenance request does not exist"
+        }), 404
+    else:
+        if request.method == "PUT":
+            if request.is_json:
                 if request.json.get("status") is not None:
                     result = request.json
                     maintenance_request.status = result['status']
@@ -111,18 +105,18 @@ def modify_request(_id):
                             "status": "Maintenance status is required"
                         }
                     }), 400
+            else:
+                return jsonify({
+                    "message": "Request should be in JSON",
+                    "status": "error"
+                }), 400
 
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "request": maintenance_request.to_json_object()
-                }
-            }), 200
-    else:
         return jsonify({
-            "message": "Request should be in JSON",
-            "status": "error"
-        }), 400
+            "status": "success",
+            "data": {
+                "request": maintenance_request.to_json_object()
+            }
+        }), 200
 
 
 @admin_routes.route('/requests/<int:_id>/feedback', methods=['POST'])

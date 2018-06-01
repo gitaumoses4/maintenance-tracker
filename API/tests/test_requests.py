@@ -40,13 +40,6 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "error")
 
     def test_user_can_get_all_requests(self):
-        result = self.client().get(self.full_endpoint('users/requests'),
-                                   headers=self.no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
-
         result = self.client().get(self.full_endpoint("users/requests"),
                                    headers=self.headers)
         self.assertEqual(result.status_code, 200)
@@ -55,13 +48,6 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
     def test_admin_can_get_all_requests(self):
-        result = self.client().get(self.full_endpoint('admin/requests'),
-                                   headers=self.no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
-
         result = self.client().get(self.full_endpoint("admin/requests"),
                                    headers=self.headers)
         self.assertEqual(result.status_code, 200)
@@ -126,13 +112,6 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
         request_id = json_result['data']['request']['id']
-        result = self.client().put(self.full_endpoint('admin/requests/1'.format(request_id)),
-                                   headers=self.admin_no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
-
         result = self.client().put(
             self.full_endpoint("admin/requests/{}".format(request_id)),
             data=json.dumps({"status": "Approved"}),
@@ -182,13 +161,6 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
         request_id = json_result['data']['request']['id']
-
-        result = self.client().get(self.full_endpoint('users/requests/{}'.format(request_id)),
-                                   headers=self.no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
 
         result = self.client().get(self.full_endpoint("users/requests/{}".format(request_id)),
                                    headers=self.headers)

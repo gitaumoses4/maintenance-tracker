@@ -90,14 +90,6 @@ class FeedbackTestCase(AuthenticatedTestCase):
 
         result = self.client().get(
             self.full_endpoint("users/requests/{}/feedback".format(request_id)),
-            headers=self.no_json_headers)
-        self.assertEqual(result.status_code, 400)
-
-        json_result = json.loads(result.get_data(as_text=True))
-        self.assertEqual(json_result['message'], "Request should be in JSON")
-
-        result = self.client().get(
-            self.full_endpoint("users/requests/{}/feedback".format(request_id)),
             headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
