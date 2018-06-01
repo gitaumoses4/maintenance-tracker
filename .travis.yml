@@ -9,3 +9,4 @@ script:
 # run coverage tests
 after_success:
     - coveralls
+    - codecov
