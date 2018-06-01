@@ -37,6 +37,13 @@ class LoginTestCase(BaseTestCase):
         json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(json_result['status'], "success")
 
+        result = self.client().post(self.full_endpoint('users/login'),
+                                    headers=self.no_json_headers)
+        self.assertEqual(result.status_code, 400)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['message'], "Request should be in JSON")
+
         result = self.user_login()
         self.assertEqual(result.status_code, 200)
 
@@ -100,6 +107,13 @@ class LoginTestCase(BaseTestCase):
         self.assertEqual(json_result['status'], "error")
 
     def test_admin_can_login(self):
+        result = self.client().post(self.full_endpoint('admin/login'),
+                                    headers=self.admin_no_json_headers)
+        self.assertEqual(result.status_code, 400)
+
+        json_result = json.loads(result.get_data(as_text=True))
+        self.assertEqual(json_result['message'], "Request should be in JSON")
+
         result = self.admin_login()
         self.assertEqual(result.status_code, 200)
 
