@@ -168,7 +168,7 @@ def modify_request(_id):
                     return jsonify({
                         "status": "error",
                         "data": errors
-                    })
+                    }), 400
                 result = request.json
 
                 maintenance_request.product_name = result['product_name']

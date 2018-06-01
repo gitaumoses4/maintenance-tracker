@@ -170,11 +170,12 @@ def send_notification(_id):
                 "message": "User does not exist"
             }), 404
         else:
-            valid, errors = db.notifications.is_valid(request.json)
-            if not valid:
+            if request.json.get("message") is None:
                 return jsonify({
                     "status": "error",
-                    "data": errors
+                    "data": {
+                        "message": "Notification message is required"
+                    }
                 }), 400
             else:
                 notification = Notification(admin=get_current_user(), user=user, message=request.json.get("message"))
