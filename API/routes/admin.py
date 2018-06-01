@@ -101,7 +101,7 @@ def modify_request(_id):
             }), 404
         else:
             if request.method == "PUT":
-                if request.json.get("status"):
+                if request.json.get("status") is not None:
                     result = request.json
                     maintenance_request.status = result['status']
                 else:
@@ -110,7 +110,7 @@ def modify_request(_id):
                         "data": {
                             "status": "Maintenance status is required"
                         }
-                    })
+                    }), 400
 
             return jsonify({
                 "status": "success",

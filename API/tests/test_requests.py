@@ -129,6 +129,7 @@ class RequestsTestCase(AuthenticatedTestCase):
 
         result = self.client().put(
             self.full_endpoint("admin/requests/{}".format(json_result['data']['request']['id'])),
+            data=json.dumps({"none": "none"}),
             headers=self.admin_headers)
         self.assertEqual(result.status_code, 400)
 
