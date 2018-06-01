@@ -10,17 +10,26 @@ Andela Maintenance Tracker Web Project Challenge 1
 
 ![Mock Up](https://image.ibb.co/gmP8vy/Mock_Up.jpg)
 
-
-# Table of Contents
-   * [Maintenance Tracker <g-emoji class="g-emoji" alias="wrench" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f527.png">🔧</g-emoji>](#maintenance-tracker-wrench)
-      * [UI Template](#ui-template)
-      * [Pivotal Tracker Project](#pivotal-tracker-project)
-      * [Introduction](#introduction)
-         * [Project Overview](#project-overview)
-         * [Required Features](#required-features)
-         * [Images](#images)
+   * [Introduction](#introduction)
+      * [Project Overview](#project-overview)
+      * [Required Features](#required-features)
+   * [Installation and Setup](#installation-and-setup)
+      * [Navigate to the API folder](#navigate-to-the-api-folder)
+      * [Create a virtual environment](#create-a-virtual-environment)
+      * [Activate the virtual environment](#activate-the-virtual-environment)
+      * [Install requirements](#install-requirements)
+      * [Running the application](#running-the-application)
+      * [Endpoints](#endpoints)
+      * [Testing](#testing)
+      * [Available endpoints](#available-endpoints)
+   * [Resources and Documentation](#resources-and-documentation)
+      * [API Documentation](#api-documentation)
+         * [UI Template](#ui-template)
+         * [Pivotal Tracker Project](#pivotal-tracker-project)
          * [Fonts](#fonts)
-         * [Wireframes](#wireframes)
+         * [Images](#images)
+         * [UI Inspiration](#ui-inspiration)
+   * [Wireframes](#wireframes)
       * [Login page](#login-page)
       * [Signup page](#signup-page)
       * [User Home Page](#user-home-page)
@@ -30,18 +39,60 @@ Andela Maintenance Tracker Web Project Challenge 1
       * [Admin Home Page](#admin-home-page)
       * [Admin Change Request Status](#admin-change-request-status)
       * [Admin can view all requests and filter them.](#admin-can-view-all-requests-and-filter-them)
-         * [UI Inspiration](#ui-inspiration)
-         
-## Installation
-To have the API running you will need to create a virtual environment and install the requirements
-So navigate to the `/API` directory where the API is located.
+      
+# Introduction
+## Project Overview
+Maintenance Tracker App is an application that provides users with the ability to reach out to operations or repairs department regarding repair or maintenance requests and monitor the status of their request.
 
-### Create a virtual environment
+## Required Features
+1. Users can [create an account](https://gitaumoses4.github.io/maintenance-tracker/UI/register.html) and [log in](https://gitaumoses4.github.io/maintenance-tracker/UI/login.html) 
+2. Users should be able to [make maintenance or repair requests](https://gitaumoses4.github.io/maintenance-tracker/UI/user/new-request.html).
+3. An admin should be able to [approve/reject](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/request.html) a repair/maintenance request.
+4. The admin should be able to [mark a request as resolved](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/request.html) once it is done.
+5. The admin should be able to [view all maintenance/repair requests](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/requests.html) on the application.
+6. The admin should be able to [filter](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/requests.html) requests.
+7. A user can [view all](https://gitaumoses4.github.io/maintenance-tracker/UI/user/requests.html) of his/her requests
+
+# Installation and Setup
+Clone the repository.
+```bash
+git clone https://github.com/gitaumoses4/maintenance-tracker
+```
+## Navigate to the API folder
+```bash
+cd maintenance-tracker/API
+```
+
+## Create a virtual environment
+
 ```bash
 $ python3 -m venv venv;
 $ source venv/bin/activate
 ```
-#### Install requirements
+On Windows
+```bash
+py -3 -m venv venv
+```
+If you need to install virtualenv because you are on an older version of Python:
+```bash
+virtualenv venv
+```
+On Windows
+```bash
+\Python27\Scripts\virtualenv.exe venv
+```
+
+## Activate the virtual environment
+Before you begin you will need to activate the corresponding environment
+```bash
+source venv/bin/activate
+```
+On Windows
+```bash
+venv\Scripts\activate
+```
+
+## Install requirements
 ```bash
 $ pip install -r requirements.txt
 ```
@@ -52,7 +103,8 @@ After the configuration, you will run the app
 $ export FLASK_APP=run.py
 $ flask run
 ```
-### Endpoints
+
+## Endpoints
 All endpoints can be now accessed from the following url on your local computer
 ```
 http://localhost:5000/api/v1/
@@ -61,8 +113,17 @@ Or from Heroku
 ```
 https://maintenance-tracker-api.herokuapp.com/api/v1/
 ```
+## Testing
+After successfully installing the application, the endpoints can be tested by running.
+```bash
+nosetests tests/*
+```
 
-### Available endpoints
+Or with coverage
+```bash
+nosetests --with-coverage --cover-package=routes tests/*
+```
+## Available endpoints
 |  Endpoint  | Task  |
 |  ---  | --- |
 | `POST api/v1/users/signup` | Users can sign up |
@@ -85,24 +146,21 @@ https://maintenance-tracker-api.herokuapp.com/api/v1/
 | `PUT api/v1/users/notifications/<notificationId>` | Set a notification as read |
 | `GET api/v1/users/details` | Get user details |
 
-## UI Template
+# Resources and Documentation
+## API Documentation
+The API documentation can be accessed from [Apiary](https://maintenancetrackerapp.docs.apiary.io/)
+or from [Heroku](https://maintenance-tracker.herokuapp.com)
+
+### UI Template
 You can view the UI template on [Github Pages](https://gitaumoses4.github.io/maintenance-tracker)
 
-## Pivotal Tracker Project
+### Pivotal Tracker Project
 You can view the [Pivotal Tracker stories](https://www.pivotaltracker.com/n/projects/2173234)
 
-## Introduction
-### Project Overview
-Maintenance Tracker App is an application that provides users with the ability to reach out to operations or repairs department regarding repair or maintenance requests and monitor the status of their request.
+### Fonts
+The following font are used for this project.
 
-### Required Features
-1. Users can [create an account](https://gitaumoses4.github.io/maintenance-tracker/UI/register.html) and [log in](https://gitaumoses4.github.io/maintenance-tracker/UI/login.html) 
-2. Users should be able to [make maintenance or repair requests](https://gitaumoses4.github.io/maintenance-tracker/UI/user/new-request.html).
-3. An admin should be able to [approve/reject](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/request.html) a repair/maintenance request.
-4. The admin should be able to [mark a request as resolved](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/request.html) once it is done.
-5. The admin should be able to [view all maintenance/repair requests](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/requests.html) on the application.
-6. The admin should be able to [filter](https://gitaumoses4.github.io/maintenance-tracker/UI/admin/requests.html) requests.
-7. A user can [view all](https://gitaumoses4.github.io/maintenance-tracker/UI/user/requests.html) of his/her requests
+1. [Dosis](https://fonts.google.com/specimen/Dosis) font by Google Fonts
 
 ### Images
 The following images are used in this project.
@@ -113,12 +171,11 @@ The following images are used in this project.
 5. [Yahama Keyboard Piano](https://www.pexels.com/photo/black-yamaha-piano-164743/) by [Pixabay](https://pixabay.com) on [Pexels](https://pexels.com)
 6. [Auomobile Repair](https://www.pexels.com/photo/adult-auto-automobile-automotive-558375/) by Fancycrave on [Pexels](https://pexels.com)
 
-### Fonts
-The following font are used for this project.
+### UI Inspiration
 
-1. [Dosis](https://fonts.google.com/specimen/Dosis) font by Google Fonts
+User Interface inspired by [Semantic UI](https://semantic-ui.com)
 
-### Wireframes
+# Wireframes
 Wireframes are created using [MockFlow](http://mockflow.com)
 
 ## Login page
@@ -162,6 +219,3 @@ The admin can view a request and set it as approved or rejected.
 ## Admin can view all requests and filter them.
 ![Admin Requests](https://image.ibb.co/deV8ao/admin_requests.png)
 
-### UI Inspiration
-
-User Interface inspired by [Semantic UI](https://semantic-ui.com)
