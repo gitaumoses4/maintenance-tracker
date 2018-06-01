@@ -9,4 +9,4 @@ script:
 # run coverage tests
 after_success:
   - coveralls
-  - bash < (curl -s https://codecov.io/bash)
+  - codecov --token=0634ba86-efae-4b82-822d-a55ec7ceec7b
