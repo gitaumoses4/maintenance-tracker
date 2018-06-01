@@ -14,7 +14,7 @@ class SignupTestCase(BaseTestCase):
         self.user.password = "password"
 
     def test_user_can_sign_up(self):
-        result = self.client().post(self.full_endpoint('users/signup'), data=self.user.to_json_str(),
+        result = self.client().post(self.full_endpoint('users/signup'), data=self.user.to_json_str(False),
                                     headers=self.headers)
         json_result = json.loads(result.get_data(as_text=True))
         self.assertEqual(result.status_code, 201)  # Resource created

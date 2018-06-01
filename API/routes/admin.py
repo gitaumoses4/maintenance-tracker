@@ -1,5 +1,5 @@
 from app.models import Feedback, Notification, User
-from routes import is_json, db, validate, get_current_user
+from routes import db, get_current_user
 from flask import jsonify, request, Blueprint
 from passlib.hash import bcrypt
 from flask_jwt_extended import (
@@ -12,7 +12,7 @@ admin_routes = Blueprint("routes.admin", __name__)
 
 @admin_routes.route("/login", methods=['POST'])
 def login_admin():
-    if is_json():
+    if request.is_json:
         if not request.json.get('username'):
             return jsonify({
                 "status": "error",
@@ -48,9 +48,15 @@ def login_admin():
         return jsonify({
             "status": "success",
             "data": {
-                "token": access_token
+                "token": access_token,
+                "user": user.to_json_object()
             }
         }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @admin_routes.route("/logout", methods=["DELETE"])
@@ -67,7 +73,7 @@ def logout_admin():
 @admin_routes.route("/requests", methods=["GET"])
 @jwt_required
 def get_all_requests():
-    if is_json():
+    if request.is_json:
         requests = [x.to_json_object() for x in db.requests.query_all().values()]
         return jsonify({
             "status": "success",
@@ -76,12 +82,17 @@ def get_all_requests():
                 "requests": requests
             }
         }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @admin_routes.route("/requests/<int:_id>", methods=["PUT", "GET"])
 @jwt_required
 def modify_request(_id):
-    if is_json():
+    if request.is_json:
         maintenance_request = db.requests.query(_id)
         if maintenance_request is None:
             return jsonify({
@@ -90,12 +101,16 @@ def modify_request(_id):
             }), 404
         else:
             if request.method == "PUT":
-                valid, response, response_code = validate({"status": "Maintenance status is required"})
-                if valid:
+                if request.json.get("status"):
                     result = request.json
                     maintenance_request.status = result['status']
                 else:
-                    return response, response_code
+                    return jsonify({
+                        "status": "error",
+                        "data": {
+                            "status": "Maintenance status is required"
+                        }
+                    })
 
             return jsonify({
                 "status": "success",
@@ -103,12 +118,17 @@ def modify_request(_id):
                     "request": maintenance_request.to_json_object()
                 }
             }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @admin_routes.route('/requests/<int:_id>/feedback', methods=['POST'])
 @jwt_required
 def write_feedback_for_request(_id):
-    if is_json():
+    if request.is_json:
         maintenance_request = db.requests.query(_id)
         if maintenance_request is None:
             return jsonify({
@@ -132,12 +152,17 @@ def write_feedback_for_request(_id):
                         "feedback": feedback.to_json_object()
                     }
                 }), 201
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @admin_routes.route('/users/<int:_id>/notifications', methods=['POST'])
 @jwt_required
 def send_notification(_id):
-    if is_json():
+    if request.is_json:
         user = db.users.query(_id)
         if user is None:
             return jsonify({
@@ -160,3 +185,8 @@ def send_notification(_id):
                         "notification": notification.to_json_object()
                     }
                 }), 201
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400

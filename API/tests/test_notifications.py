@@ -9,15 +9,14 @@ class NotificationsTestCase(AuthenticatedTestCase):
     def setUp(self):
         super().setUp()
         self.notification = Notification(message="You have a notification")
-        result = self.client().get(self.full_endpoint("users/details")
-                                    , headers=self.headers)
+        result = self.client().get(self.full_endpoint("users/details"), headers=self.headers)
         json_result = json.loads(result.get_data(as_text=True))
         self.user.id = json_result['data']['user']['id']
 
     def test_can_get_notification_by_id(self):
         result = self.client().post(
             self.full_endpoint("admin/users/{}/notifications".format(self.user.id)),
-            data=self.notification.to_json_str(),
+            data=self.notification.to_json_str(False),
             headers=self.admin_headers)
 
         json_result = json.loads(result.get_data(as_text=True))
@@ -34,7 +33,7 @@ class NotificationsTestCase(AuthenticatedTestCase):
     def test_can_create_notification(self):
         result = self.client().post(
             self.full_endpoint("admin/users/{}/notifications".format(self.user.id)),
-            data=self.notification.to_json_str(),
+            data=self.notification.to_json_str(False),
             headers=self.admin_headers)
 
         json_result = json.loads(result.get_data(as_text=True))

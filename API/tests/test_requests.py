@@ -13,7 +13,7 @@ class RequestsTestCase(AuthenticatedTestCase):
 
     def test_user_can_create_request(self):
         result = self.client().post(self.full_endpoint("users/requests"),
-                                    data=self.request.to_json_str(),
+                                    data=self.request.to_json_str(False),
                                     headers=self.headers)
         self.assertEqual(result.status_code, 201)
 
@@ -30,7 +30,7 @@ class RequestsTestCase(AuthenticatedTestCase):
 
     def test_user_can_modify_request(self):
         result = self.client().post(self.full_endpoint("users/requests"),
-                                    data=self.request.to_json_str(),
+                                    data=self.request.to_json_str(False),
                                     headers=self.headers)
         self.assertEqual(result.status_code, 201)
 
@@ -38,7 +38,7 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(json_result['status'], "success")
 
         result = self.client().put(self.full_endpoint("users/requests/{}".format(json_result['data']['request']['id'])),
-                                   data=self.request.to_json_str(),
+                                   data=self.request.to_json_str(False),
                                    headers=self.headers)
         self.assertEqual(result.status_code, 200)
 
@@ -54,7 +54,7 @@ class RequestsTestCase(AuthenticatedTestCase):
 
     def test_admin_can_modify_request(self):
         result = self.client().post(self.full_endpoint("users/requests"),
-                                    data=self.request.to_json_str(),
+                                    data=self.request.to_json_str(False),
                                     headers=self.headers)
         self.assertEqual(result.status_code, 201)
 
@@ -72,7 +72,7 @@ class RequestsTestCase(AuthenticatedTestCase):
 
     def test_can_get_request_by_id(self):
         result = self.client().post(self.full_endpoint("users/requests"),
-                                    data=self.request.to_json_str(),
+                                    data=self.request.to_json_str(False),
                                     headers=self.headers)
         self.assertEqual(result.status_code, 201)
 
