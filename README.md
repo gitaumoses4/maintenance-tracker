@@ -20,6 +20,7 @@ Andela Maintenance Tracker Web Project Challenge 1
       * [Install requirements](#install-requirements)
       * [Running the application](#running-the-application)
       * [Endpoints](#endpoints)
+      * [Postman Collections](#postman-collections)
       * [Testing](#testing)
       * [Available endpoints](#available-endpoints)
    * [Resources and Documentation](#resources-and-documentation)
@@ -113,6 +114,13 @@ Or from Heroku
 ```
 https://maintenance-tracker-api.herokuapp.com/api/v1/
 ```
+## Postman Collections
+To get the postman collections navigate to the following file and import them to Postman.
+
+```bash
+cd API/postman_collections.json
+```
+
 ## Testing
 After successfully installing the application, the endpoints can be tested by running.
 ```bash

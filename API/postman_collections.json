@@ -1,0 +1,602 @@
+{
+	"info": {
+		"name": "Maintenance Tracker App",
+		"_postman_id": "0dc383d3-fbe0-e6cc-fbc9-b2fd45057e9f",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"description": "",
+			"item": [
+				{
+					"name": "Sign up",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "33d963ea-8361-4538-8a8a-cc6fce367242",
+								"type": "text/javascript",
+								"exec": [
+									"pm.globals.set(\"api_link\", \"http://localhost:5000/api/v1\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstname\": \"Moses\",\n\t\"lastname\": \"Gitau\",\n\t\"email\": \"gitaumoses@gmail.com\",\n\t\"password\": \"password\",\n\t\"username\": \"gitaumoses\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"signup"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"gitaumoses\",\n\t\"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"login"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzQzMTAsIm5iZiI6MTUyNzg3NDMxMCwianRpIjoiN2EyMDkzMzUtNDI0Zi00OTEwLWE1NDItMDhkOWYwZDhhNGNkIiwiZXhwIjoxNTI3ODc1MjEwLCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.CHMAR1Oj5Rc5hvGj4jiqBf5puFC8R-6qBjpzhjSENzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_name\": \"Samsung TV\",\n    \"description\" : \"Has a broken screen\",\n    \"photo\"       : \"link to image\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/requests",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"requests"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "All Requests",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NjkwNDksIm5iZiI6MTUyNzg2OTA0OSwianRpIjoiNzRjMjhiNjAtYjllZS00Y2RmLThhNTQtYjI5N2YzYzQ0Njc2IiwiZXhwIjoxNTI3ODY5OTQ5LCJpZGVudGl0eSI6ImdpdGF1bW9zZXMiLCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.FUGAlVkBheO14v2hFzWSqJ7U2aIL4lRjW7oqT1Mhp6E",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/requests",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"requests"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4Njk0OTcsIm5iZiI6MTUyNzg2OTQ5NywianRpIjoiNGE0OWMyZTEtMzgyOS00ZmEwLThlN2EtYWEyNjk5YmNiMmIyIiwiZXhwIjoxNTI3ODcwMzk3LCJpZGVudGl0eSI6ImdpdGF1bW9zZXMiLCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.fKRrJY-tHvV62q5dOOkl5OStTJxsyVRSVCdu2T8VJWs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/requests/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"requests",
+								"2"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Update Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4Njk0OTcsIm5iZiI6MTUyNzg2OTQ5NywianRpIjoiNGE0OWMyZTEtMzgyOS00ZmEwLThlN2EtYWEyNjk5YmNiMmIyIiwiZXhwIjoxNTI3ODcwMzk3LCJpZGVudGl0eSI6ImdpdGF1bW9zZXMiLCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.fKRrJY-tHvV62q5dOOkl5OStTJxsyVRSVCdu2T8VJWs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"product_name\": \"Samsung LED tv\",\n\t\"description\": \"New description\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/requests/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"requests",
+								"2"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Feedback",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzQ1MTIsIm5iZiI6MTUyNzg3NDUxMiwianRpIjoiNzc4NzA3MzMtYjNjNy00ZjI2LWI1YmUtMDE4NGFhMGZmY2Q2IiwiZXhwIjoxNTI3ODc1NDEyLCJpZGVudGl0eSI6ImdpdGF1bW9zZXMiLCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.jOmxIUFP4msUlSNtj3djEnfavco-0wd9XeB12ZXsHsI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/requests/1/feedback",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"requests",
+								"1",
+								"feedback"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notifications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzQ2MjUsIm5iZiI6MTUyNzg3NDYyNSwianRpIjoiZjAwZTU0ZmYtYjFjNS00NjU2LTg4NjgtYzQ4YTkzZGZiYWZmIiwiZXhwIjoxNTI3ODc1NTI1LCJpZGVudGl0eSI6ImdpdGF1bW9zZXMiLCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.4OiD5eqjEsXgrHpnkUsTykQqsBDSEvO6_qttJf7DAZY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"notifications"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzQ2MzgsIm5iZiI6MTUyNzg3NDYzOCwianRpIjoiNzI5N2JiYzQtZWU2Zi00MDNiLTgzMWItNzU5MDQ0YmI5NzM3IiwiZXhwIjoxNTI3ODc1NTM4LCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0._2zscWh827j5hhe3YQ96HcE11ii7an1R5J3q8lht88k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/users/notifications/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"notifications",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"description": "",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"admin\",\n\t\"password\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/admin/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"login"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Requests",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzMwMDksIm5iZiI6MTUyNzg3MzAwOSwianRpIjoiMzNhYTg4NmMtYmQxYy00YzBlLWJlYWUtOTk4ZGU3ZTI0MmRmIiwiZXhwIjoxNTI3ODczOTA5LCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.gXVMxNc3Gsu5IyytJ5QfHalyf2pTLVx6ydqI-6YRIb8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/admin/requests",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"requests"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Update Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzMzMDYsIm5iZiI6MTUyNzg3MzMwNiwianRpIjoiMzExMTcyMGItMjUzMC00MDc1LTgzNWEtOTEyZGVkYWVjYzhjIiwiZXhwIjoxNTI3ODc0MjA2LCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.o5uofoFg23ava4vY_PrHPZp7ThcsuNe20eoPj38iEFY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"status\": \"Approved\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/admin/requests/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"requests",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzMzMDYsIm5iZiI6MTUyNzg3MzMwNiwianRpIjoiMzExMTcyMGItMjUzMC00MDc1LTgzNWEtOTEyZGVkYWVjYzhjIiwiZXhwIjoxNTI3ODc0MjA2LCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.o5uofoFg23ava4vY_PrHPZp7ThcsuNe20eoPj38iEFY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/admin/requests/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"requests",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Provide feedback",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzQ1NDAsIm5iZiI6MTUyNzg3NDU0MCwianRpIjoiMzc4ZDVhZDYtOGFkNC00OTQyLWE1ZmYtM2ExZWJhODI5ZjJiIiwiZXhwIjoxNTI3ODc1NDQwLCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.ouPnAgoj3QhLl6bT7x5qhLMUESYSChTOIaTWRL57sNY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"message\": \"Here is your feedback\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/admin/requests/1/feedback",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"requests",
+								"1",
+								"feedback"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Send Notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NzQ2MzgsIm5iZiI6MTUyNzg3NDYzOCwianRpIjoiNzI5N2JiYzQtZWU2Zi00MDNiLTgzMWItNzU5MDQ0YmI5NzM3IiwiZXhwIjoxNTI3ODc1NTM4LCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0._2zscWh827j5hhe3YQ96HcE11ii7an1R5J3q8lht88k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"message\": \"You have a notification\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/admin/users/1/notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users",
+								"1",
+								"notifications"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

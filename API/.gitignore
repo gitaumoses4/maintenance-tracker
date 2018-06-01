@@ -6,3 +6,4 @@ server.js
 venv
 __pycache__/
 .coverage
+!postman_collections.json
