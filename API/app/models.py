@@ -12,14 +12,21 @@ class BaseModel:
         self.updated_at = updated_at
         self.id = 0
 
-    def to_json_object(self):
-        return json.loads(self.to_json_str())
+    def to_json_object(self, exclude=True):
+        return json.loads(self.to_json_str(exclude))
 
-    def to_json_str(self):
+    def to_json_str(self, exclude=True):
+        fields = self.excluded_fields()
+        if not exclude:
+            fields = []
         return json.dumps(self,
                           default=lambda o: o.strftime("%Y-%m-%d %H:%M:%S") if isinstance(o, datetime)
-                          else o.__dict__,
+                          else {k: v for k, v in o.__dict__.items() if
+                                k not in fields},
                           sort_keys=True, indent=4)
+
+    def excluded_fields(self):
+        return ['created_at', 'updated_at']
 
 
 class User(BaseModel):
@@ -37,6 +44,9 @@ class User(BaseModel):
         self.password = password
         self.profile_picture = profile_picture
         self.role = User.ROLE_USER
+
+    def excluded_fields(self):
+        return ['password', 'role', 'created_at', 'updated_at']
 
 
 class Admin(User):
@@ -69,6 +79,9 @@ class Feedback(BaseModel):
         self.request = request
         self.message = message
 
+    def excluded_fields(self):
+        return []
+
 
 class Notification(BaseModel):
     """The notification class"""
@@ -79,6 +92,9 @@ class Notification(BaseModel):
         self.user = user
         self.message = message
         self.read = False
+
+    def excluded_fields(self):
+        return []
 
 
 class Request(BaseModel):
@@ -95,3 +111,6 @@ class Request(BaseModel):
         self.status = status
         self.photo = photo
         self.created_by = created_by
+
+    def excluded_fields(self):
+        return ['updated_at']

@@ -1,6 +1,6 @@
 from app.models import Request, User
 from flask import jsonify, request, Blueprint
-from routes import is_json, db, get_current_user
+from routes import db, get_current_user
 from passlib.hash import bcrypt
 from flask_jwt_extended import (
     jwt_required,
@@ -13,7 +13,7 @@ user_routes = Blueprint("routes.user", __name__)
 
 @user_routes.route("/signup", methods=["POST"])
 def register_user():
-    if is_json():
+    if request.is_json:
         valid, errors = db.users.is_valid(request.json)
         if not valid:
             return jsonify({
@@ -31,11 +31,16 @@ def register_user():
             },
             "status": "success"
         }), 201
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route("/login", methods=["POST"])
 def login_user():
-    if is_json():
+    if request.is_json:
         if not request.json.get('username'):
             return jsonify({
                 "status": "error",
@@ -67,9 +72,15 @@ def login_user():
         return jsonify({
             "status": "success",
             "data": {
-                "token": access_token
+                "token": access_token,
+                "user": user.to_json_object()
             }
         }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route("/logout", methods=["DELETE"])
@@ -86,7 +97,7 @@ def logout_user():
 @user_routes.route("/requests", methods=["POST"])
 @jwt_required
 def create_request():
-    if is_json():
+    if request.is_json:
         valid, errors = db.requests.is_valid(request.json)
         if not valid:
             return jsonify({
@@ -108,12 +119,17 @@ def create_request():
                 "request": maintenance_request.to_json_object()
             }
         }), 201
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route("/requests", methods=["GET"])
 @jwt_required
 def get_all_requests():
-    if is_json():
+    if request.is_json:
         requests = [x.to_json_object() for x in db.requests.query_all().values() if
                     x.created_by.username == get_jwt_identity()]  # get requests for this user
         return jsonify({
@@ -123,12 +139,17 @@ def get_all_requests():
                 "requests": requests
             }
         }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route("/requests/<int:_id>", methods=["PUT", "GET"])
 @jwt_required
 def modify_request(_id):
-    if is_json():
+    if request.is_json:
         maintenance_request = db.requests.query(_id)
         if maintenance_request is None:
             return jsonify({
@@ -147,7 +168,7 @@ def modify_request(_id):
                     return jsonify({
                         "status": "error",
                         "data": errors
-                    })
+                    }), 400
                 result = request.json
 
                 maintenance_request.product_name = result['product_name']
@@ -158,30 +179,41 @@ def modify_request(_id):
                 "data": {
                     "request": maintenance_request.to_json_object()}
             }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route("/requests/<int:_id>/feedback", methods=['GET'])
 @jwt_required
 def get_feedback_for_request(_id):
-    maintenance_request = db.requests.query(_id)
-    if maintenance_request is None:
-        return jsonify({
-            "status": "error",
-            "message": "Maintenance request does not exist"
-        }), 404
-    elif maintenance_request.created_by.username != get_jwt_identity():
-        return jsonify({
-            "status": "error",
-            "message": "You are not allowed to modify or view this maintenance request"
-        }), 401
+    if request.is_json:
+        maintenance_request = db.requests.query(_id)
+        if maintenance_request is None:
+            return jsonify({
+                "status": "error",
+                "message": "Maintenance request does not exist"
+            }), 404
+        elif maintenance_request.created_by.username != get_jwt_identity():
+            return jsonify({
+                "status": "error",
+                "message": "You are not allowed to modify or view this maintenance request"
+            }), 401
+        else:
+            feedback = [x.to_json_object() for x in db.feedback.query_all().values() if x.request.id == _id]
+            return jsonify({
+                "status": "success",
+                "data": {
+                    "feedback": feedback
+                }
+            }), 200
     else:
-        feedback = [x.to_json_object() for x in db.feedback.query_all().values() if x.request.id == _id]
         return jsonify({
-            "status": "success",
-            "data": {
-                "feedback": feedback
-            }
-        }), 200
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route("/details", methods=['GET'])
@@ -198,7 +230,7 @@ def get_user_details():
 @user_routes.route('/notifications/<int:_id>', methods=['GET'])
 @jwt_required
 def get_user_notification(_id):
-    if is_json():
+    if request.is_json:
         notification = db.notifications.query(_id)
         if not notification:
             return jsonify({
@@ -212,12 +244,17 @@ def get_user_notification(_id):
                     "notification": notification.to_json_object()
                 }
             }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route('/notifications', methods=['GET'])
 @jwt_required
 def get_all_notifications():
-    if is_json():
+    if request.is_json:
         notifications = [x.to_json_object() for x in db.notifications.query_all().values() if
                          x.user.username == get_jwt_identity()]
         return jsonify({
@@ -227,12 +264,17 @@ def get_all_notifications():
                 "notifications": notifications
             }
         }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400
 
 
 @user_routes.route('/notifications/<int:_id>', methods=['PUT'])
 @jwt_required
 def mark_as_read(_id):
-    if is_json():
+    if request.is_json:
         notification = db.notifications.query(_id)
         if not notification:
             return jsonify({
@@ -245,3 +287,8 @@ def mark_as_read(_id):
                 "status": "success",
                 "message": "Successfully marked as read"
             }), 200
+    else:
+        return jsonify({
+            "message": "Request should be in JSON",
+            "status": "error"
+        }), 400

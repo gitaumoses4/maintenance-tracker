@@ -39,13 +39,13 @@ class AuthenticatedTestCase(BaseTestCase):
 
         self.client().post(
             self.full_endpoint("users/signup"),
-            data=self.user.to_json_str(),
+            data=self.user.to_json_str(False),
             headers=self.headers
         )
 
         result = self.client().post(
             self.full_endpoint('users/login'),
-            data=self.user.to_json_str(),
+            data=self.user.to_json_str(False),
             headers=self.headers
         )
         json_result = json.loads(result.get_data(as_text=True))
@@ -56,7 +56,7 @@ class AuthenticatedTestCase(BaseTestCase):
 
         result = self.client().post(
             self.full_endpoint('admin/login'),
-            data=self.admin.to_json_str(),
+            data=self.admin.to_json_str(False),
             headers=self.admin_headers
         )
 
