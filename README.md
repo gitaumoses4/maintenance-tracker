@@ -149,7 +149,7 @@ nosetests --with-coverage --cover-package=routes tests/*
 # Resources and Documentation
 ## API Documentation
 The API documentation can be accessed from [Apiary](https://maintenancetrackerapp.docs.apiary.io/)
-or from [Heroku](https://maintenance-tracker.herokuapp.com)
+or from [Heroku](https://maintenance-tracker-api.herokuapp.com)
 
 ### UI Template
 You can view the UI template on [Github Pages](https://gitaumoses4.github.io/maintenance-tracker)
