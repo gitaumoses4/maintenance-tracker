@@ -1,5 +1,5 @@
-from app.models import Feedback, Notification, User
-from routes import db, get_current_user
+from v1.models import Feedback, Notification, User
+from v1.routes import db, get_current_user
 from flask import jsonify, request, Blueprint
 from passlib.hash import bcrypt
 from flask_jwt_extended import (

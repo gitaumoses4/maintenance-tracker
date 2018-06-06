@@ -2,7 +2,7 @@
 import re
 from datetime import datetime
 from passlib.handlers.bcrypt import bcrypt
-from app.models import BaseModel, User
+from v1.models import BaseModel, User
 
 
 class NonPersistentCollection:

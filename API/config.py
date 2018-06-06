@@ -1,7 +1,6 @@
 """Configuration classes for the application"""
 
 
-
 class Configuration:
     """Base configuration class"""
     DEBUG = False

@@ -1,7 +1,10 @@
 """ Initializes and runs the application"""
+from flask import Flask
+import v1, v2
 
-import app
+app = Flask(__name__, instance_relative_config=True)
 
-app = app.initialize_app()
+v1.initialize_app(app)
+
 if __name__ == '__main__':
     app.run()

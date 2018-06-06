@@ -1,6 +1,6 @@
-from app.models import Request, User
+from v1.models import Request, User
 from flask import jsonify, request, Blueprint
-from routes import db, get_current_user
+from v1.routes import db, get_current_user
 from passlib.hash import bcrypt
 from flask_jwt_extended import (
     jwt_required,

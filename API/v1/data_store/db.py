@@ -1,6 +1,6 @@
 """The main data structure"""
-from data_store.collections import UserCollection, RequestCollection, FeedbackCollection, NonPersistentCollection
-from app.models import Admin
+from v1.data_store.collections import UserCollection, RequestCollection, FeedbackCollection, NonPersistentCollection
+from v1.models import Admin
 
 
 class MaintenanceTrackerDB:

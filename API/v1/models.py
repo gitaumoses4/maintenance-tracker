@@ -1,7 +1,7 @@
 """Models will be used to store the data in a data structure"""
 import json
 from datetime import datetime
-from app.config import default_config
+from config import default_config
 
 
 class BaseModel:

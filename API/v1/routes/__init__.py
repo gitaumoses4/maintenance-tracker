@@ -1,6 +1,6 @@
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from data_store.db import MaintenanceTrackerDB
+from v1.data_store.db import MaintenanceTrackerDB
 
 db = MaintenanceTrackerDB()
 
