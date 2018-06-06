@@ -1,7 +1,7 @@
 import json
 
-from app.models import Request
-from tests.base_test import AuthenticatedTestCase
+from v1.models import Request
+from v1.tests.base_test import AuthenticatedTestCase
 
 
 class RequestsTestCase(AuthenticatedTestCase):

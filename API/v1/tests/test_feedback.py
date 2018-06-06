@@ -1,7 +1,7 @@
 import json
 
-from app.models import Feedback, Request
-from tests.base_test import AuthenticatedTestCase
+from v1.models import Feedback, Request
+from v1.tests.base_test import AuthenticatedTestCase
 import unittest
 
 

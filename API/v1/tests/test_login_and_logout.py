@@ -1,6 +1,6 @@
-from tests.base_test import BaseTestCase
+from v1.tests.base_test import BaseTestCase
 import json
-from app.models import Admin, User
+from v1.models import Admin, User
 
 
 class LoginTestCase(BaseTestCase):
