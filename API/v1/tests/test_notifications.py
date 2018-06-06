@@ -1,7 +1,7 @@
 import json
 
-from app.models import Notification
-from tests.base_test import AuthenticatedTestCase
+from v1.models import Notification
+from v1.tests.base_test import AuthenticatedTestCase
 
 
 class NotificationsTestCase(AuthenticatedTestCase):

@@ -1,7 +1,7 @@
 import json
 
-from app.models import User
-from tests.base_test import AuthenticatedTestCase
+from v1.models import User
+from v1.tests.base_test import AuthenticatedTestCase
 
 
 class UserTestCase(AuthenticatedTestCase):

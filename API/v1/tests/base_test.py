@@ -1,15 +1,16 @@
 import json
 from unittest import TestCase
-from app.models import Admin, User
+from v1.models import Admin, User
 
-from app import initialize_app, clear
+from run import create_app
+from v1 import clear
 
 
 class BaseTestCase(TestCase):
     api_prefix = "/api/v1/"
 
     def setUp(self):
-        self.app = initialize_app("TESTING")
+        self.app = create_app("TESTING")
         self.client = self.app.test_client
         self.headers = {'Content-Type': 'application/json'}
         self.admin_headers = {'Content-Type': 'application/json'}
