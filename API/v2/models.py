@@ -204,6 +204,20 @@ class Request(v1.models.Request, DBBaseModel):
           FOREIGN KEY (created_by) REFERENCES users(id))""")
         db.connection.commit()
 
+    @classmethod
+    def deserialize(cls, dictionary):
+        request = Request()
+        request.id = dictionary['id']
+        request.product_name = dictionary['product_name']
+        request.description = dictionary['description']
+        request.status = dictionary['status']
+        request.photo = dictionary['photo']
+        request.created_by = dictionary['created_by']
+        request.created_at = dictionary['created_at']
+        request.updated_at = dictionary['updated_at']
+
+        return request
+
     def save(self):
         """
         Save the request into the database
@@ -301,6 +315,18 @@ class Feedback(v1.models.Feedback, DBBaseModel):
         )""")
         db.connection.commit()
 
+    @classmethod
+    def deserialize(cls, dictionary):
+        feedback = Feedback()
+        feedback.id = dictionary['id']
+        feedback.admin = dictionary['admin']
+        feedback.request = dictionary['request']
+        feedback.message = dictionary['message']
+        feedback.created_at = dictionary['created_at']
+        feedback.updated_at = dictionary['updated_at']
+
+        return feedback
+
     def save(self):
         """
         Saves a feedback to the feedback table
@@ -359,6 +385,19 @@ class Notification(v1.models.Notification, DBBaseModel):
             FOREIGN KEY (user_id) references users(id)
         )""")
         db.connection.commit()
+
+    @classmethod
+    def deserialize(cls, dictionary):
+        notification = Notification()
+        notification.id = dictionary['id']
+        notification.admin = dictionary['admin_id']
+        notification.user = dictionary['user_id']
+        notification.message = dictionary['message']
+        notification.read = dictionary['read']
+        notification.updated_at = dictionary['updated_at']
+        notification.created_at = dictionary['created_at']
+
+        return notification
 
     def save(self):
         """
@@ -430,6 +469,14 @@ class Blacklist(DBBaseModel):
     def __init__(self, token):
         super().__init__(datetime.now(), datetime.now())
         self.token = token
+
+    @classmethod
+    def deserialize(cls, dictionary):
+        blacklist = Blacklist()
+        blacklist.id = dictionary['id']
+        blacklist.token = dictionary['token']
+
+        return blacklist
 
     @classmethod
     def migrate(cls):
