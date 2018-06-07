@@ -1,6 +1,8 @@
 """ Default testing cases for the API"""
 import json
 from unittest import TestCase
+
+from migrate import Migration
 from v1.models import Admin, User
 
 from run import create_app
@@ -14,6 +16,8 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         self.app = create_app("TESTING")
+        self.migration = Migration()
+        self.migration.set_up()
         self.client = self.app.test_client
         self.headers = {'Content-Type': 'application/json'}
         self.admin_headers = {'Content-Type': 'application/json'}
@@ -37,17 +41,17 @@ class BaseTestCase(TestCase):
         """ Call this method from child classes to request user login """
         if user is None:
             user = self.user
-        return self.post("auth/login", json.dumps(user), self.headers)
+        return self.post("auth/login", user.to_json_str(False), self.headers)
 
     def user_signup(self, user=None):
         """ Method to perform the API call to sign up a user"""
         if user is None:
             user = self.user
-        return self.post("auth/signup", json.dumps(user), self.headers)
+        return self.post("auth/signup", user.to_json_str(False), self.headers)
 
     def admin_login(self):
         """ Method to perform the API call to login the default admin"""
-        return self.post("auth/login", json.dumps(self.admin), self.headers)
+        return self.post("auth/login", self.admin.to_json_str(False), self.headers)
 
     def post(self, endpoint="", data="", headers=None):
         """ Make API calls for the POST method"""
@@ -80,6 +84,7 @@ class BaseTestCase(TestCase):
 
     def make_api_call(self, method="GET", endpoint="", data="", headers=None):
         """ Makes API calls and returns the JSON result and the response code"""
+        endpoint = self.full_endpoint(endpoint)
         if method == "GET":
             result = self.client().get(endpoint, data=data, headers=headers)
         elif method == "POST":
@@ -92,12 +97,11 @@ class BaseTestCase(TestCase):
             result = None
         if result is not None:
             json_result = json.loads(result.get_data(as_text=True))
-
             return json_result, result.status_code
         return None
 
     def tearDown(self):
-        pass
+        self.migration.tear_down()
 
 
 class AuthenticatedTestCase(BaseTestCase):
