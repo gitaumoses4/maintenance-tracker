@@ -1,27 +1,43 @@
 """Creates the database models with ability to perform SQL functions"""
 
-from run import database
 import v1.models
 from datetime import datetime
+from run import connection, cursor
 
 
 class DBBaseModel(v1.models.BaseModel):
+    """
+    Base Database models for transactions
+    """
     __table__ = ""
-
-    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
     def __init__(self, created_at, updated_at):
         super().__init__(created_at, updated_at)
 
-    def migrate(self):
+    @classmethod
+    def migrate(cls):
+        """
+        Create the tables here
+        :return:
+        """
         pass
 
-    @staticmethod
-    def deserialize(dictionary):
+    @classmethod
+    def rollback(cls):
+        """
+        Deletes all the data from the tables
+        :param cls:
+        :return:
+        """
+        cursor.execute("DELETE FROM %s", (cls.__table__,))
+
+        connection.commit()
+
+    def deserialize(self, **dictionary):
         """ Create a model object from the dictionary,
             Override this method to do the conversion custom
         """
-        return None
+        return self.__dict__.update(dictionary)
 
     @classmethod
     def query_all(cls):
@@ -29,9 +45,22 @@ class DBBaseModel(v1.models.BaseModel):
         Query all items from the database
         :return:
         """
-        database.cursor.execute("SELECT * FROM {}".format(cls.__table__))
-        items = database.cursor.fetchall()
-        return {cls.deserialize(x) for x in items}
+        cursor.execute("SELECT * FROM {}".format(cls.__table__))
+        items = cursor.fetchall()
+        return [cls.deserialize(x) for x in items]
+
+    @classmethod
+    def query_by_field(cls, field, value):
+        """
+        Query items from the database based on a particular field
+        :param field:
+        :param value:
+        :return:
+        """
+        cursor.execute("SELECT * FROM %s WHERE %s = %s", (cls.__table__, field, value))
+        items = cursor.fetchall()
+
+        return [cls.deserialize(x) for x in items]
 
     @classmethod
     def query_by_id(cls, _id):
@@ -40,8 +69,8 @@ class DBBaseModel(v1.models.BaseModel):
         :param _id:
         :return:
         """
-        database.cursor.execute("SELECT * FROM %s WHERE id = %s", (cls.__table__, _id))
-        item = database.cursor.fetchone()
+        cursor.execute("SELECT * FROM %s WHERE id = %s", (cls.__table__, _id))
+        item = cursor.fetchone()
         if item is None:
             return None
         return cls.deserialize(item)
@@ -63,15 +92,19 @@ class DBBaseModel(v1.models.BaseModel):
         Deletes an item from the database
         :return:
         """
-        database.cursor.execute("DELETE FROM %s WHERE id = %s", (self.__table__, self.id))
-        database.connection.commit()
+        cursor.execute("DELETE FROM %s WHERE id = %s", (self.__table__, self.id))
+        connection.commit()
 
 
 class User(v1.models.User, DBBaseModel):
+    """
+    Creates a user with different roles
+    """
     __table__ = "users"
 
-    def migrate(self):
-        database.cursor.execute("""CREATE TABLE IF NOT EXISTS users(
+    @classmethod
+    def migrate(cls):
+        cursor.execute("""CREATE TABLE IF NOT EXISTS users(
             id serial PRIMARY KEY ,
             firstname varchar,
             lastname varchar,
@@ -81,35 +114,30 @@ class User(v1.models.User, DBBaseModel):
             created_at timestamp,
             updated_at timestamp,
             role varchar)""")
-        database.connection.commit()
+        connection.commit()
 
     @staticmethod
-    def deserialize(dictionary):
-        user = User()
-        if dictionary is None:
-            return None
-        user.firstname = dictionary['firstname']
-        user.lastname = dictionary['lastname']
-        user.username = dictionary['username']
-        user.email = dictionary['email']
-        user.password = dictionary['password']
-        user.created_at = datetime.strptime(dictionary['created_at'], DBBaseModel.DATE_FORMAT)
-        user.updated_at = datetime.strptime(dictionary['updated_at'], DBBaseModel.DATE_FORMAT)
-        return user
+    def get_by_username(username):
+        """
+        Get user based on the username
+        :param username:
+        :return:
+        """
+        return User.query_by_field("username", username)
 
     def save(self):
         """
         Save the user into the database
         :return:
         """
-        database.cursor.execute(
+        cursor.execute(
             "INSERT INTO users(firstname,lastname,username,email,"
             "password,created_at,updated_at) VALUES(%s,%s,%s,%s,%s,%s,%s)", (
                 self.firstname, self.lastname, self.username, self.email,
                 self.password, self.created_at,
                 self.updated_at
             ))
-        database.connection.commit()
+        connection.commit()
 
     def update(self):
         """
@@ -117,21 +145,38 @@ class User(v1.models.User, DBBaseModel):
         :return:
         """
         super().update()
-        database.cursor.execute(
+        cursor.execute(
             "UPDATE users SET firstname = %s, lastname = %s, username = %s,"
-            "email = %s, password = %s, updated_at = %s where id = %s", (
+            "email = %s, password = %s, updated_at = now() where id = %s", (
                 self.firstname, self.lastname, self.username,
                 self.email, self.password,
-                self.updated_at,
                 self.id))
-        database.connection.commit()
+        connection.commit()
+
+    def requests(self):
+        """
+        Get all the requests for this user
+        :return:
+        """
+        return Request.query_by_field("created_by", self.id)
+
+    def is_admin(self):
+        """
+        To check whether a user is an administrator
+        :return:
+        """
+        return self.role == User.ROLE_ADMINISTRATOR
 
 
 class Request(v1.models.Request, DBBaseModel):
+    """
+    Contains the maintenance/repair request
+    """
     __table__ = "requests"
 
-    def migrate(self):
-        database.cursor.execute("""CREATE TABLE requests(
+    @classmethod
+    def migrate(cls):
+        cursor.execute("""CREATE TABLE IF NOT EXISTS requests(
           id serial PRIMARY KEY ,
           product_name varchar,
           description varchar,
@@ -141,14 +186,14 @@ class Request(v1.models.Request, DBBaseModel):
           created_at TIMESTAMP,
           updated_at TIMESTAMP,
           FOREIGN KEY (created_by) REFERENCES users(id))""")
-        database.connection.commit()
+        connection.commit()
 
     def save(self):
         """
         Save the request into the database
         :return:
         """
-        database.cursor.execute(
+        cursor.execute(
             "INSERT INTO requests(product_name,description,status,photo,created_by,created_at,updated_at)"
             " VALUES(%s,%s,%s,%s,%s,%s,%s)", (
                 self.product_name,
@@ -159,22 +204,21 @@ class Request(v1.models.Request, DBBaseModel):
                 self.created_at,
                 self.updated_at
             ))
-        database.connection.commit()
+        connection.commit()
 
     def update(self):
         super().update()
-        database.cursor.execute(
+        cursor.execute(
             "UPDATE requests SET product_name = %s, description = %s, "
-            "status = %s, photo = %s, updated_at = %s WHERE id = %s", (
+            "status = %s, photo = %s, updated_at = now() WHERE id = %s", (
                 self.product_name,
                 self.description,
                 self.status,
                 self.photo,
-                self.updated_at,
                 self.id
             )
         )
-        database.connection.commit()
+        connection.commit()
 
     def approve(self):
         """
@@ -200,12 +244,36 @@ class Request(v1.models.Request, DBBaseModel):
         self.status = Request.STATUS_RESOLVED
         self.update()
 
+    def feedback(self):
+        """
+        Gets the feedback associated with this request
+        :return:
+        """
+        return Feedback.query_by_field("request", self.id)
+
+    @classmethod
+    def query_for_user(cls, user_id):
+        """
+        Gets all the requests for this user
+        :param user_id:
+        :return:
+        """
+        return Request.query_by_field("created_by", user_id)
+
 
 class Feedback(v1.models.Feedback, DBBaseModel):
+    """
+    Stores the feedback to the requests
+    """
     __table__ = "feedback"
 
-    def migrate(self):
-        database.cursor.execute("""CREATE TABLE feedback(
+    @classmethod
+    def migrate(cls):
+        """
+        Creates the feedback table
+        :return:
+        """
+        cursor.execute("""CREATE TABLE IF NOT EXISTS feedback(
           id serial PRIMARY KEY ,
           admin INTEGER,
           request INTEGER,
@@ -215,18 +283,154 @@ class Feedback(v1.models.Feedback, DBBaseModel):
           foreign key (admin) references users(id),
           foreign key (request) references requests(id)
         )""")
-        database.connection.commit()
+        connection.commit()
 
     def save(self):
-        database.cursor.execute("INSERT INTO feedback(admin, request, message, created_at, updated_at) "
-                                "VALUES(%s,%s,%s,%s,%s)", (
-                                    self.admin,
-                                    self.request,
-                                    self.message,
-                                    self.created_at,
-                                    self.updated_at
-                                ))
+        """
+        Saves a feedback to the feedback table
+        :return:
+        """
+        cursor.execute("INSERT INTO feedback(admin, request, message, created_at, updated_at) "
+                       "VALUES(%s,%s,%s,%s,%s)", (
+                           self.admin,
+                           self.request,
+                           self.message,
+                           self.created_at,
+                           self.updated_at
+                       ))
+        connection.commit()
+
+    def update(self):
+        super().update()
+        cursor.execute(
+            "UPDATE feedback SET admin = %s, request = %s, message = %s, updated_at = now() WHERE id = %d",
+            (
+                self.admin,
+                self.request,
+                self.message,
+                self.id
+            ))
+
+    def maintenance_request(self):
+        """
+        Returns the request for this Feedback
+        :return:
+        """
+        return Request.query_by_id(self.request)
 
 
-if __name__ == '__main__':
-    User.query_all()
+class Notification(v1.models.Notification, DBBaseModel):
+    """
+    Stores the unread and the read notifications for the user
+    """
+    __table__ = "notifications"
+
+    @classmethod
+    def migrate(cls):
+        """
+        Create the Notifications Table
+        :return:
+        """
+        cursor.execute("""CREATE TABLE IF NOT EXISTS notifications(
+            id serial PRIMARY KEY ,
+            admin_id INTEGER,
+            user_id INTEGER,
+            message varchar,
+            read boolean,
+            created_at timestamp,
+            updated_at timestamp,
+            FOREIGN KEY (admin_id) references users(id),
+            FOREIGN KEY (user_id) references users(id)
+        )""")
+        connection.commit()
+
+    def save(self):
+        """
+        Save the notification into the database
+        :return:
+        """
+        cursor.execute(
+            "INSERT INTO notifications(admin_id,user_id,message,read, created_at, updated_at) VALUES(%s,%s,%s,%s,%s,%s)",
+            (
+                self.admin,
+                self.user,
+                self.message,
+                False,
+                self.created_at,
+                self.updated_at
+            ))
+        connection.commit()
+
+    def update(self):
+        """
+        Update the notification in the database
+        :return:
+        """
+        super().update()
+        cursor.execute("UPDATE notifications SET message = %s, read = %s, updated_at = now()", (
+            self.message,
+            self.read
+        ))
+        connection.commit()
+
+    def mark_as_read(self):
+        """
+        Mark a notification as read
+        :return:
+        """
+        self.read = True
+        self.update()
+
+    def get_admin(self):
+        """
+        Get the Admin that created this notification
+        :return:
+        """
+        return User.query_by_id(self.admin)
+
+    def get_user(self):
+        """
+        Get the User that received this notification
+        :return:
+        """
+        return User.query_by_id(self.user)
+
+    @classmethod
+    def query_all_for_user(cls, user_id):
+        """
+        Returns all the notifications sent to this a user
+        :param user_id:
+        :return:
+        """
+        return Notification.query_by_field("user_id", user_id)
+
+
+class Blacklist(DBBaseModel):
+    """
+    Contains the list of blacklisted tokens when a user logs out
+    """
+    __table__ = "blacklist"
+
+    def __init__(self, token):
+        super().__init__(datetime.now(), datetime.now())
+        self.token = token
+
+    @classmethod
+    def migrate(cls):
+        """
+        Create the table to store the blacklisted tokens
+        :return:
+        """
+        cursor.execute("""CREATE TABLE IF NOT EXISTS blacklist(
+          id serial PRIMARY KEY ,
+          token varchar)""")
+        connection.commit()
+
+    def save(self):
+        """
+        Saves a token into the database
+        :return:
+        """
+
+        cursor.execute("INSERT INTO blacklist(token) VALUES(%S)", (self.token,))
+        connection.commit()
