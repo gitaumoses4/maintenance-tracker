@@ -13,17 +13,17 @@ class BaseModel:
         self.id = 0
 
     def to_json_object(self, exclude=True):
-        return json.loads(self.to_json_str(exclude))
-
-    def to_json_str(self, exclude=True):
         fields = self.excluded_fields()
         if not exclude:
             fields = []
-        return json.dumps(self,
+        return json.loads(self,
                           default=lambda o: o.strftime("%Y-%m-%d %H:%M:%S") if isinstance(o, datetime)
                           else {k: v for k, v in o.__dict__.items() if
                                 k not in fields},
                           sort_keys=True, indent=4)
+
+    def to_json_str(self, exclude=True):
+        return json.dumps(self.to_json_object(exclude))
 
     def excluded_fields(self):
         return ['created_at', 'updated_at']
@@ -100,7 +100,7 @@ class Notification(BaseModel):
 class Request(BaseModel):
     STATUS_PENDING = "Pending"
     STATUS_APPROVED = "Approved"
-    STATUS_REJECTED = "Rejected"
+    STATUS_DISAPPROVED = "Disapproved"
     STATUS_RESOLVED = "Resolved"
 
     def __init__(self, product_name="", description="", status=STATUS_PENDING, photo="", created_by=None,
