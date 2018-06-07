@@ -13,6 +13,11 @@ class Configuration:
     DEFAULT_ADMIN_PROFILE_PICTURE = ""
     JWT_SECRET_KEY = "my_awesome_key"
 
+    DATABASE_NAME = "maintenance_tracker"
+    DATABASE_USER = "postgres"
+    DATABASE_PASSWORD = "password"
+    DATABASE_HOST = "localhost"
+
 
 class Development(Configuration):
     """Development configuration class"""
@@ -27,6 +32,8 @@ class Production(Development):
 class Testing(Development):
     """Testing configuration class"""
     TESTING = True
+
+    DATABASE_NAME = "maintenance_tracker_test"
 
 
 config = {
