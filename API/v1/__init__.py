@@ -7,10 +7,6 @@ from v1.routes.web import web
 
 
 def initialize_app(app):
-    app.register_blueprint(user_routes, url_prefix="/api/v1/users")
-    app.register_blueprint(admin_routes, url_prefix="/api/v1/admin")
-    app.register_blueprint(web)
-
     # initialize JWT
     jwt = JWTManager(app)
 

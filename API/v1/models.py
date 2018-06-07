@@ -16,11 +16,11 @@ class BaseModel:
         fields = self.excluded_fields()
         if not exclude:
             fields = []
-        return json.loads(self,
+        return json.loads(json.dumps(self,
                           default=lambda o: o.strftime("%Y-%m-%d %H:%M:%S") if isinstance(o, datetime)
                           else {k: v for k, v in o.__dict__.items() if
                                 k not in fields},
-                          sort_keys=True, indent=4)
+                          sort_keys=True, indent=4))
 
     def to_json_str(self, exclude=True):
         return json.dumps(self.to_json_object(exclude))
