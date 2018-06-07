@@ -11,12 +11,12 @@ class NotificationsTestCase(AuthenticatedTestCase):
     def setUp(self):
         super().setUp()
         self.notification = Notification(message="You have a notification")
-        json_result, status_code = self.get("users/details", headers=self.headers)
+        json_result = self.get("users/details", headers=self.headers)[0]
         self.user.id = json_result['data']['user']['id']
 
     def create_notification(self):
         """Creates a notification and returns the response"""
-        return self.post("notifications/send".format(self.user.id),
+        return self.post("notifications/send/{}".format(self.user.id),
                          data=self.notification.to_json_str(),
                          headers=self.admin_headers)
 
@@ -49,7 +49,7 @@ class NotificationsTestCase(AuthenticatedTestCase):
 
     def test_cannot_create_notification_for_non_existing_user(self):
         """Checks to see that an admin cannot send notification to non-existing users"""
-        json_result, status_code = self.post("notifications/send".format(123123),
+        json_result, status_code = self.post("notifications/send/{}".format(123123),
                                              data=self.notification.to_json_str(),
                                              headers=self.admin_headers)
 
@@ -58,7 +58,7 @@ class NotificationsTestCase(AuthenticatedTestCase):
 
     def test_cannot_create_notification_with_empty_message(self):
         """Ensures the admin cannot create notification with an empty message"""
-        json_result, status_code = self.post("notifications/send".format(self.user.id),
+        json_result, status_code = self.post("notifications/send/{}".format(self.user.id),
                                              data=json.dumps({"fake": ""}),
                                              headers=self.admin_headers)
 

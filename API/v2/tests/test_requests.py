@@ -59,6 +59,7 @@ class RequestsTestCase(AuthenticatedTestCase):
 
         json_result, status_code = self.put("users/requests/{}".format(request_id),
                                             data=json.dumps({"invalid": "details"}))
+        self.assertEqual(status_code, 400)
         self.assertEqual(json_result['status'], "error")
 
     def test_user_can_modify_request(self):

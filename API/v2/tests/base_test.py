@@ -120,7 +120,7 @@ class AuthenticatedTestCase(BaseTestCase):
     def test_admin_endpoints(self):
         """Checks whether the admin endpoints are guarded from other users"""
         endpoints = {
-            "POST": ['requests/1/feedback', "notifications/send"],
+            "POST": ['requests/1/feedback', "notifications/send/1"],
             "GET": ["requests"],
             "PUT": ["requests/1/approve", "requests/1/disapprove", "requests/1/resolve", "users/1/upgrade"],
             "DELETE": []
@@ -137,7 +137,7 @@ class AuthenticatedTestCase(BaseTestCase):
             "DELETE": []
         }
         admin_endpoints = {
-            "POST": ["requests/1/feedback", "notifications/send"],
+            "POST": ["requests/1/feedback", "notifications/send/1"],
             "GET": [],
             "PUT": [],
             "DELETE": []
