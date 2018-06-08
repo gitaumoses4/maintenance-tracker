@@ -217,3 +217,16 @@ class AdminFeedback(Resource):
                     return {"status": "success", "data": {"feedback": feedback.to_json_object()}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
+
+
+class UserFeedbackResource(Resource):
+    @jwt_required
+    def get(self, request_id):
+        maintenance_request = Request.query_by_id(request_id)
+        if maintenance_request is None:
+            return {"status": "error", "message": "Maintenance request does not exist"}, 404
+        elif maintenance_request.created_by != get_jwt_identity():
+            return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
+        else:
+            feedback = maintenance_request.feedback()
+            return {"status": "success", "data": {"feedback": [x.to_json_object() for x in feedback]}}, 200
