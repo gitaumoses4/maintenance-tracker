@@ -195,6 +195,14 @@ class User(v1.models.User, DBBaseModel):
         """
         return self.role == User.ROLE_ADMINISTRATOR
 
+    def notifications(self):
+        """
+        Get all the notifications sent to this user
+        :return:
+        """
+
+        return Notification.query_by_field("user_id", self.id)
+
 
 class Admin(User):
     """
