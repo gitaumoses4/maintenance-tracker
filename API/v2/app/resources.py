@@ -7,7 +7,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, g
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
 
-from v2.models import User, Blacklist, Request
+from v2.app.models import User, Blacklist, Request
 
 
 class UserSignUp(Resource):

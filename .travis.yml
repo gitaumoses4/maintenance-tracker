@@ -14,7 +14,7 @@ script:
     - cd v1
     - nosetests --with-coverage --cover-package=routes tests/*
     - cd ../v2
-    - nosetests --with-coverage --cover-package=routes tests/*
+    - nosetests --with-coverage --cover-package=app tests/*
 # run coverage tests
 after_success:
   - coveralls

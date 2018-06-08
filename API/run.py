@@ -6,11 +6,11 @@ from flask_jwt_extended import JWTManager
 import v1
 from config import config
 from v1 import user_routes, admin_routes, web
-from v2.database import Database
+from v2.app.database import Database
 
 db = Database()
 
-import v2.routes
+import v2.app.routes
 
 load_dotenv()
 
@@ -23,14 +23,14 @@ def create_app(config_name="DEVELOPMENT"):
     app.register_blueprint(user_routes, url_prefix="/api/v1/users")
     app.register_blueprint(admin_routes, url_prefix="/api/v1/admin")
     app.register_blueprint(web)
-    app.register_blueprint(v2.routes.resource_routes, url_prefix="/api/v2")
+    app.register_blueprint(v2.app.routes.resource_routes, url_prefix="/api/v2")
     db.init_app(app)
 
     jwt = JWTManager(app)
 
     @jwt.token_in_blacklist_loader
     def check_token(token):
-        from v2.models import Blacklist
+        from v2.app.models import Blacklist
         """check if the token is blacklisted"""
         return Blacklist.query_one_by_field("token", token['jti']) is not None
 

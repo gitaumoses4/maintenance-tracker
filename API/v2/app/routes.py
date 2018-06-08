@@ -4,7 +4,7 @@ The main endpoints for the application
 from flask_restful import Api
 from flask import Blueprint
 
-from v2.resources import UserSignUp, UserLogin, UserLogout, UserMaintenanceRequest, UserModifyRequest, \
+from v2.app.resources import UserSignUp, UserLogin, UserLogout, UserMaintenanceRequest, UserModifyRequest, \
     AdminMaintenanceRequest, AdminManageRequest
 
 resource_routes = Blueprint("resource_routes", __name__)
