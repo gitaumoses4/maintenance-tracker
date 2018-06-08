@@ -1,5 +1,8 @@
 """Configuration classes for the application"""
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Configuration:
