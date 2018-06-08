@@ -7,7 +7,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, g
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
 
-from v2.app.models import User, Blacklist, Request
+from v2.app.models import User, Blacklist, Request, Feedback
 
 
 class UserSignUp(Resource):
@@ -188,3 +188,32 @@ class AdminManageRequest(Resource):
 
         maintenance_request.update()
         return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200
+
+
+class AdminFeedback(Resource):
+    @staticmethod
+    def is_valid(item):
+        """Check whether a feedback object has valid fields"""
+        errors = {}
+        if not item.get("message"):
+            errors["message"] = "Feedback message must be provided"
+
+        return len(errors) == 0, errors
+
+    @jwt_required
+    def post(self, request_id):
+        if request.is_json:
+            maintenance_request = Request.query_by_id(request_id)
+            if maintenance_request is None:
+                return {"status": "error", "message": "Maintenance request does not exist"}, 404
+            else:
+                valid, errors = self.is_valid(request.json)
+                if not valid:
+                    return {"status": "error", "data": errors}, 400
+                else:
+                    feedback = Feedback(admin=get_jwt_identity(), request=maintenance_request.id,
+                                        message=request.json.get("message"))
+                    feedback.save()
+                    return {"status": "success", "data": {"feedback": feedback.to_json_object()}}, 201
+        else:
+            return {"message": "Request should be in JSON", "status": "error"}, 400
