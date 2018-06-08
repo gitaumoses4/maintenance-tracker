@@ -1,4 +1,5 @@
 """Creates the database models with ability to perform SQL functions"""
+from passlib.handlers.bcrypt import bcrypt
 
 import v1.models
 from datetime import datetime
@@ -49,6 +50,14 @@ class DBBaseModel(v1.models.BaseModel):
         db.cursor.execute("SELECT * FROM {}".format(cls.__table__))
         items = db.cursor.fetchall()
         return [cls.deserialize(x) for x in items]
+
+    @classmethod
+    def query_one_by_field(cls, field, value):
+        """Get one item from the database"""
+        items = cls.query_by_field(field, value)
+        if len(items) == 0:
+            return None
+        return items[0]
 
     @classmethod
     def query_by_field(cls, field, value):
@@ -182,6 +191,29 @@ class User(v1.models.User, DBBaseModel):
         :return:
         """
         return self.role == User.ROLE_ADMINISTRATOR
+
+
+class Admin(User):
+    """
+    Contains implementation for creating a default admin from the super class
+    """
+
+    def __init__(self, firstname="", lastname="", email="", username="", password="", profile_picture="",
+                 created_at=datetime.now(), updated_at=datetime.now()):
+        super().__init__(firstname, lastname, email, username, password, profile_picture, created_at, updated_at)
+        self.role = User.ROLE_ADMINISTRATOR
+
+    @staticmethod
+    def default():
+        admin = Admin()
+        admin.firstname = db.app.config['DEFAULT_ADMIN_FIRST_NAME']
+        admin.lastname = db.app.config['DEFAULT_ADMIN_LAST_NAME']
+        admin.email = db.app.config['DEFAULT_ADMIN_EMAIL']
+        admin.username = db.app.config['DEFAULT_ADMIN_USER_NAME']
+        admin.password = bcrypt.encrypt(db.app.config['DEFAULT_ADMIN_PASSWORD'])
+        admin.profile_picture = db.app.config['DEFAULT_ADMIN_PROFILE_PICTURE']
+
+        return admin
 
 
 class Request(v1.models.Request, DBBaseModel):
@@ -495,5 +527,5 @@ class Blacklist(DBBaseModel):
         :return:
         """
 
-        db.cursor.execute("INSERT INTO blacklist(token) VALUES(%S)", (self.token,))
+        db.cursor.execute("INSERT INTO blacklist(token) VALUES(%s)", (self.token,))
         db.connection.commit()
