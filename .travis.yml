@@ -13,7 +13,7 @@ before_script:
 script:
     - cd v1
     - nosetests --with-coverage --cover-package=routes tests/*
-    - ../cd v2
+    - cd ../v2
     - nosetests --with-coverage --cover-package=routes tests/*
 # run coverage tests
 after_success:
