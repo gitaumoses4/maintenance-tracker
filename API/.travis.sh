@@ -9,7 +9,7 @@ export JWT_SECRET_KEY="my_awesome_key"
 export DATABASE_USER="moses"
 export DATABASE_PASSWORD="password"
 export DATABASE_HOST="localhost"
-export DATABASE_NAME="maintenance_tracker"
+export DATABASE_NAME="maintenance_tracker_test"
 export TEST_DATABASE_NAME="maintenance_tracker_test"
 
 export ENVIRONMENT="DEVELOPMENT"
