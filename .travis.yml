@@ -1,9 +1,15 @@
 language: python
 python:
     - "3.6"
+services:
+    - postgresql
 install:
     - cd API
     - pip install -r requirements.txt
+before_script:
+    - source .travis.sh
+    - psql -c 'create database maintenance_tracker_test;' -U postgres
+    - psql -c "create user moses with password 'password';" -U postgres
 script:
     - cd v1
     - nosetests --with-coverage --cover-package=routes tests/*
