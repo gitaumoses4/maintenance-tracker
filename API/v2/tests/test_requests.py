@@ -48,7 +48,7 @@ class RequestsTestCase(AuthenticatedTestCase):
 
     def test_admin_can_get_all_requests(self):
         """This will tests whether the admin can get the requests in the system"""
-        json_result, status_code = self.get("requests")
+        json_result, status_code = self.get("requests", headers=self.admin_headers)
         self.assertEqual(status_code, 200)
 
         self.assertEqual(json_result['status'], "success")
@@ -108,9 +108,9 @@ class RequestsTestCase(AuthenticatedTestCase):
     def test_can_only_approved_pending_request(self):
         """Ensures the admin can only approve a pending request"""
         request_id = self.create_request_and_get_id()
-        self.put("requests/{}/approve".format(request_id))
+        self.put("requests/{}/approve".format(request_id), headers = self.admin_headers)
 
-        json_result, status_code = self.put("requests/{}/approve".format(request_id))
+        json_result, status_code = self.put("requests/{}/approve".format(request_id), headers=self.admin_headers)
         self.assertEqual(status_code, 400)
         self.assertEqual(json_result['status'], "error")
 

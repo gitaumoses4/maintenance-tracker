@@ -29,7 +29,8 @@ class FeedbackTestCase(AuthenticatedTestCase):
 
     def test_admin_cannot_provide_feedback_for_non_existing_request(self):
         """Tests whether the admin can provide feedback for a user that does not exist in the database"""
-        json_result, status_code = self.post("requests/123123/feedback", self.feedback.to_json_str())
+        json_result, status_code = self.post("requests/123123/feedback", self.feedback.to_json_str(),
+                                             self.admin_headers)
 
         self.assertEqual(status_code, 404)
 

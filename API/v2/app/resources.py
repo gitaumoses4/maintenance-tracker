@@ -2,12 +2,25 @@
 The main resources for the API endpoints
 """
 import re
-from flask import request
+from functools import wraps
+
+from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, get_jwt_identity
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
 
 from v2.app.models import User, Blacklist, Request, Feedback, Notification
+
+
+def admin_guard(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        user = User.query_by_id(get_jwt_identity())
+        if not user.is_admin():
+            return {"status": "error", "message": "User not an Admin"}, 401
+        return f(*args, **kwargs)
+
+    return wrapped
 
 
 class UserResource(Resource):
@@ -18,8 +31,11 @@ class UserResource(Resource):
         return {"status": "success", "data": {"user": user.to_json_object()}}, 200
 
     @jwt_required
+    @admin_guard
     def put(self, user_id):
         user = User.query_by_id(user_id)
+        if user is None:
+            return {"status": "error", "message": "User not found"}, 404
         user.role = User.ROLE_ADMINISTRATOR
         user.update()
 
@@ -180,6 +196,7 @@ class UserModifyRequest(Resource):
 
 class AdminMaintenanceRequest(Resource):
     @jwt_required
+    @admin_guard
     def get(self):
         requests = [x.to_json_object() for x in Request.query_all()]
         return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
@@ -188,6 +205,7 @@ class AdminMaintenanceRequest(Resource):
 class AdminManageRequest(Resource):
 
     @jwt_required
+    @admin_guard
     def put(self, request_id, status):
         statuses = {"approve": Request.STATUS_APPROVED, "disapprove": Request.STATUS_DISAPPROVED,
                     "pending": Request.STATUS_PENDING, "resolve": Request.STATUS_RESOLVED}
@@ -217,6 +235,7 @@ class AdminFeedback(Resource):
         return len(errors) == 0, errors
 
     @jwt_required
+    @admin_guard
     def post(self, request_id):
         if request.is_json:
             maintenance_request = Request.query_by_id(request_id)
@@ -283,6 +302,7 @@ class ManageNotifications(Resource):
             return {"status": "success", "data": {"notification": notification.to_json_object()}}, 200
 
     @jwt_required
+    @admin_guard
     def post(self, user_id):
         if request.is_json:
             user = User.query_by_id(user_id)
