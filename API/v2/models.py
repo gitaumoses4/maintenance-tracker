@@ -79,7 +79,7 @@ class DBBaseModel(v1.models.BaseModel):
         :param _id:
         :return:
         """
-        db.cursor.execute("SELECT * FROM {} WHERE id = %s".format(cls.__table__), (_id))
+        db.cursor.execute("SELECT * FROM {} WHERE id = %s".format(cls.__table__), (_id,))
         item = db.cursor.fetchone()
         if item is None:
             return None
@@ -87,7 +87,9 @@ class DBBaseModel(v1.models.BaseModel):
 
     def save(self):
         """ Save an item to the database"""
-        pass
+        result = db.cursor.fetchone()
+        if result is not None:
+            self.id = result['id']
 
     def update(self):
         """
@@ -157,12 +159,12 @@ class User(v1.models.User, DBBaseModel):
         """
         db.cursor.execute(
             "INSERT INTO users(firstname,lastname,username,email,"
-            "password,created_at,updated_at) VALUES(%s,%s,%s,%s,%s,%s,%s)", (
+            "password,created_at,updated_at) VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING id", (
                 self.firstname, self.lastname, self.username, self.email,
                 self.password, self.created_at,
                 self.updated_at
             ))
-        db.connection.commit()
+        super().save()
 
     def update(self):
         """
@@ -257,7 +259,7 @@ class Request(v1.models.Request, DBBaseModel):
         """
         db.cursor.execute(
             "INSERT INTO requests(product_name,description,status,photo,created_by,created_at,updated_at)"
-            " VALUES(%s,%s,%s,%s,%s,%s,%s)", (
+            " VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING id", (
                 self.product_name,
                 self.description,
                 self.status,
@@ -266,7 +268,7 @@ class Request(v1.models.Request, DBBaseModel):
                 self.created_at,
                 self.updated_at
             ))
-        db.connection.commit()
+        super().save()
 
     def update(self):
         super().update()
@@ -365,14 +367,15 @@ class Feedback(v1.models.Feedback, DBBaseModel):
         :return:
         """
         db.cursor.execute("INSERT INTO feedback(admin, request, message, created_at, updated_at) "
-                          "VALUES(%s,%s,%s,%s,%s)", (
+                          "VALUES(%s,%s,%s,%s,%s) RETURNING id", (
                               self.admin,
                               self.request,
                               self.message,
                               self.created_at,
                               self.updated_at
                           ))
-        db.connection.commit()
+
+        super().save()
 
     def update(self):
         super().update()
@@ -437,7 +440,8 @@ class Notification(v1.models.Notification, DBBaseModel):
         :return:
         """
         db.cursor.execute(
-            "INSERT INTO notifications(admin_id,user_id,message,read, created_at, updated_at) VALUES(%s,%s,%s,%s,%s,%s)",
+            "INSERT INTO notifications(admin_id,user_id,message,read, created_at, updated_at) "
+            "VALUES(%s,%s,%s,%s,%s,%s) RETURNING id",
             (
                 self.admin,
                 self.user,
@@ -446,7 +450,7 @@ class Notification(v1.models.Notification, DBBaseModel):
                 self.created_at,
                 self.updated_at
             ))
-        db.connection.commit()
+        super().save()
 
     def update(self):
         """
