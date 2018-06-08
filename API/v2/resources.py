@@ -120,3 +120,43 @@ class UserMaintenanceRequest(Resource):
             return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
+
+    @jwt_required
+    def get(self):
+        requests = [x.to_json_object() for x in Request.query_for_user(get_jwt_identity())]
+        return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
+
+
+class UserModifyRequest(Resource):
+
+    @jwt_required
+    def get(self, request_id):
+        maintenance_request = Request.query_by_id(request_id)
+        if maintenance_request is None:
+            return {"status": "error", "message": "Maintenance request does not exist"}, 404
+        elif maintenance_request.created_by != get_jwt_identity():
+            return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
+        else:
+            return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200
+
+    @jwt_required
+    def put(self, request_id):
+        if request.is_json:
+            maintenance_request = Request.query_by_id(request_id)
+            if maintenance_request is None:
+                return {"status": "error", "message": "Maintenance request does not exist"}, 404
+            elif maintenance_request.created_by != get_jwt_identity():
+                return {"status": "error",
+                        "message": "You are not allowed to modify or view this maintenance request"}, 401
+            valid, errors = UserMaintenanceRequest.is_valid(request.json)
+            if not valid:
+                return {"status": "error", "data": errors}, 400
+            result = request.json
+
+            maintenance_request.product_name = result['product_name']
+            maintenance_request.description = result['description']
+
+            maintenance_request.update()
+            return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200
+        else:
+            return {"message": "Request should be in JSON", "status": "error"}, 400

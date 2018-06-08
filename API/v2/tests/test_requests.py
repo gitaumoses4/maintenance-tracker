@@ -55,10 +55,11 @@ class RequestsTestCase(AuthenticatedTestCase):
 
     def test_user_cannot_modify_request_with_invalid_details(self):
         """Ensures a user cannot modify a request with invalid details"""
-        request_id = self.create_request()
+        request_id = self.create_request_and_get_id()
 
         json_result, status_code = self.put("users/requests/{}".format(request_id),
                                             data=json.dumps({"invalid": "details"}))
+        print(json_result)
         self.assertEqual(status_code, 400)
         self.assertEqual(json_result['status'], "error")
 
@@ -67,7 +68,7 @@ class RequestsTestCase(AuthenticatedTestCase):
         request_id = self.create_request_and_get_id()
 
         self.request.description = "Some New Description"
-        self.create_request()
+        self.put("users/requests/{}".format(request_id), data=self.request.to_json_str(False))
 
         json_result, status_code = self.get("users/requests/{}".format(request_id),
                                             )
@@ -116,7 +117,7 @@ class RequestsTestCase(AuthenticatedTestCase):
     def test_can_get_request_by_id(self):
         """Checks whether a user can get a request by it's id"""
         request_id = self.create_request_and_get_id()
-        json_result, status_code = self.client().get("users/requests/{}".format(request_id))
+        json_result, status_code = self.get("users/requests/{}".format(request_id))
         self.assertEqual(status_code, 200)
 
         self.assertEqual(json_result['status'], "success")
