@@ -3,10 +3,11 @@ The main resources for the API endpoints
 """
 import re
 from flask import request
+from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
 
-from v2.models import User
+from v2.models import User, Blacklist
 
 
 class UserSignUp(Resource):
@@ -56,3 +57,32 @@ class UserSignUp(Resource):
             return {"message": "Registration successful", "status": "success"}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
+
+
+class UserLogin(Resource):
+
+    def post(self):
+        if request.is_json:
+            if not request.json.get('username'):
+                return {"status": "error", "data": {"username": "Username is required"}}, 400
+            if not request.json.get("password"):
+                return {"status": "error", "data": {"email": "Password is required"}}, 400
+            user = User.query_one_by_field("username", request.json.get("username"))
+            if user is None:
+                return {"status": "error", "message": "Username does not exist"}, 400
+            elif not bcrypt.verify(request.json.get("password"), user.password):
+                return {"status": "error", "message": "Wrong password"}, 400
+            access_token = create_access_token(identity=user.username)
+            return {"status": "success", "data": {"token": access_token, "user": user.to_json_object()}}, 200
+        else:
+            return {"message": "Request should be in JSON", "status": "error"}, 400
+
+
+class UserLogout(Resource):
+
+    @jwt_required
+    def delete(self):
+        jti = get_raw_jwt()['jti']
+        blacklist = Blacklist(jti)
+        blacklist.save()
+        return {"status": "success", "message": "Successfully logged out"}, 200

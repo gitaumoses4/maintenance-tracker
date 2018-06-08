@@ -1,6 +1,6 @@
 """Runs the database set up options such as refresh, reset and create"""
 
-from v2.models import User, Request, Feedback, Notification, Blacklist
+from v2.models import User, Request, Feedback, Notification, Blacklist, Admin
 
 
 class Migration:
@@ -22,6 +22,10 @@ class Migration:
         Feedback.migrate()
         Notification.migrate()
         Blacklist.migrate()
+
+        # create default admin
+        admin = Admin.default()
+        admin.save()
 
     @staticmethod
     def tear_down():
