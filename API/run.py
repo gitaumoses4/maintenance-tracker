@@ -1,6 +1,7 @@
 """ Initializes and runs the application"""
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, jsonify
+from flask_jwt_extended import JWTManager
 
 import v1
 from config import config
@@ -25,10 +26,26 @@ def create_app(config_name="DEVELOPMENT"):
     app.register_blueprint(v2.routes.resource_routes, url_prefix="/api/v2")
     db.init_app(app)
 
+    jwt = JWTManager(app)
+
+    @jwt.token_in_blacklist_loader
+    def check_token(token):
+        from v2.models import Blacklist
+        """check if the token is blacklisted"""
+        return Blacklist.query_one_by_field("token", token['jti']) is not None
+
     return app
 
 
 app = create_app()
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return jsonify({
+        "status": "error",
+        "message": "Resource not found"
+    }), 404
 
 
 if __name__ == '__main__':

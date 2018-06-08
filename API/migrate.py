@@ -33,10 +33,10 @@ class Migration:
         Delete data from the tables
         :return:
         """
-        User.rollback()
-        Request.rollback()
         Feedback.rollback()
+        Request.rollback()
         Notification.rollback()
+        User.rollback()
         Blacklist.rollback()
 
 

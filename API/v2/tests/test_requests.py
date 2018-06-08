@@ -35,7 +35,7 @@ class RequestsTestCase(AuthenticatedTestCase):
         """ This will test that the user cannot create a request with invalid details"""
         self.request.product_name = ""
         json_result, status_code = self.post('users/requests', data=json.dumps({"invalid": "details"}))
-        self.assertEqual(status_code, 200)
+        self.assertEqual(status_code, 400)
 
         self.assertEqual(json_result['status'], "error")
 
@@ -141,6 +141,6 @@ class RequestsTestCase(AuthenticatedTestCase):
 
         self.headers['Authorization'] = 'Bearer {}'.format(json_result['data']['token'])
 
-        json_result, status_code = self.client().get("users/requests/{}".format(request_id))
+        json_result, status_code = self.get("users/requests/{}".format(request_id))
         self.assertEqual(status_code, 401)
         self.assertEqual(json_result['status'], "error")
