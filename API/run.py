@@ -11,6 +11,7 @@ from v2.app.database import Database
 db = Database()
 
 import v2.app.routes
+from migrate import Migration
 
 load_dotenv()
 
@@ -45,6 +46,7 @@ def create_app(config_name="DEVELOPMENT"):
 
 
 app = create_app()
-
+migration = Migration()
+migration.set_up()
 if __name__ == '__main__':
     app.run()

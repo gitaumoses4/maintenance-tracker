@@ -141,7 +141,7 @@ class AuthenticatedTestCase(BaseTestCase):
             "DELETE": []
         }
         admin_endpoints = {
-            "POST": ["requests/1/feedback", "notifications/send/1"],
+            "POST": ["requests/1/feedback", "notifications/1"],
             "GET": [],
             "PUT": [],
             "DELETE": []
