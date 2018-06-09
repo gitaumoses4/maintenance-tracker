@@ -90,6 +90,7 @@ class DBBaseModel(v1.models.BaseModel):
         result = db.cursor.fetchone()
         if result is not None:
             self.id = result['id']
+        db.connection.commit()
 
     def update(self):
         """
