@@ -5,7 +5,7 @@ from flask_restful import Api
 from flask import Blueprint
 
 from v2.app.resources import UserSignUp, UserLogin, UserLogout, UserMaintenanceRequest, UserModifyRequest, \
-    AdminMaintenanceRequest, AdminManageRequest
+    AdminMaintenanceRequest, AdminManageRequest, AdminFeedback
 
 resource_routes = Blueprint("resource_routes", __name__)
 
@@ -18,3 +18,4 @@ api.add_resource(UserMaintenanceRequest, "/users/requests")
 api.add_resource(UserModifyRequest, "/users/requests/<int:request_id>")
 api.add_resource(AdminMaintenanceRequest, "/requests")
 api.add_resource(AdminManageRequest, "/requests/<int:request_id>/<string:status>")
+api.add_resource(AdminFeedback, "/requests/<int:request_id>/feedback")
