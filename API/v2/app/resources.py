@@ -17,6 +17,14 @@ class UserResource(Resource):
         user = User.query_by_id(get_jwt_identity())
         return {"status": "success", "data": {"user": user.to_json_object()}}, 200
 
+    @jwt_required
+    def put(self, user_id):
+        user = User.query_by_id(user_id)
+        user.role = User.ROLE_ADMINISTRATOR
+        user.update()
+
+        return {"status": "success", "message": "User is now an admin"}, 200
+
 
 class UserSignUp(Resource):
     """
