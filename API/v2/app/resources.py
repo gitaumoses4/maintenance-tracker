@@ -7,7 +7,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, g
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
 
-from v2.models import User, Blacklist, Request
+from v2.app.models import User, Blacklist, Request
 
 
 class UserSignUp(Resource):
@@ -160,3 +160,31 @@ class UserModifyRequest(Resource):
             return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
+
+
+class AdminMaintenanceRequest(Resource):
+    @jwt_required
+    def get(self):
+        requests = [x.to_json_object() for x in Request.query_all()]
+        return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
+
+
+class AdminManageRequest(Resource):
+
+    @jwt_required
+    def put(self, request_id, status):
+        statuses = {"approve": Request.STATUS_APPROVED, "disapprove": Request.STATUS_DISAPPROVED,
+                    "pending": Request.STATUS_PENDING, "resolve": Request.STATUS_RESOLVED}
+        if status not in statuses.keys():
+            return {"status": "error", "message": "Request status can only be [approve,resolve,disapprove]"}, 400
+        maintenance_request = Request.query_by_id(request_id)
+        if maintenance_request is None:
+            return {"status": "error", "message": "Maintenance request does not exist"}, 404
+        elif status == 'approve' and maintenance_request.status != Request.STATUS_PENDING:
+            return {"status": "error",
+                    "message": "Only a pending request can be approved"}, 400
+
+        maintenance_request.status = statuses[status]
+
+        maintenance_request.update()
+        return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+export DEFAULT_ADMIN_FIRST_NAME="Moses"
+export DEFAULT_ADMIN_LAST_NAME="Gitau"
+export DEFAULT_ADMIN_USER_NAME="admin"
+export DEFAULT_ADMIN_PASSWORD="admin"
+export DEFAULT_ADMIN_EMAIL="gitaumoses4@gmail.com"
+export DEFAULT_ADMIN_PROFILE_PICTURE="adfadf"
+export JWT_SECRET_KEY="my_awesome_key"
+export DATABASE_USER="moses"
+export DATABASE_PASSWORD="password"
+export DATABASE_HOST="localhost"
+export DATABASE_NAME="maintenance_tracker_test"
+export TEST_DATABASE_NAME="maintenance_tracker_test"
+
+export ENVIRONMENT="DEVELOPMENT"

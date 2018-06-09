@@ -1,6 +1,6 @@
 """Runs the database set up options such as refresh, reset and create"""
 
-from v2.models import User, Request, Feedback, Notification, Blacklist, Admin
+from v2.app.models import User, Request, Feedback, Notification, Blacklist, Admin
 
 
 class Migration:
