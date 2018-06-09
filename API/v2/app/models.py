@@ -160,10 +160,10 @@ class User(v1.models.User, DBBaseModel):
         """
         db.cursor.execute(
             "INSERT INTO users(firstname,lastname,username,email,"
-            "password,created_at,updated_at) VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING id", (
+            "password,created_at,updated_at, role) VALUES(%s,%s,%s,%s,%s,%s,%s, %s) RETURNING id", (
                 self.firstname, self.lastname, self.username, self.email,
                 self.password, self.created_at,
-                self.updated_at
+                self.updated_at, self.role
             ))
         super().save()
 
@@ -175,9 +175,9 @@ class User(v1.models.User, DBBaseModel):
         super().update()
         db.cursor.execute(
             "UPDATE users SET firstname = %s, lastname = %s, username = %s,"
-            "email = %s, password = %s, updated_at = now() where id = %s", (
+            "email = %s, password = %s, updated_at = now(), role = %s where id = %s", (
                 self.firstname, self.lastname, self.username,
-                self.email, self.password,
+                self.email, self.password, self.role,
                 self.id))
         db.connection.commit()
 
@@ -442,7 +442,7 @@ class Notification(v1.models.Notification, DBBaseModel):
         """
         db.cursor.execute(
             "INSERT INTO notifications(admin_id,user_id,message,read, created_at, updated_at) "
-            "VALUES(%s,%s,%s,%s,%s,%s) RETURNING id",
+            "VALUES(%s,%s,%s,%s,%s,%s) RETURNING id;",
             (
                 self.admin,
                 self.user,

@@ -7,7 +7,15 @@ from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, g
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
 
-from v2.app.models import User, Blacklist, Request, Feedback
+from v2.app.models import User, Blacklist, Request, Feedback, Notification
+
+
+class UserResource(Resource):
+
+    @jwt_required
+    def get(self):
+        user = User.query_by_id(get_jwt_identity())
+        return {"status": "success", "data": {"user": user.to_json_object()}}, 200
 
 
 class UserSignUp(Resource):
@@ -230,3 +238,23 @@ class UserFeedbackResource(Resource):
         else:
             feedback = maintenance_request.feedback()
             return {"status": "success", "data": {"feedback": [x.to_json_object() for x in feedback]}}, 200
+
+
+class SendNotification(Resource):
+
+    @jwt_required
+    def post(self, user_id):
+        if request.is_json:
+            user = User.query_by_id(user_id)
+            if user is None:
+                return {"status": "error", "message": "User does not exist"}, 404
+            else:
+                if request.json.get("message") is None:
+                    return {"status": "error", "data": {"message": "Notification message is required"}}, 400
+                else:
+                    notification = Notification(admin=get_jwt_identity(), user=user.id,
+                                                message=request.json.get("message"))
+                    notification.save()
+                    return {"status": "success", "data": {"notification": notification.to_json_object()}}, 201
+        else:
+            return {"message": "Request should be in JSON", "status": "error"}, 400
