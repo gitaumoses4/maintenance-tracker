@@ -258,3 +258,26 @@ class SendNotification(Resource):
                     return {"status": "success", "data": {"notification": notification.to_json_object()}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
+
+
+class NotificationResource(Resource):
+
+    @jwt_required
+    def get(self):
+        user = User.query_by_id(get_jwt_identity())
+        notifications = user.notifications()
+        return {"status": "success",
+                "data": {"notification_count": len(notifications), "notifications": notifications}}, 200
+
+
+class ManageNotifications(Resource):
+
+    @jwt_required
+    def get(self, notification_id):
+        notification = Notification.query_by_id(notification_id)
+        if not notification:
+            return {"status": "error", "message": "Notification not found"}, 404
+        if notification.user != get_jwt_identity():
+            return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
+        else:
+            return {"status": "success", "data": {"notification": notification.to_json_object()}}, 200
