@@ -4,6 +4,7 @@ The main resources for the API endpoints
 import re
 from functools import wraps
 
+from flask import request
 from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, get_jwt_identity
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
