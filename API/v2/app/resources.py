@@ -4,7 +4,6 @@ The main resources for the API endpoints
 import re
 from functools import wraps
 
-from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, get_jwt_identity
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
@@ -99,7 +98,8 @@ class UserLogin(Resource):
                 return {"status": "error", "data": {"username": "Username is required"}}, 400
             if not request.json.get("password"):
                 return {"status": "error", "data": {"email": "Password is required"}}, 400
-            user = User.query_one_by_field("username", request.json.get("username"))
+            user = User.query_one_by_field(
+                "username", request.json.get("username"))
             if user is None:
                 return {"status": "error", "message": "Username does not exist"}, 400
             elif not bcrypt.verify(request.json.get("password"), user.password):
@@ -155,7 +155,8 @@ class UserMaintenanceRequest(Resource):
 
     @jwt_required
     def get(self):
-        requests = [x.to_json_object() for x in Request.query_for_user(get_jwt_identity())]
+        requests = [x.to_json_object()
+                    for x in Request.query_for_user(get_jwt_identity())]
         return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
 
 
