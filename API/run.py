@@ -34,19 +34,17 @@ def create_app(config_name="DEVELOPMENT"):
         """check if the token is blacklisted"""
         return Blacklist.query_one_by_field("token", token['jti']) is not None
 
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return jsonify({
+            "status": "error",
+            "message": "Resource not found"
+        }), 404
+
     return app
 
 
 app = create_app()
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return jsonify({
-        "status": "error",
-        "message": "Resource not found"
-    }), 404
-
 
 if __name__ == '__main__':
     app.run()
