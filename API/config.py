@@ -9,6 +9,7 @@ class Configuration:
     """Base configuration class"""
     DEBUG = False
     TESTING = False
+    PROPAGATE_EXCEPTIONS = True
     DEFAULT_ADMIN_FIRST_NAME = os.getenv("DEFAULT_ADMIN_FIRST_NAME")
     DEFAULT_ADMIN_LAST_NAME = os.getenv("DEFAULT_ADMIN_LAST_NAME")
     DEFAULT_ADMIN_USER_NAME = os.getenv("DEFAULT_ADMIN_USER_NAME")

@@ -10,63 +10,79 @@
             background: #fefefe;
         }
 
+        .mg.navbar {
+            background: #1c7075 !important;
+            color: white;
+        }
+        .mg.sidebar > .menu {
+            background: #091a1d !important;
+            color: white;
+        }
+
+        .mg.sidebar > .menu a {
+            color: white;
+            text-decoration: none;
+        }
+
         .padded {
             padding: 2em;
         }
+
     </style>
 </head>
 <body class="landing body">
+<div class="mg sidebar" data-trigger="openSidebar">
+    <div class="menu">
+        <a class="item" href="api/v1">
+            <i class="icon fas fa-code-branch"></i>
+            <div class="title">API v1</div>
+        </a>
+        <a class="item" href="api/v2">
+            <i class="icon fas fa-code-branch"></i>
+            <div class="title">
+                <div class="title">API v2</div>
+            </div>
+        </a>
+    </div>
+</div>
 <div class="mg pushable">
     <div class="mg navbar">
+        <i class="open fas fa-bars" id="openSidebar"></i>
         <div class="header padded left">Maintenance Tracker API</div>
     </div>
     <div class="mg content">
-        <div class="mg container">
-            <div class="mg segment">
-                <div class="header">
-                    Project Overview
-                </div>
-                <div class="content">
-
-                    Maintenance Tracker App is an application that provides users with the ability to reach out to
-                    operations or repairs department regarding repair or maintenance requests and monitor the status of
-                    their request.
-
-                    <h2>Required Features</h2>
-                    <ol>
-                        <li>Users can create an account and log in.</li>
-                        <li> The users should be able to make maintenance or repairs request.</li>
-                        <li> An admin should be able to approve/reject a repair/maintenance request.</li>
-                        <li> The admin should be able to mark request as resolved once it is done.</li>
-                        <li> The admin should be able to view all maintenance/repairs requests on the application</li>
-                        <li> The admin should be able to filter requests</li>
-                        <li> The user can view all his/her requests</li>
-                        <li> Making API calls will require the following header</li>
-                    </ol>
-                </div>
-            </div>
-            <h2>The two versions of the API and their documentations can be accessed with the links below.</h2>
-            <div class="mg row">
-                <div class="mg card hoverable">
-                    <div class="content">
-                        <h2>API v1</h2>
-                        <div class="mg vertical divider"></div>
-                        <p>This version uses non-persistent data storage, meaning that the data is stored in memory
-                            while
-                            the application is running. Once the application exits, the data does not persist.</p>
+        <div class="mg row container">
+            <div class="twelve-large twelve-medium twelve-small column">
+                <div class="mg segment">
+                    <div class="header">
+                        Project Overview
                     </div>
-                </div>
-                <div class="mg card hoverable">
                     <div class="content">
-                        <h2>API v2</h2>
-                        <div class="mg vertical divider"></div>
-                        <p>This version uses a persistent data storage. The data remains in the database until the
-                            database is deleted. PostgreSQL is the database used.</p>
+
+                        Maintenance Tracker App is an application that provides users with the ability to reach out to
+                        operations or repairs department regarding repair or maintenance requests and monitor the status
+                        of
+                        their request.
+
+                        <h2>Required Features</h2>
+                        <ol>
+                            <li>Users can create an account and log in.</li>
+                            <li> The users should be able to make maintenance or repairs request.</li>
+                            <li> An admin should be able to approve/reject a repair/maintenance request.</li>
+                            <li> The admin should be able to mark request as resolved once it is done.</li>
+                            <li> The admin should be able to view all maintenance/repairs requests on the application
+                            </li>
+                            <li> The admin should be able to filter requests</li>
+                            <li> The user can view all his/her requests</li>
+                            <li> Making API calls will require the following header</li>
+                        </ol>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="js" type="text/javascript"></script>
 </div>
 </body>
 </html>

@@ -244,7 +244,7 @@ class Request(v1.models.Request, DBBaseModel):
           created_by INTEGER,
           created_at TIMESTAMP,
           updated_at TIMESTAMP,
-          FOREIGN KEY (created_by) REFERENCES users(id))""")
+          FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE)""")
         db.connection.commit()
 
     @classmethod
@@ -353,8 +353,8 @@ class Feedback(v1.models.Feedback, DBBaseModel):
           message varchar,
           created_at timestamp,
           updated_at TIMESTAMP,
-          foreign key (admin) references users(id),
-          foreign key (request) references requests(id)
+          foreign key (admin) references users(id) ON DELETE CASCADE,
+          foreign key (request) references requests(id) ON DELETE CASCADE
         )""")
         db.connection.commit()
 
@@ -426,7 +426,7 @@ class Notification(v1.models.Notification, DBBaseModel):
             created_at timestamp,
             updated_at timestamp,
             FOREIGN KEY (admin_id) references users(id),
-            FOREIGN KEY (user_id) references users(id)
+            FOREIGN KEY (user_id) references users(id) ON DELETE CASCADE
         )""")
         db.connection.commit()
 

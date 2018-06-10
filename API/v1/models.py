@@ -12,15 +12,26 @@ class BaseModel:
         self.updated_at = updated_at
         self.id = 0
 
+    def to_json_object_filter_fields(self, only):
+        """
+        Get specific fields of this base model
+        :param only:
+        :return:
+        """
+        json_object = self.to_json_object(True)
+        if only is None or len(only) == 0:
+            return json_object
+        return {k: json_object[k] for k in json_object if k in only}
+
     def to_json_object(self, exclude=True):
         fields = self.excluded_fields()
         if not exclude:
             fields = []
         return json.loads(json.dumps(self,
-                          default=lambda o: o.strftime("%Y-%m-%d %H:%M:%S") if isinstance(o, datetime)
-                          else {k: v for k, v in o.__dict__.items() if
-                                k not in fields},
-                          sort_keys=True, indent=4))
+                                     default=lambda o: o.strftime("%Y-%m-%d %H:%M:%S") if isinstance(o, datetime)
+                                     else {k: v for k, v in o.__dict__.items() if
+                                           k not in fields},
+                                     sort_keys=True, indent=4))
 
     def to_json_str(self, exclude=True):
         return json.dumps(self.to_json_object(exclude))

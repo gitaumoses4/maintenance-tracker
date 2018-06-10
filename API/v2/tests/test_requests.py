@@ -63,6 +63,21 @@ class RequestsTestCase(AuthenticatedTestCase):
         self.assertEqual(status_code, 400)
         self.assertEqual(json_result['status'], "error")
 
+    def test_user_cannot_modify_request_if_not_pending(self):
+        """Ensures a user can modify a request"""
+        request_id = self.create_request_and_get_id()
+
+        # Make the admin approve the request
+        self.put("requests/{}/approve".format(request_id),
+                 headers=self.admin_headers)
+
+        self.request.description = "Some New Description"
+        json_result, status_code = self.put("users/requests/{}".format(request_id), data=self.request.to_json_str(False))
+
+        self.assertEqual(status_code, 400)
+
+        self.assertEqual(json_result['status'], "error")
+
     def test_user_can_modify_request(self):
         """Ensures a user can modify a request"""
         request_id = self.create_request_and_get_id()
@@ -108,7 +123,7 @@ class RequestsTestCase(AuthenticatedTestCase):
     def test_can_only_approved_pending_request(self):
         """Ensures the admin can only approve a pending request"""
         request_id = self.create_request_and_get_id()
-        self.put("requests/{}/approve".format(request_id), headers = self.admin_headers)
+        self.put("requests/{}/approve".format(request_id), headers=self.admin_headers)
 
         json_result, status_code = self.put("requests/{}/approve".format(request_id), headers=self.admin_headers)
         self.assertEqual(status_code, 400)

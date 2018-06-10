@@ -35,6 +35,27 @@ def create_app(config_name="DEVELOPMENT"):
         """check if the token is blacklisted"""
         return Blacklist.query_one_by_field("token", token['jti']) is not None
 
+    @jwt.expired_token_loader
+    def my_expired_token_callback():
+        return jsonify({
+            'status': "error",
+            'message': 'The token has expired, login to get another token'
+        }), 401
+
+    @jwt.unauthorized_loader
+    def unauthorized(e):
+        return jsonify({
+            "status": "error",
+            "message": "Bearer token not provided"
+        }), 401
+
+    @jwt.invalid_token_loader
+    def invalid_token(e):
+        return jsonify({
+            "status": "error",
+            "message": "Invalid token provided"
+        }), 401
+
     @app.route("/")
     def get_home_page():
         return send_from_directory("./docs", "index.html")
@@ -42,6 +63,10 @@ def create_app(config_name="DEVELOPMENT"):
     @app.route("/css")
     def get_css():
         return send_from_directory("../UI/css/mg-framework", "mg-framework.css")
+
+    @app.route('/js')
+    def get_js():
+        return send_from_directory("../UI/js/mg-framework", "mg-framework.js")
 
     @app.errorhandler(404)
     def page_not_found(e):
