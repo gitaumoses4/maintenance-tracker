@@ -1,0 +1,465 @@
+FORMAT: 1A
+HOST: https://maintenance-tracker-api.herokuapp.com/api/v2
+
+# Maintenance Tracker
+
+## Project Overview
+Maintenance Tracker App is an application that provides users with the ability to reach out to operations or repairs department regarding repair or maintenance requests and monitor the status of their request.
+## Required Features
+1. Users can create an account and log in.
+2. The users should be able to make maintenance or repairs request.
+3. An admin should be able to approve/reject a repair/maintenance request.
+4. The admin should be able to mark request as resolved once it is done.
+5. The admin should be able to view all maintenance/repairs requests on the application
+6. The admin should be able to filter requests
+7. The user can view all his/her requests
+
+Making API calls will require the following header
+```
+Content-Type : application/json
+```
+After authentication, the rest of the endpoints will require to include the bearer token that is sent with the login reponse.
+```
+Authentication: Bearer [Token]
+```
+
+## Registration [/auth/signup]
+
+### Sign up [POST]
+
+Creates a new user account. Once the user has successfully signed up, they can login with their username and password.
+
++ Request (application/json)
+
+        {
+            "firstname": "Moses",
+            "lastname": "Gitau",
+            "email": "gitaumoses@gmail.com",
+            "password": "password",
+            "username": "gitaumoses"
+        }
+        
++ Response 201 (application/json)
+
+        {
+            "data": {
+                "user": {
+                    "email": "gitaumoses@gmail.com",
+                    "firstname": "Moses",
+                    "id": 2,
+                    "lastname": "Gitau",
+                    "profile_picture": "",
+                    "username": "gitaumoses"
+                }
+            },
+            "status": "success"
+        }
+
+## Login [/auth/login]
+
+### Sign in[POST]
+
+The user can login with their username and password. The response includes a token which will be used in subsequent requests. The token 
+automatically expires after some time when the user is not accessing the API.
+Both admins and normal users will login here.
+
++ Request (application/json)
+
+        {
+            "username": "gitaumoses"
+            "password": "password"
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4Njc5MjgsIm5iZiI6MTUyNzg2NzkyOCwianRpIjoiYjJhOGE3OTYtNGE5MS00YzU0LThhY2ItZmU5NDQ3NDNiYjg0IiwiZXhwIjoxNTI3ODY4ODI4LCJpZGVudGl0eSI6ImdpdGF1bW9zZXMiLCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.URM1Yr9ziOmB4w5HORZElhJDP7RCd_6wC_0ERQA9aAE",
+                "user": {
+                    "email": "gitaumoses@gmail.com",
+                    "firstname": "Moses",
+                    "id": 2,
+                    "lastname": "Gitau",
+                    "profile_picture": "",
+                    "username": "gitaumoses"
+                }
+            },
+            "status": "success"
+        }
+
+## User Maintenance Requests [/users/requests]
+
+### Create a maintenance/repair request[POST]
+
+The user can create a maintenance/repair request. This will be verified by the admin, who will accept or reject it.
+
++ Request (application/json)
+
+        {
+            "product_name": "Samsung TV",
+            "description" : "Has a broken screen",
+            "photo"       : "link to image"
+        }
+
++ Response 201 (application/json)
+
+        {
+            "data": {
+                "request": {
+                    "created_at": "2018-06-01 18:58:26",
+                    "created_by": 2,
+                    "description": "Has a broken screen",
+                    "id": 1,
+                    "photo": "link to image",
+                    "product_name": "Samsung TV",
+                    "status": "Pending"
+                }
+            },
+            "status": "success"
+        }
+        
+### Get all requests[GET]
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "requests": [
+                    {
+                        "created_at": "2018-06-01 19:04:29",
+                        "created_by": 2,
+                        "description": "Has a broken screen",
+                        "id": 1,
+                        "photo": "link to image",
+                        "product_name": "Samsung TV",
+                        "status": "Pending"
+                    }
+                ],
+                "total_requests": 1
+            },
+            "status": "success"
+        }
+
+## User Modify Request [/users/requests/{request_id}]
++ Parameters
+    + request_id (integer) - Id of the request the user wants to get details or to edit.
+    
+### Get request by id[GET]
+The user can get the details of a request given the request id.
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "request": {
+                    "created_at": "2018-06-01 19:10:53",
+                    "created_by": 2,
+                    "description": "Has a broken screen",
+                    "id": 2,
+                    "photo": "link to image",
+                    "product_name": "Samsung TV",
+                    "status": "Pending"
+                }
+            },
+            "status": "success"
+        }
+        
+### Update Request[PUT]
+The user can update the details of a request. The user cannot update the details of a request once the Administrator has approved it.
+
++ Request (application/json)
+
+        {
+            "product_name": "Samsung LED TV",
+            "description": "New Description"
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "request": {
+                    "created_at": "2018-06-01 19:10:53",
+                    "created_by": 2,
+                    "description": "New description",
+                    "id": 2,
+                    "photo": "link to image",
+                    "product_name": "Samsung LED tv",
+                    "status": "Pending"
+                }
+            },
+            "status": "success"
+        }
+        
+## Admin Maintenance Requests [/requests]
+
+### Get all Requests[GET]
+
+The admin can get all available requests for all the users.
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "requests": [
+                    {
+                        "created_at": "2018-06-01 19:04:29",
+                        "created_by": 2,
+                        "description": "Has a broken screen",
+                        "id": 1,
+                        "photo": "link to image",
+                        "product_name": "Samsung TV",
+                        "status": "Pending"
+                    },
+                    {
+                        "created_at": "2018-06-01 19:04:29",
+                        "created_by": 2,
+                        "description": "Has a broken screen",
+                        "id": 2,
+                        "photo": "link to image",
+                        "product_name": "Samsung TV",
+                        "status": "Pending"
+                    }
+                ],
+                "total_requests": 2
+            },
+            "status": "success"
+        }
+
+## Admin view a Request [/requests/{request_id}]
+
++ Parameters
+    + request_id (integer) - The ID of the request the admin would like to view.
+    
+### View a request details [GET]
+
+An admin can query the details of a particular request.
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "request": {
+                    "created_at": "2018-06-01 20:24:29",
+                    "created_by": 1,
+                    "description": "Has a broken screen",
+                    "id": 1,
+                    "photo": "link to image",
+                    "product_name": "Samsung TV",
+                    "status": "Pending"
+                }
+            },
+            "status": "success"
+        }
+
+## Admin change request status [/requests/{request_id}/{request_status}]
+
++ Parameters
+    + request_id (integer) - the ID of the request the admin would like to change the status.
+    + request_status (string) - the new status of the request. Can either be *approve*, *disapprove* or *resolve*
+    
+
+### Change Request Status[PUT]
+
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "request": {
+                    "created_at": "2018-06-01 20:15:02",
+                    "created_by": 1,
+                    "description": "Has a broken screen",
+                    "id": 1,
+                    "photo": "link to image",
+                    "product_name": "Samsung TV",
+                    "status": "Approved"
+                }
+            },
+            "status": "success"
+        }
+
+## Provide Feedback [/requests/{request_id}/feedback]
+
+### Admin to provide feedback [POST]
+
+Admin will be able to provide feedback on a particular request.
+
++ Request (application/json)
+
+        {
+            "message": "Here is your feedback"
+        }
++ Response 201 (application/json)
+
+        {
+            "data": {
+                "feedback": {
+                    "admin": 1,
+                    "created_at": "2018-06-01 20:29:51",
+                    "id": 1,
+                    "message": "Here is your feedback",
+                    "request": 1,
+                    "updated_at": "2018-06-01 20:24:22"
+                }
+            },
+            "status": "success"
+        }
+
+## User Request feedback [/users/requests/{request_id}/feedback]
+
++ Parameters
+    + request_id (integer) - The id of the request to get feedback details.
+    
+### Get feedback for request[GET]
+
+A user can query the feedback for a particular request.
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "feedback": [
+                    {
+                        "admin": 1,
+                        "created_at": "2018-06-01 20:37:29",
+                        "id": 1,
+                        "message": "Here is your feedback",
+                        "request": 1,
+                        "updated_at": "2018-06-01 20:36:59"
+                    }
+                ]
+            },
+            "status": "success"
+        }
+
+## User Information [/users/details]
+
+### Get User details [GET]
+Get's the details of the logged in user.
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "user": {
+                    "email": "gitaumoses@gmail.com",
+                    "firstname": "Moses",
+                    "id": 2,
+                    "lastname": "Gitau",
+                    "profile_picture": "",
+                    "username": "gitaumoses"
+                }
+            },
+            "status": "success"
+        }
+
+## User's Role [/users/{user_id}/upgrade]
+
++ Parameters
+    + user_id (integer) - The id of the user to upgrade.
+    
+### Upgrade user to admin [PUT]
+
+Upgrades the role of a user to be an administrator. Only an Admin can access this route.
+
++ Response 200 (application/json)
+
+        {
+            "status": "success",
+            "message": "User is now an admin"
+        }
+        
+## Send Notifications [/notifications/{user_id}]
+
++ Parameter
+    + user_id (integer) - the ID of the user to send the notification to.
+    
+### Send notification to user[POST]
+
+Sends a notification to a particular user.
+
++ Request (application/json)
+        
+        {
+            "message": "You have a notification"
+        }
+        
++ Response 201 (application/json)
+
+        {
+            "data": {
+                "notification": {
+                    "admin": 1,
+                    "created_at": "2018-06-01 20:44:33",
+                    "id": 1,
+                    "message": "You have a notification",
+                    "read": false,
+                    "updated_at": "2018-06-01 20:36:59",
+                    "user": 2
+                }
+            },
+            "status": "success"
+        }
+        
+## Get Notifications [/users/notifications]
+
+### Get all notifications[GET]
+
+A user can get all the notifications sent to them.
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "notification_count": 1,
+                "notifications": [
+                    {
+                        "admin": 1,
+                        "created_at": "2018-06-01 20:48:34",
+                        "id": 1,
+                        "message": "You have a notification",
+                        "read": false,
+                        "updated_at": "2018-06-01 20:47:15",
+                        "user": 2
+                    }
+                ]
+            },
+            "status": "success"
+        }
+        
+### Get or Update Single notification [/users/notifications/{notification_id}]
+
++ Parameters
+    + notification_id (integer) - The ID of the notification.
+    
+#### Get notification by id [GET]
+
+A user can get a notification by it's Id
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "notification": {
+                    "admin": 1,
+                    "created_at": "2018-06-01 20:48:34",
+                    "id": 1,
+                    "message": "You have a notification",
+                    "read": false,
+                    "updated_at": "2018-06-01 20:47:15",
+                    "user": 2
+                }
+            },
+            "status": "success"
+        }
+
+#### Set as seen [PUT]
+
+This will mark the notification as seen by the user.
+
++ Response 200 (application/json)
+
+        {
+            "message": "Successfully marked as read",
+            "status": "success"
+        }

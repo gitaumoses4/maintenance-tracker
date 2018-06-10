@@ -1,6 +1,6 @@
 """ Initializes and runs the application"""
 from dotenv import load_dotenv
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 
 import v1
@@ -34,6 +34,14 @@ def create_app(config_name="DEVELOPMENT"):
         from v2.app.models import Blacklist
         """check if the token is blacklisted"""
         return Blacklist.query_one_by_field("token", token['jti']) is not None
+
+    @app.route("/")
+    def get_home_page():
+        return send_from_directory("./docs", "index.html")
+
+    @app.route("/css")
+    def get_css():
+        return send_from_directory("../UI/css/mg-framework", "mg-framework.css")
 
     @app.errorhandler(404)
     def page_not_found(e):
