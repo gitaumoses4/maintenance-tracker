@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: https://maintenance-tracker-api.herokuapp.com/api/v1
+HOST: https://maintenance-tracker-api.herokuapp.com/api/v2
 
 # Maintenance Tracker
 
@@ -23,7 +23,7 @@ After authentication, the rest of the endpoints will require to include the bear
 Authentication: Bearer [Token]
 ```
 
-## Registration [/users/register]
+## Registration [/auth/signup]
 
 ### Sign up [POST]
 
@@ -44,7 +44,7 @@ Creates a new user account. Once the user has successfully signed up, they can l
         {
             "data": {
                 "user": {
-                     "email": "gitaumoses@gmail.com",
+                    "email": "gitaumoses@gmail.com",
                     "firstname": "Moses",
                     "id": 2,
                     "lastname": "Gitau",
@@ -55,11 +55,13 @@ Creates a new user account. Once the user has successfully signed up, they can l
             "status": "success"
         }
 
-## Login [/users/login]
+## Login [/auth/login]
 
 ### Sign in[POST]
 
-The user can login with their username and password. The response includes a token which will be used in subsequent requests.
+The user can login with their username and password. The response includes a token which will be used in subsequent requests. The token 
+automatically expires after some time when the user is not accessing the API.
+Both admins and normal users will login here.
 
 + Request (application/json)
 
@@ -85,36 +87,6 @@ The user can login with their username and password. The response includes a tok
             "status": "success"
         }
 
-## Admin Login [/admin/login]
-
-### Sign in[POST]
-
-The admin can sign in with the default username and password for admins. This can be changed later when the admin is already logged in.
-
-+ Request (application/json)
-
-        {
-            "username": "admin",
-            "password": "admin"
-        }
-        
-+ Response 200 (application/json)
-
-        {
-            "data": {
-                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mjc4NjgyNTUsIm5iZiI6MTUyNzg2ODI1NSwianRpIjoiOWI2MTk4YzItZDlmOC00MWI0LTgwZGItZWU5ODA2ZGEzMzEyIiwiZXhwIjoxNTI3ODY5MTU1LCJpZGVudGl0eSI6ImFkbWluIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.4OGsm9mljsQcfKzWyWXby70X5YduGIBwzSORs23IwOI",
-                "user": {
-                    "email": "gitaumoses4@gmail.com",
-                    "firstname": "Moses",
-                    "id": 1,
-                    "lastname": "Gitau",
-                    "profile_picture": "",
-                    "username": "admin"
-                }
-            },
-            "status": "success"
-        }
-
 ## User Maintenance Requests [/users/requests]
 
 ### Create a maintenance/repair request[POST]
@@ -135,17 +107,7 @@ The user can create a maintenance/repair request. This will be verified by the a
             "data": {
                 "request": {
                     "created_at": "2018-06-01 18:58:26",
-                    "created_by": {
-                        "created_at": "2018-06-01 18:38:01",
-                        "email": "gitaumoses@gmail.com",
-                        "firstname": "Moses",
-                        "id": 2,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$UBo5DpLOXuGi/qmsHS0FdOnqyu/7ypLvDL3Qv3vo1Q7R.VS1VUiEy",
-                        "profile_picture": "",
-                        "role": "User",
-                        "username": "gitaumoses"
-                    },
+                    "created_by": 2,
                     "description": "Has a broken screen",
                     "id": 1,
                     "photo": "link to image",
@@ -164,17 +126,7 @@ The user can create a maintenance/repair request. This will be verified by the a
                 "requests": [
                     {
                         "created_at": "2018-06-01 19:04:29",
-                        "created_by": {
-                            "created_at": "2018-06-01 19:04:05",
-                            "email": "gitaumoses@gmail.com",
-                            "firstname": "Moses",
-                            "id": 2,
-                            "lastname": "Gitau",
-                            "password": "$2b$12$xkklWUS4lja/r8N0MMHQmuKC..grQK9Nvx.BcxE7FoZTG6OCY.m2.",
-                            "profile_picture": "",
-                            "role": "User",
-                            "username": "gitaumoses"
-                        },
+                        "created_by": 2,
                         "description": "Has a broken screen",
                         "id": 1,
                         "photo": "link to image",
@@ -187,9 +139,9 @@ The user can create a maintenance/repair request. This will be verified by the a
             "status": "success"
         }
 
-## User Modify Request [/users/request/{request_id}]
+## User Modify Request [/users/requests/{request_id}]
 + Parameters
-    + request_id (integer) - Id of the request the user wants to get details.
+    + request_id (integer) - Id of the request the user wants to get details or to edit.
     
 ### Get request by id[GET]
 The user can get the details of a request given the request id.
@@ -200,17 +152,7 @@ The user can get the details of a request given the request id.
             "data": {
                 "request": {
                     "created_at": "2018-06-01 19:10:53",
-                    "created_by": {
-                        "created_at": "2018-06-01 19:10:40",
-                        "email": "gitaumoses@gmail.com",
-                        "firstname": "Moses",
-                        "id": 2,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$IgdqXqSZHW.yguOCOUNAiuSp7FMWHHfm9.xum.cLRtaRBVwEWmQF2",
-                        "profile_picture": "",
-                        "role": "User",
-                        "username": "gitaumoses"
-                    },
+                    "created_by": 2,
                     "description": "Has a broken screen",
                     "id": 2,
                     "photo": "link to image",
@@ -222,7 +164,7 @@ The user can get the details of a request given the request id.
         }
         
 ### Update Request[PUT]
-The user can update the details of a request
+The user can update the details of a request. The user cannot update the details of a request once the Administrator has approved it.
 
 + Request (application/json)
 
@@ -237,17 +179,7 @@ The user can update the details of a request
             "data": {
                 "request": {
                     "created_at": "2018-06-01 19:10:53",
-                    "created_by": {
-                        "created_at": "2018-06-01 19:10:40",
-                        "email": "gitaumoses@gmail.com",
-                        "firstname": "Moses",
-                        "id": 2,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$IgdqXqSZHW.yguOCOUNAiuSp7FMWHHfm9.xum.cLRtaRBVwEWmQF2",
-                        "profile_picture": "",
-                        "role": "User",
-                        "username": "gitaumoses"
-                    },
+                    "created_by": 2,
                     "description": "New description",
                     "id": 2,
                     "photo": "link to image",
@@ -258,7 +190,7 @@ The user can update the details of a request
             "status": "success"
         }
         
-## Admin Maintenance Requests [/admin/requests/]
+## Admin Maintenance Requests [/requests]
 
 ### Get all Requests[GET]
 
@@ -271,69 +203,33 @@ The admin can get all available requests for all the users.
                 "requests": [
                     {
                         "created_at": "2018-06-01 19:04:29",
-                        "created_by": {
-                            "created_at": "2018-06-01 19:04:05",
-                            "email": "gitaumoses@gmail.com",
-                            "firstname": "Moses",
-                            "id": 2,
-                            "lastname": "Gitau",
-                            "password": "$2b$12$xkklWUS4lja/r8N0MMHQmuKC..grQK9Nvx.BcxE7FoZTG6OCY.m2.",
-                            "profile_picture": "",
-                            "role": "User",
-                            "username": "gitaumoses"
-                        },
+                        "created_by": 2,
                         "description": "Has a broken screen",
                         "id": 1,
                         "photo": "link to image",
                         "product_name": "Samsung TV",
                         "status": "Pending"
+                    },
+                    {
+                        "created_at": "2018-06-01 19:04:29",
+                        "created_by": 2,
+                        "description": "Has a broken screen",
+                        "id": 2,
+                        "photo": "link to image",
+                        "product_name": "Samsung TV",
+                        "status": "Pending"
                     }
                 ],
-                "total_requests": 1
+                "total_requests": 2
             },
             "status": "success"
         }
 
-## Admin Update or view  Request [/admin/requests/{request_id}]
+## Admin view a Request [/requests/{request_id}]
 
 + Parameters
-    + request_id (integer) - The ID of the request the admin would like to update.
+    + request_id (integer) - The ID of the request the admin would like to view.
     
-### Change Request Status[PUT]
-
-+ Request (application/json)
-        
-        {
-            "status": "Approved"
-        }
-
-+ Response 200 (application/json)
-
-        {
-            "data": {
-                "request": {
-                    "created_at": "2018-06-01 20:15:02",
-                    "created_by": {
-                        "created_at": "2018-06-01 20:114:03",
-                        "email": "gitaumoses4@gmail.com",
-                        "firstname": "Moses",
-                        "id": 1,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$xf6MCp/7SgARSixxAXWg.ub7Gz2EnSvhkBw8sl8okpZBxuX4P8RyG",
-                        "profile_picture": "",
-                        "role": "Administrator",
-                        "username": "admin"
-                    },
-                    "description": "Has a broken screen",
-                    "id": 1,
-                    "photo": "link to image",
-                    "product_name": "Samsung TV",
-                    "status": "Approved"
-                }
-            },
-            "status": "success"
-        }
-
 ### View a request details [GET]
 
 An admin can query the details of a particular request.
@@ -344,17 +240,7 @@ An admin can query the details of a particular request.
             "data": {
                 "request": {
                     "created_at": "2018-06-01 20:24:29",
-                    "created_by": {
-                        "created_at": "2018-06-01 20:24:22",
-                        "email": "gitaumoses4@gmail.com",
-                        "firstname": "Moses",
-                        "id": 1,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$ro6gw3GWYIDnNMih9wRv.ufAuOhYKZ0yPeQK9Jj/oKnsMJ/xTpcX.",
-                        "profile_picture": "",
-                        "role": "Administrator",
-                        "username": "admin"
-                    },
+                    "created_by": 1,
                     "description": "Has a broken screen",
                     "id": 1,
                     "photo": "link to image",
@@ -365,7 +251,34 @@ An admin can query the details of a particular request.
             "status": "success"
         }
 
-## Provide Feedback [/admin/requests/{request_id}/feedback]
+## Admin change request status [/requests/{request_id}/{request_status}]
+
++ Parameters
+    + request_id (integer) - the ID of the request the admin would like to change the status.
+    + request_status (string) - the new status of the request. Can either be *approve*, *disapprove* or *resolve*
+    
+
+### Change Request Status[PUT]
+
+
++ Response 200 (application/json)
+
+        {
+            "data": {
+                "request": {
+                    "created_at": "2018-06-01 20:15:02",
+                    "created_by": 1,
+                    "description": "Has a broken screen",
+                    "id": 1,
+                    "photo": "link to image",
+                    "product_name": "Samsung TV",
+                    "status": "Approved"
+                }
+            },
+            "status": "success"
+        }
+
+## Provide Feedback [/requests/{request_id}/feedback]
 
 ### Admin to provide feedback [POST]
 
@@ -381,42 +294,11 @@ Admin will be able to provide feedback on a particular request.
         {
             "data": {
                 "feedback": {
-                    "admin": {
-                        "created_at": "2018-06-01 20:24:22",
-                        "email": "gitaumoses4@gmail.com",
-                        "firstname": "Moses",
-                        "id": 1,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$ro6gw3GWYIDnNMih9wRv.ufAuOhYKZ0yPeQK9Jj/oKnsMJ/xTpcX.",
-                        "profile_picture": "",
-                        "role": "Administrator",
-                        "updated_at": "2018-06-01 20:24:22",
-                        "username": "admin"
-                    },
+                    "admin": 1,
                     "created_at": "2018-06-01 20:29:51",
                     "id": 1,
                     "message": "Here is your feedback",
-                    "request": {
-                        "created_at": "2018-06-01 20:24:29",
-                        "created_by": {
-                            "created_at": "2018-06-01 20:24:22",
-                            "email": "gitaumoses4@gmail.com",
-                            "firstname": "Moses",
-                            "id": 1,
-                            "lastname": "Gitau",
-                            "password": "$2b$12$ro6gw3GWYIDnNMih9wRv.ufAuOhYKZ0yPeQK9Jj/oKnsMJ/xTpcX.",
-                            "profile_picture": "",
-                            "role": "Administrator",
-                            "updated_at": "2018-06-01 20:24:22",
-                            "username": "admin"
-                        },
-                        "description": "Has a broken screen",
-                        "id": 1,
-                        "photo": "link to image",
-                        "product_name": "Samsung TV",
-                        "status": "Pending",
-                        "updated_at": "2018-06-01 20:24:22"
-                    },
+                    "request": 1,
                     "updated_at": "2018-06-01 20:24:22"
                 }
             },
@@ -430,48 +312,19 @@ Admin will be able to provide feedback on a particular request.
     
 ### Get feedback for request[GET]
 
+A user can query the feedback for a particular request.
+
 + Response 200 (application/json)
 
         {
             "data": {
                 "feedback": [
                     {
-                        "admin": {
-                            "created_at": "2018-06-01 20:36:59",
-                            "email": "gitaumoses4@gmail.com",
-                            "firstname": "Moses",
-                            "id": 1,
-                            "lastname": "Gitau",
-                            "password": "$2b$12$nLKQheHWtp6Sn8NNAS5Ua.3z90xy58ruV3WFqdp58etRCVZkPlToG",
-                            "profile_picture": "",
-                            "role": "Administrator",
-                            "updated_at": "2018-06-01 20:36:59",
-                            "username": "admin"
-                        },
+                        "admin": 1,
                         "created_at": "2018-06-01 20:37:29",
                         "id": 1,
                         "message": "Here is your feedback",
-                        "request": {
-                            "created_at": "2018-06-01 20:37:13",
-                            "created_by": {
-                                "created_at": "2018-06-01 20:37:02",
-                                "email": "gitaumoses@gmail.com",
-                                "firstname": "Moses",
-                                "id": 2,
-                                "lastname": "Gitau",
-                                "password": "$2b$12$zP.53BZ0axpp6rLwRxtcCe9s0X5xTFOdIL50Nt6g57P8rzftyO39S",
-                                "profile_picture": "",
-                                "role": "User",
-                                "updated_at": "2018-06-01 20:36:59",
-                                "username": "gitaumoses"
-                            },
-                            "description": "Has a broken screen",
-                            "id": 1,
-                            "photo": "link to image",
-                            "product_name": "Samsung TV",
-                            "status": "Pending",
-                            "updated_at": "2018-06-01 20:36:59"
-                        },
+                        "request": 1,
                         "updated_at": "2018-06-01 20:36:59"
                     }
                 ]
@@ -500,7 +353,23 @@ Get's the details of the logged in user.
             "status": "success"
         }
 
-## Send Notifications [/admin/users/{user_id}/notifications]
+## User's Role [/users/{user_id}/upgrade]
+
++ Parameters
+    + user_id - The id of the user to upgrade.
+    
+### Upgrade user to admin [PUT]
+
+Upgrades the role of a user to be an administrator. Only an Admin can access this route.
+
++ Response 200 (application/json)
+
+        {
+            "status": "success",
+            "message": "User is now an admin"
+        }
+        
+## Send Notifications [/notifications/{user_id}]
 
 + Parameter
     + user_id (integer) - the ID of the user to send the notification to.
@@ -520,35 +389,13 @@ Sends a notification to a particular user.
         {
             "data": {
                 "notification": {
-                    "admin": {
-                        "created_at": "2018-06-01 20:36:59",
-                        "email": "gitaumoses4@gmail.com",
-                        "firstname": "Moses",
-                        "id": 1,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$nLKQheHWtp6Sn8NNAS5Ua.3z90xy58ruV3WFqdp58etRCVZkPlToG",
-                        "profile_picture": "",
-                        "role": "Administrator",
-                        "updated_at": "2018-06-01 20:36:59",
-                        "username": "admin"
-                    },
+                    "admin": 1,
                     "created_at": "2018-06-01 20:44:33",
                     "id": 1,
                     "message": "You have a notification",
                     "read": false,
                     "updated_at": "2018-06-01 20:36:59",
-                    "user": {
-                        "created_at": "2018-06-01 20:36:59",
-                        "email": "gitaumoses4@gmail.com",
-                        "firstname": "Moses",
-                        "id": 1,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$nLKQheHWtp6Sn8NNAS5Ua.3z90xy58ruV3WFqdp58etRCVZkPlToG",
-                        "profile_picture": "",
-                        "role": "Administrator",
-                        "updated_at": "2018-06-01 20:36:59",
-                        "username": "admin"
-                    }
+                    "user": 2
                 }
             },
             "status": "success"
@@ -567,35 +414,13 @@ A user can get all the notifications sent to them.
                 "notification_count": 1,
                 "notifications": [
                     {
-                        "admin": {
-                            "created_at": "2018-06-01 20:47:15",
-                            "email": "gitaumoses4@gmail.com",
-                            "firstname": "Moses",
-                            "id": 1,
-                            "lastname": "Gitau",
-                            "password": "$2b$12$MG6w.Ugv24b1jd5cD.fHZ./9Nm2a/rRuZCvEIpen2oxheotJ4DJIa",
-                            "profile_picture": "",
-                            "role": "Administrator",
-                            "updated_at": "2018-06-01 20:47:15",
-                            "username": "admin"
-                        },
+                        "admin": 1,
                         "created_at": "2018-06-01 20:48:34",
                         "id": 1,
                         "message": "You have a notification",
                         "read": false,
                         "updated_at": "2018-06-01 20:47:15",
-                        "user": {
-                            "created_at": "2018-06-01 20:47:58",
-                            "email": "gitaumoses@gmail.com",
-                            "firstname": "Moses",
-                            "id": 2,
-                            "lastname": "Gitau",
-                            "password": "$2b$12$TlFShk.KTMSCEmdzubWmOOCassO38JzhuDbgW3krhJJCYneuwwkS6",
-                            "profile_picture": "",
-                            "role": "User",
-                            "updated_at": "2018-06-01 20:47:15",
-                            "username": "gitaumoses"
-                        }
+                        "user": 2
                     }
                 ]
             },
@@ -609,40 +434,20 @@ A user can get all the notifications sent to them.
     
 #### Get notification by id [GET]
 
+A user can get a notification by it's Id
+
 + Response 200 (application/json)
 
         {
             "data": {
                 "notification": {
-                    "admin": {
-                        "created_at": "2018-06-01 20:47:15",
-                        "email": "gitaumoses4@gmail.com",
-                        "firstname": "Moses",
-                        "id": 1,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$MG6w.Ugv24b1jd5cD.fHZ./9Nm2a/rRuZCvEIpen2oxheotJ4DJIa",
-                        "profile_picture": "",
-                        "role": "Administrator",
-                        "updated_at": "2018-06-01 20:47:15",
-                        "username": "admin"
-                    },
+                    "admin": 1,
                     "created_at": "2018-06-01 20:48:34",
                     "id": 1,
                     "message": "You have a notification",
                     "read": false,
                     "updated_at": "2018-06-01 20:47:15",
-                    "user": {
-                        "created_at": "2018-06-01 20:47:58",
-                        "email": "gitaumoses@gmail.com",
-                        "firstname": "Moses",
-                        "id": 2,
-                        "lastname": "Gitau",
-                        "password": "$2b$12$TlFShk.KTMSCEmdzubWmOOCassO38JzhuDbgW3krhJJCYneuwwkS6",
-                        "profile_picture": "",
-                        "role": "User",
-                        "updated_at": "2018-06-01 20:47:15",
-                        "username": "gitaumoses"
-                    }
+                    "user": 2
                 }
             },
             "status": "success"
