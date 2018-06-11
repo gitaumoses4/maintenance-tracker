@@ -62,11 +62,11 @@ def create_app(config_name="DEVELOPMENT"):
 
     @app.route("/css")
     def get_css():
-        return send_from_directory("../UI/css/mg-framework", "mg-framework.css")
+        return send_from_directory("./docs", "mg-framework.css")
 
     @app.route('/js')
     def get_js():
-        return send_from_directory("../UI/js/mg-framework", "mg-framework.js")
+        return send_from_directory("./docs", "mg-framework.js")
 
     @app.errorhandler(404)
     def page_not_found(e):
