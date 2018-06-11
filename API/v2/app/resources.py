@@ -12,6 +12,12 @@ from passlib.handlers.bcrypt import bcrypt
 from v2.app.models import User, Blacklist, Request, Feedback, Notification
 
 
+def get_fields():
+    if request.args.get("fields") is not None:
+        return request.args.get("fields").split(",")
+    return None
+
+
 def admin_guard(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
@@ -28,7 +34,7 @@ class UserResource(Resource):
     @jwt_required
     def get(self):
         user = User.query_by_id(get_jwt_identity())
-        return {"status": "success", "data": {"user": user.to_json_object()}}, 200
+        return {"status": "success", "data": {"user": user.to_json_object_filter_fields(get_fields())}}, 200
 
     @jwt_required
     @admin_guard
@@ -86,7 +92,7 @@ class UserSignUp(Resource):
                         bcrypt.encrypt(result['password']))
             user.save()
 
-            return {"data": {"user": user.to_json_object()}, "status": "success"}, 201
+            return {"data": {"user": user.to_json_object_filter_fields(get_fields())}, "status": "success"}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
@@ -106,7 +112,7 @@ class UserLogin(Resource):
             elif not bcrypt.verify(request.json.get("password"), user.password):
                 return {"status": "error", "message": "Wrong password"}, 400
             access_token = create_access_token(identity=user.id)
-            return {"status": "success", "data": {"token": access_token, "user": user.to_json_object()}}, 200
+            return {"status": "success", "data": {"token": access_token, "user": user.to_json_object_filter_fields(get_fields())}}, 200
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
@@ -150,18 +156,32 @@ class UserMaintenanceRequest(Resource):
 
             maintenance_request.save()
 
-            return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 201
+            return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
     @jwt_required
     def get(self):
-        requests = [x.to_json_object()
+        requests = [x.to_json_object_filter_fields(get_fields())
                     for x in Request.query_for_user(get_jwt_identity())]
         return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
 
 
 class UserModifyRequest(Resource):
+
+    def is_valid(self, maintenance_request, item):
+        errors = {}
+        if not item.get("product_name"):
+            errors["product_name"] = "Product name must be provided"
+
+        if not item.get("description"):
+            errors["description"] = "Maintenance/Repair request description must be provided"
+
+        if maintenance_request.product_name == item.get("product_name") and \
+                maintenance_request.description == item.get("description"):
+            errors['fields'] = "The details entered already exist."
+
+        return len(errors) == 0, errors
 
     @jwt_required
     def get(self, request_id):
@@ -171,7 +191,7 @@ class UserModifyRequest(Resource):
         elif maintenance_request.created_by != get_jwt_identity():
             return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
         else:
-            return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200
+            return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
 
     @jwt_required
     def put(self, request_id):
@@ -182,7 +202,10 @@ class UserModifyRequest(Resource):
             elif maintenance_request.created_by != get_jwt_identity():
                 return {"status": "error",
                         "message": "You are not allowed to modify or view this maintenance request"}, 401
-            valid, errors = UserMaintenanceRequest.is_valid(request.json)
+            elif maintenance_request.status != Request.STATUS_PENDING:
+                return {"status": "error",
+                        "message": "A maintenance request can only be edited if pending."}, 400
+            valid, errors = self.is_valid(maintenance_request, request.json)
             if not valid:
                 return {"status": "error", "data": errors}, 400
             result = request.json
@@ -191,7 +214,7 @@ class UserModifyRequest(Resource):
             maintenance_request.description = result['description']
 
             maintenance_request.update()
-            return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200
+            return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
@@ -200,7 +223,7 @@ class AdminMaintenanceRequest(Resource):
     @jwt_required
     @admin_guard
     def get(self):
-        requests = [x.to_json_object() for x in Request.query_all()]
+        requests = [x.to_json_object_filter_fields(get_fields()) for x in Request.query_all()]
         return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
 
 
@@ -223,7 +246,7 @@ class AdminManageRequest(Resource):
         maintenance_request.status = statuses[status]
 
         maintenance_request.update()
-        return {"status": "success", "data": {"request": maintenance_request.to_json_object()}}, 200
+        return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
 
 
 class AdminFeedback(Resource):
@@ -251,7 +274,7 @@ class AdminFeedback(Resource):
                     feedback = Feedback(admin=get_jwt_identity(), request=maintenance_request.id,
                                         message=request.json.get("message"))
                     feedback.save()
-                    return {"status": "success", "data": {"feedback": feedback.to_json_object()}}, 201
+                    return {"status": "success", "data": {"feedback": feedback.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
@@ -266,7 +289,7 @@ class UserFeedbackResource(Resource):
             return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
         else:
             feedback = maintenance_request.feedback()
-            return {"status": "success", "data": {"feedback": [x.to_json_object() for x in feedback]}}, 200
+            return {"status": "success", "data": {"feedback": [x.to_json_object_filter_fields(get_fields()) for x in feedback]}}, 200
 
 
 class NotificationResource(Resource):
@@ -277,7 +300,7 @@ class NotificationResource(Resource):
         notifications = user.notifications()
         return {"status": "success",
                 "data": {"notification_count": len(notifications),
-                         "notifications": [x.to_json_object() for x in notifications]}}, 200
+                         "notifications": [x.to_json_object_filter_fields(get_fields()) for x in notifications]}}, 200
 
 
 class ManageNotifications(Resource):
@@ -290,7 +313,7 @@ class ManageNotifications(Resource):
         if notification.user != get_jwt_identity():
             return {"status": "error", "message": "You are not allowed to modify or view this notification"}, 401
         else:
-            return {"status": "success", "data": {"notification": notification.to_json_object()}}, 200
+            return {"status": "success", "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 200
 
     @jwt_required
     def put(self, notification_id):
@@ -301,7 +324,7 @@ class ManageNotifications(Resource):
             return {"status": "error", "message": "You are not allowed to modify or view this notification"}, 401
         else:
             notification.mark_as_read()
-            return {"status": "success", "data": {"notification": notification.to_json_object()}}, 200
+            return {"status": "success", "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 200
 
     @jwt_required
     @admin_guard
@@ -317,6 +340,6 @@ class ManageNotifications(Resource):
                     notification = Notification(admin=get_jwt_identity(), user=user.id,
                                                 message=request.json.get("message"))
                     notification.save()
-                    return {"status": "success", "data": {"notification": notification.to_json_object()}}, 201
+                    return {"status": "success", "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
