@@ -25,7 +25,7 @@ class Migration:
 
         # create default admin
         admin = Admin.default()
-        if not Admin.query_one_by_field("username", admin.username)
+        if not Admin.query_one_by_field("username", admin.username):
             admin.save()
 
     @staticmethod
