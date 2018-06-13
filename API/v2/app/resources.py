@@ -11,6 +11,14 @@ from passlib.handlers.bcrypt import bcrypt
 
 from v2.app.models import User, Blacklist, Request, Feedback, Notification
 
+RESULTS_PER_PAGE = 5  # define the maximum results per page
+
+
+def get_page():
+    if request.args.get("page") is not None:
+        return int(request.args.get("page"))
+    return 1
+
 
 def get_fields():
     if request.args.get("fields") is not None:
@@ -46,6 +54,33 @@ class UserResource(Resource):
         user.update()
 
         return {"status": "success", "message": "User is now an admin"}, 200
+
+
+class UsersResource(Resource):
+
+    @jwt_required
+    @admin_guard
+    def get(self):
+        users = [x.to_json_object_filter_fields(get_fields()) for
+                 x in User.query_all(get_page(), RESULTS_PER_PAGE)]
+
+        total_results = User.count_all()
+
+        previous_page = None
+        next_page = None
+        if get_page() > 1:
+            previous_page = "{0}?page={1}".format(request.url_rule, (get_page() - 1))
+
+        if get_page() < (total_results / RESULTS_PER_PAGE):
+            next_page = "{0}?page={1}".format(request.url_rule, (get_page() + 1))
+        return {"status": "success", "data": {
+            "current_page": get_page(),
+            "previous_page": previous_page,
+            "next_page": next_page,
+            "num_results": len(users),
+            "total_results": total_results,
+            "users": users
+        }}, 200
 
 
 class UserSignUp(Resource):
@@ -88,8 +123,10 @@ class UserSignUp(Resource):
                 return {"data": errors, "status": "error"}, 400
             # create user
             result = request.json
-            user = User(result['firstname'], result['lastname'], result['email'], result['username'],
-                        bcrypt.encrypt(result['password']))
+            user = User(
+                result['firstname'], result['lastname'], result[
+                    'email'], result['username'],
+                bcrypt.encrypt(result['password']))
             user.save()
 
             return {"data": {"user": user.to_json_object_filter_fields(get_fields())}, "status": "success"}, 201
@@ -112,7 +149,8 @@ class UserLogin(Resource):
             elif not bcrypt.verify(request.json.get("password"), user.password):
                 return {"status": "error", "message": "Wrong password"}, 400
             access_token = create_access_token(identity=user.id)
-            return {"status": "success", "data": {"token": access_token, "user": user.to_json_object_filter_fields(get_fields())}}, 200
+            return {"status": "success",
+                    "data": {"token": access_token, "user": user.to_json_object_filter_fields(get_fields())}}, 200
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
@@ -137,7 +175,8 @@ class UserMaintenanceRequest(Resource):
             errors["product_name"] = "Product name must be provided"
 
         if not item.get("description"):
-            errors["description"] = "Maintenance/Repair request description must be provided"
+            errors[
+                "description"] = "Maintenance/Repair request description must be provided"
 
         return len(errors) == 0, errors
 
@@ -156,7 +195,8 @@ class UserMaintenanceRequest(Resource):
 
             maintenance_request.save()
 
-            return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 201
+            return {"status": "success",
+                    "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
@@ -175,7 +215,8 @@ class UserModifyRequest(Resource):
             errors["product_name"] = "Product name must be provided"
 
         if not item.get("description"):
-            errors["description"] = "Maintenance/Repair request description must be provided"
+            errors[
+                "description"] = "Maintenance/Repair request description must be provided"
 
         if maintenance_request.product_name == item.get("product_name") and \
                 maintenance_request.description == item.get("description"):
@@ -191,7 +232,8 @@ class UserModifyRequest(Resource):
         elif maintenance_request.created_by != get_jwt_identity():
             return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
         else:
-            return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
+            return {"status": "success",
+                    "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
 
     @jwt_required
     def put(self, request_id):
@@ -214,16 +256,24 @@ class UserModifyRequest(Resource):
             maintenance_request.description = result['description']
 
             maintenance_request.update()
-            return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
+            return {"status": "success",
+                    "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
 
 class AdminMaintenanceRequest(Resource):
+
     @jwt_required
     @admin_guard
     def get(self):
-        requests = [x.to_json_object_filter_fields(get_fields()) for x in Request.query_all()]
+        status = request.args.get("status")
+        if status:
+            requests = [x.to_json_object_filter_fields(get_fields())
+                        for x in Request.query_by_field("status", status)]
+        else:
+            requests = [x.to_json_object_filter_fields(get_fields()) for x in Request.query_all()]
+
         return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
 
 
@@ -232,8 +282,9 @@ class AdminManageRequest(Resource):
     @jwt_required
     @admin_guard
     def put(self, request_id, status):
-        statuses = {"approve": Request.STATUS_APPROVED, "disapprove": Request.STATUS_DISAPPROVED,
-                    "pending": Request.STATUS_PENDING, "resolve": Request.STATUS_RESOLVED}
+        statuses = {
+            "approve": Request.STATUS_APPROVED, "disapprove": Request.STATUS_DISAPPROVED,
+            "pending": Request.STATUS_PENDING, "resolve": Request.STATUS_RESOLVED}
         if status not in statuses.keys():
             return {"status": "error", "message": "Request status can only be [approve,resolve,disapprove]"}, 400
         maintenance_request = Request.query_by_id(request_id)
@@ -246,10 +297,12 @@ class AdminManageRequest(Resource):
         maintenance_request.status = statuses[status]
 
         maintenance_request.update()
-        return {"status": "success", "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
+        return {"status": "success",
+                "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
 
 
 class AdminFeedback(Resource):
+
     @staticmethod
     def is_valid(item):
         """Check whether a feedback object has valid fields"""
@@ -271,15 +324,18 @@ class AdminFeedback(Resource):
                 if not valid:
                     return {"status": "error", "data": errors}, 400
                 else:
-                    feedback = Feedback(admin=get_jwt_identity(), request=maintenance_request.id,
-                                        message=request.json.get("message"))
+                    feedback = Feedback(
+                        admin=get_jwt_identity(), request=maintenance_request.id,
+                        message=request.json.get("message"))
                     feedback.save()
-                    return {"status": "success", "data": {"feedback": feedback.to_json_object_filter_fields(get_fields())}}, 201
+                    return {"status": "success",
+                            "data": {"feedback": feedback.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
 
 class UserFeedbackResource(Resource):
+
     @jwt_required
     def get(self, request_id):
         maintenance_request = Request.query_by_id(request_id)
@@ -289,7 +345,8 @@ class UserFeedbackResource(Resource):
             return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
         else:
             feedback = maintenance_request.feedback()
-            return {"status": "success", "data": {"feedback": [x.to_json_object_filter_fields(get_fields()) for x in feedback]}}, 200
+            return {"status": "success",
+                    "data": {"feedback": [x.to_json_object_filter_fields(get_fields()) for x in feedback]}}, 200
 
 
 class NotificationResource(Resource):
@@ -313,7 +370,8 @@ class ManageNotifications(Resource):
         if notification.user != get_jwt_identity():
             return {"status": "error", "message": "You are not allowed to modify or view this notification"}, 401
         else:
-            return {"status": "success", "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 200
+            return {"status": "success",
+                    "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 200
 
     @jwt_required
     def put(self, notification_id):
@@ -324,7 +382,8 @@ class ManageNotifications(Resource):
             return {"status": "error", "message": "You are not allowed to modify or view this notification"}, 401
         else:
             notification.mark_as_read()
-            return {"status": "success", "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 200
+            return {"status": "success",
+                    "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 200
 
     @jwt_required
     @admin_guard
@@ -337,9 +396,11 @@ class ManageNotifications(Resource):
                 if request.json.get("message") is None:
                     return {"status": "error", "data": {"message": "Notification message is required"}}, 400
                 else:
-                    notification = Notification(admin=get_jwt_identity(), user=user.id,
-                                                message=request.json.get("message"))
+                    notification = Notification(
+                        admin=get_jwt_identity(), user=user.id,
+                        message=request.json.get("message"))
                     notification.save()
-                    return {"status": "success", "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 201
+                    return {"status": "success",
+                            "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400

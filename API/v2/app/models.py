@@ -42,12 +42,15 @@ class DBBaseModel(v1.models.BaseModel):
         return cls(datetime.now(), datetime.now())
 
     @classmethod
-    def query_all(cls):
+    def query_all(cls, page=1, number_of_items=100):
         """
-        Query all items from the database
+        Query all items from the database for a particular page
+        :param number_of_items:
+        :param page:
         :return:
         """
-        db.cursor.execute("SELECT * FROM {}".format(cls.__table__))
+        offset = number_of_items * (int(page) - 1)
+        db.cursor.execute("SELECT * FROM {} LIMIT {} OFFSET {}".format(cls.__table__, number_of_items, offset))
         items = db.cursor.fetchall()
         return [cls.deserialize(x) for x in items]
 
@@ -60,14 +63,30 @@ class DBBaseModel(v1.models.BaseModel):
         return items[0]
 
     @classmethod
-    def query_by_field(cls, field, value):
+    def count_all(cls):
+        """
+        Counts the total number of items in the database
+        :return:
+        """
+        db.cursor.execute("SELECT COUNT(*) as count FROM {}".format(cls.__table__))
+        result = db.cursor.fetchone()
+        return result['count']
+
+    @classmethod
+    def query_by_field(cls, field, value, page=1, number_of_items=100):
         """
         Query items from the database based on a particular field
+        :param page:
+        :param number_of_items:
         :param field:
         :param value:
         :return:
         """
-        db.cursor.execute("SELECT * FROM {0} WHERE {1} = %s".format(cls.__table__, field), (value,))
+        offset = number_of_items * (int(page) - 1)
+        db.cursor.execute(
+            "SELECT * FROM {0} WHERE {1} = %s LIMIT {2} OFFSET {3}".format(cls.__table__,
+                                                                           field, number_of_items,
+                                                                           offset), (value,))
         items = db.cursor.fetchall()
 
         return [cls.deserialize(x) for x in items]
