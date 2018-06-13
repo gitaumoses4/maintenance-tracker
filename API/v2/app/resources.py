@@ -20,6 +20,24 @@ def get_page():
     return 1
 
 
+def paginated_results(total_results, items, items_key="items"):
+    previous_page = None
+    next_page = None
+    if get_page() > 1:
+        previous_page = "{0}?page={1}".format(request.url_rule, (get_page() - 1))
+
+    if get_page() < (total_results / RESULTS_PER_PAGE):
+        next_page = "{0}?page={1}".format(request.url_rule, (get_page() + 1))
+    return {"status": "success", "data": {
+        "current_page": get_page(),
+        "previous_page": previous_page,
+        "next_page": next_page,
+        "num_results": len(items),
+        "total_results": total_results,
+        items_key: [x.to_json_object_filter_fields(get_fields()) for x in items]
+    }}, 200
+
+
 def get_fields():
     if request.args.get("fields") is not None:
         return request.args.get("fields").split(",")
@@ -61,26 +79,10 @@ class UsersResource(Resource):
     @jwt_required
     @admin_guard
     def get(self):
-        users = [x.to_json_object_filter_fields(get_fields()) for
-                 x in User.query_all(get_page(), RESULTS_PER_PAGE)]
+        users = User.query_all(get_page(), RESULTS_PER_PAGE)
 
         total_results = User.count_all()
-
-        previous_page = None
-        next_page = None
-        if get_page() > 1:
-            previous_page = "{0}?page={1}".format(request.url_rule, (get_page() - 1))
-
-        if get_page() < (total_results / RESULTS_PER_PAGE):
-            next_page = "{0}?page={1}".format(request.url_rule, (get_page() + 1))
-        return {"status": "success", "data": {
-            "current_page": get_page(),
-            "previous_page": previous_page,
-            "next_page": next_page,
-            "num_results": len(users),
-            "total_results": total_results,
-            "users": users
-        }}, 200
+        return paginated_results(total_results, users, "users")
 
 
 class UserSignUp(Resource):
@@ -201,10 +203,19 @@ class UserMaintenanceRequest(Resource):
             return {"message": "Request should be in JSON", "status": "error"}, 400
 
     @jwt_required
-    def get(self):
-        requests = [x.to_json_object_filter_fields(get_fields())
-                    for x in Request.query_for_user(get_jwt_identity())]
-        return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
+    def get(self, status):
+        if status == "pending" or status == "approved" or status == "disapproved" or status == "resolved":
+            requests = [x for x in
+                        Request.query_by_field("created_by", get_jwt_identity(), get_page(), RESULTS_PER_PAGE) if
+                        x.status.lower() == status]
+            num_results = len([x for x in Request.query_for_user(get_jwt_identity()) if x.status.lower() == status])
+        elif status == "all":
+            num_results = Request.count_all_by_field("created_by", get_jwt_identity())
+            requests = Request.query_by_field("created_by", get_jwt_identity(), get_page(), RESULTS_PER_PAGE)
+        else:
+            num_results = 0
+            requests = []
+        return paginated_results(total_results=num_results, items=requests, items_key="requests")
 
 
 class UserModifyRequest(Resource):
@@ -266,15 +277,20 @@ class AdminMaintenanceRequest(Resource):
 
     @jwt_required
     @admin_guard
-    def get(self):
-        status = request.args.get("status")
-        if status:
-            requests = [x.to_json_object_filter_fields(get_fields())
-                        for x in Request.query_by_field("status", status)]
+    def get(self, status):
+        if status in ["pending", "approved", "disapproved", "resolved"]:
+            requests = [x for x in Request.query_all(page=get_page(), number_of_items=RESULTS_PER_PAGE)
+                        if x.status.lower() == status]
+            total_results = len([x for x in Request.query_all() if x.status.lower() == status])
+        elif status == "all":
+            requests = Request.query_all(page=get_page(), number_of_items=RESULTS_PER_PAGE)
+            total_results = Request.count_all()
         else:
-            requests = [x.to_json_object_filter_fields(get_fields()) for x in Request.query_all()]
+            requests = []
+            total_results = 0
 
-        return {"status": "success", "data": {"total_requests": len(requests), "requests": requests}}, 200
+        return paginated_results(total_results=total_results,
+                                 items=requests, items_key="requests")
 
 
 class AdminManageRequest(Resource):
@@ -286,7 +302,8 @@ class AdminManageRequest(Resource):
             "approve": Request.STATUS_APPROVED, "disapprove": Request.STATUS_DISAPPROVED,
             "pending": Request.STATUS_PENDING, "resolve": Request.STATUS_RESOLVED}
         if status not in statuses.keys():
-            return {"status": "error", "message": "Request status can only be [approve,resolve,disapprove]"}, 400
+            return {"status": "error",
+                    "message": "Request status can only be [approve,resolve,disapprove]"}, 400
         maintenance_request = Request.query_by_id(request_id)
         if maintenance_request is None:
             return {"status": "error", "message": "Maintenance request does not exist"}, 404
@@ -342,7 +359,8 @@ class UserFeedbackResource(Resource):
         if maintenance_request is None:
             return {"status": "error", "message": "Maintenance request does not exist"}, 404
         elif maintenance_request.created_by != get_jwt_identity():
-            return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
+            return {"status": "error",
+                    "message": "You are not allowed to modify or view this maintenance request"}, 401
         else:
             feedback = maintenance_request.feedback()
             return {"status": "success",
@@ -352,12 +370,16 @@ class UserFeedbackResource(Resource):
 class NotificationResource(Resource):
 
     @jwt_required
-    def get(self):
+    def get(self, status):
         user = User.query_by_id(get_jwt_identity())
-        notifications = user.notifications()
-        return {"status": "success",
-                "data": {"notification_count": len(notifications),
-                         "notifications": [x.to_json_object_filter_fields(get_fields()) for x in notifications]}}, 200
+        if status == "read":
+            notifications = user.read_notifications()
+        elif status == "unread":
+            notifications = user.unread_notifications()
+        else:
+            notifications = user.notifications()
+
+        return paginated_results(len(notifications), items=notifications, items_key="notifications")
 
 
 class ManageNotifications(Resource):
@@ -368,7 +390,8 @@ class ManageNotifications(Resource):
         if not notification:
             return {"status": "error", "message": "Notification not found"}, 404
         if notification.user != get_jwt_identity():
-            return {"status": "error", "message": "You are not allowed to modify or view this notification"}, 401
+            return {"status": "error",
+                    "message": "You are not allowed to modify or view this notification"}, 401
         else:
             return {"status": "success",
                     "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 200
@@ -379,7 +402,8 @@ class ManageNotifications(Resource):
         if not notification:
             return {"status": "error", "message": "Notification not found"}, 404
         if notification.user != get_jwt_identity():
-            return {"status": "error", "message": "You are not allowed to modify or view this notification"}, 401
+            return {"status": "error",
+                    "message": "You are not allowed to modify or view this notification"}, 401
         else:
             notification.mark_as_read()
             return {"status": "success",
@@ -401,6 +425,7 @@ class ManageNotifications(Resource):
                         message=request.json.get("message"))
                     notification.save()
                     return {"status": "success",
-                            "data": {"notification": notification.to_json_object_filter_fields(get_fields())}}, 201
+                            "data": {
+                                "notification": notification.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400

@@ -73,6 +73,19 @@ class DBBaseModel(v1.models.BaseModel):
         return result['count']
 
     @classmethod
+    def count_all_by_field(cls, field, value):
+        """
+        Query all after filtering
+        :param field:
+        :param value:
+        :return:
+        """
+        db.cursor.execute("SELECT COUNT(*) as count FROM {0} WHERE {1} = %s"
+                          .format(cls.__table__, field), (value,))
+        result = db.cursor.fetchone()
+        return result['count']
+
+    @classmethod
     def query_by_field(cls, field, value, page=1, number_of_items=100):
         """
         Query items from the database based on a particular field
@@ -221,6 +234,20 @@ class User(v1.models.User, DBBaseModel):
         """
 
         return Notification.query_by_field("user_id", self.id)
+
+    def read_notifications(self):
+        """
+        Get all the read notifications
+        :return:
+        """
+        return [x for x in self.notifications() if x.read]
+
+    def unread_notifications(self):
+        """
+        Get all the unread notifications for this user
+        :return:
+        """
+        return [x for x in self.notifications() if not x.read]
 
 
 class Admin(User):
