@@ -69,7 +69,25 @@ class NotificationsTestCase(AuthenticatedTestCase):
         """Tests whether user can get all their notifications"""
         self.create_notification()
 
-        json_result, status_code = self.get("users/notifications")
+        json_result, status_code = self.get("users/notifications/all")
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_can_get_read_notifications(self):
+        """Tests whether user can get all their read notifications"""
+        self.create_notification()
+
+        json_result, status_code = self.get("users/notifications/read")
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_can_get_unread_notifications(self):
+        """Tests whether user can get all their unread notifications"""
+        self.create_notification()
+
+        json_result, status_code = self.get("users/notifications/unread")
         self.assertEqual(status_code, 200)
 
         self.assertEqual(json_result['status'], "success")

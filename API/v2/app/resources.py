@@ -11,7 +11,7 @@ from passlib.handlers.bcrypt import bcrypt
 
 from v2.app.models import User, Blacklist, Request, Feedback, Notification
 
-RESULTS_PER_PAGE = 5  # define the maximum results per page
+RESULTS_PER_PAGE = 10  # define the maximum results per page
 
 
 def get_page():

@@ -22,3 +22,9 @@ class UserTestCase(AuthenticatedTestCase):
         self.assertEqual(status_code, 200)
 
         self.assertEqual(json_result['status'], "success")
+
+    def test_admin_can_get_all_users(self):
+        """Logs in the admin and checks to see whether the admin can get all users"""
+        json_result = self.get("users", headers=self.admin_headers)[0]
+
+        self.assertEqual(json_result['status'], "success")

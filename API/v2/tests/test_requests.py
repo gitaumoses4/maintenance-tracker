@@ -41,14 +41,70 @@ class RequestsTestCase(AuthenticatedTestCase):
 
     def test_user_can_get_all_requests(self):
         """This will test whether a user can get all their requests"""
-        json_result, status_code = self.get("users/requests")
+        json_result, status_code = self.get("users/requests/all")
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_user_can_get_pending_requests(self):
+        """This will test whether a user can get all their pending requests"""
+        json_result, status_code = self.get("users/requests/pending")
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_user_can_get_approved_requests(self):
+        """This will test whether a user can get all their approved requests"""
+        json_result, status_code = self.get("users/requests/approved")
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_user_can_get_disapproved_requests(self):
+        """This will test whether a user can get all their disapproved requests"""
+        json_result, status_code = self.get("users/requests/disapproved")
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_user_can_get_resolved_requests(self):
+        """This will test whether a user can get all their resolved requests"""
+        json_result, status_code = self.get("users/requests/resolved")
         self.assertEqual(status_code, 200)
 
         self.assertEqual(json_result['status'], "success")
 
     def test_admin_can_get_all_requests(self):
         """This will tests whether the admin can get the requests in the system"""
-        json_result, status_code = self.get("requests", headers=self.admin_headers)
+        json_result, status_code = self.get("requests/all", headers=self.admin_headers)
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_admin_can_get_pending_requests(self):
+        """This will tests whether the admin can get the pending requests in the system"""
+        json_result, status_code = self.get("requests/pending", headers=self.admin_headers)
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_admin_can_get_approved_requests(self):
+        """This will tests whether the admin can get the approved requests in the system"""
+        json_result, status_code = self.get("requests/approved", headers=self.admin_headers)
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_admin_can_get_disapproved_requests(self):
+        """This will tests whether the admin can get the disapproved requests in the system"""
+        json_result, status_code = self.get("requests/disapproved", headers=self.admin_headers)
+        self.assertEqual(status_code, 200)
+
+        self.assertEqual(json_result['status'], "success")
+
+    def test_admin_can_get_resolved_requests(self):
+        """This will tests whether the admin can get the resolved requests in the system"""
+        json_result, status_code = self.get("requests/resolved", headers=self.admin_headers)
         self.assertEqual(status_code, 200)
 
         self.assertEqual(json_result['status'], "success")
@@ -72,7 +128,8 @@ class RequestsTestCase(AuthenticatedTestCase):
                  headers=self.admin_headers)
 
         self.request.description = "Some New Description"
-        json_result, status_code = self.put("users/requests/{}".format(request_id), data=self.request.to_json_str(False))
+        json_result, status_code = self.put("users/requests/{}".format(request_id),
+                                            data=self.request.to_json_str(False))
 
         self.assertEqual(status_code, 400)
 

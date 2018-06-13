@@ -23,7 +23,8 @@ api.add_resource(UserLogin, "/auth/login")
 api.add_resource(UserLogout, "/auth/logout")
 api.add_resource(UserResource, "/users/details",
                  "/users/<int:user_id>/upgrade")
-api.add_resource(UserMaintenanceRequest, "/users/requests/<string:status>")
+api.add_resource(UserMaintenanceRequest, "/users/requests/<string:status>"
+                 , "/users/requests")
 api.add_resource(UserModifyRequest, "/users/requests/<int:request_id>")
 api.add_resource(AdminMaintenanceRequest, "/requests/<string:status>")
 api.add_resource(UsersResource, "/users")

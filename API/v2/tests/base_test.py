@@ -125,7 +125,8 @@ class AuthenticatedTestCase(BaseTestCase):
         """Checks whether the admin endpoints are guarded from other users"""
         endpoints = {
             "POST": ['requests/1/feedback', "notifications/1"],
-            "GET": ["requests"],
+            "GET": ["requests/all", "requests/approved", "requests/disapproved", "requests/resolved",
+                    "requests/pending", "users"],
             "PUT": ["requests/1/approve", "requests/1/disapprove", "requests/1/resolve", "users/1/upgrade"],
             "DELETE": []
         }
