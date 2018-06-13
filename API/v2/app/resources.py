@@ -2,6 +2,7 @@
 The main resources for the API endpoints
 """
 import re
+from datetime import datetime
 from functools import wraps
 
 from flask import request
@@ -275,6 +276,19 @@ class UserModifyRequest(Resource):
 
 class AdminMaintenanceRequest(Resource):
 
+    @staticmethod
+    def filter_requests(requests):
+        if request.args.get("from"):
+            date_from = datetime.strptime(request.args.get("from"), "%Y-%m-%d")
+            requests = [x for x in requests if x.created_at >= date_from]
+        if request.args.get("to"):
+            date_to = datetime.strptime(request.args.get("to"), "%Y-%m-%d")
+            requests = [x for x in requests if x.created_at <= date_to]
+        if request.args.get("query"):
+            requests = [x for x in requests if request.args.get("query").lower() in x.product_name.lower()]
+
+        return requests
+
     @jwt_required
     @admin_guard
     def get(self, status):
@@ -290,7 +304,8 @@ class AdminMaintenanceRequest(Resource):
             total_results = 0
 
         return paginated_results(total_results=total_results,
-                                 items=requests, items_key="requests")
+                                 items=AdminMaintenanceRequest.filter_requests(requests),
+                                 items_key="requests")
 
 
 class AdminManageRequest(Resource):
