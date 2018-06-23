@@ -7,6 +7,7 @@ import v1
 from config import config
 from v1 import user_routes, admin_routes, web
 from v2.app.database import Database
+from flask_cors import CORS
 
 db = Database()
 
@@ -18,6 +19,7 @@ load_dotenv()
 
 def create_app(config_name="DEVELOPMENT"):
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     app.config.from_object(config[config_name])
 
     v1.initialize_app(app)

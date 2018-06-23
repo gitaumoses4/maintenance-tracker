@@ -57,7 +57,7 @@ class User(BaseModel):
         self.role = User.ROLE_USER
 
     def excluded_fields(self):
-        return ['password', 'role', 'created_at', 'updated_at']
+        return ['password', 'created_at', 'updated_at']
 
 
 class Admin(User):
