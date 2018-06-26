@@ -350,7 +350,7 @@ class AdminFeedback(Resource):
             else:
                 valid, errors = self.is_valid(request.json)
                 if not valid:
-                    return {"status": "error", "data": errors}, 400
+                    return {"status": "error", "message": errors}, 400
                 else:
                     feedback = Feedback(
                         admin=get_jwt_identity(), request=maintenance_request.id,
