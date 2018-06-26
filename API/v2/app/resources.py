@@ -93,29 +93,29 @@ class UserSignUp(Resource):
 
     def is_valid(self, item):
         """Check if the response has valid user details"""
-        errors = {}
+        errors = []
         if not item.get("firstname"):
-            errors['firstname'] = "First name is required"
+            errors.append("First name is required")
 
         if not item.get("lastname"):
-            errors['lastname'] = "Last name is required"
+            errors.append("Last name is required")
 
         if not item.get("username"):
-            errors['username'] = "Username is required"
+            errors.append("Username is required")
         elif len(User.query_by_field(field="username", value=item.get("username"))) != 0:
-            errors['username'] = "Username is already in use"
+            errors.append("Username is already in use")
 
         if not item.get("email"):
-            errors['email'] = "Email is required"
+            errors.append("Email is required")
         elif re.match(r'^.+@([?)[a-zA-Z0-9-.])+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$', item.get("email")) is None:
-            errors["email"] = "Not a valid email"
+            errors.append("Not a valid email")
         elif len(User.query_by_field(field="email", value=item.get("email"))) != 0:
-            errors["email"] = "Email already in use"
+            errors.append("Email already in use")
 
         if not item.get("password"):
-            errors["password"] = "Password is required"
+            errors.append("Password is required")
         elif len(item.get("password")) < 8:
-            errors["password"] = "Password must be more than 8 characters long"
+            errors.append("Password must be more than 8 characters long")
 
         return len(errors) == 0, errors
 
@@ -123,7 +123,7 @@ class UserSignUp(Resource):
         if request.is_json:
             valid, errors = self.is_valid(request.json)
             if not valid:
-                return {"data": errors, "status": "error"}, 400
+                return {"message": errors, "status": "error"}, 400
             # create user
             result = request.json
             user = User(
@@ -142,15 +142,13 @@ class UserLogin(Resource):
     def post(self):
         if request.is_json:
             if not request.json.get('username'):
-                return {"status": "error", "data": {"username": "Username is required"}}, 400
+                return {"status": "error", "message": ["Username is required"]}, 400
             if not request.json.get("password"):
-                return {"status": "error", "data": {"email": "Password is required"}}, 400
+                return {"status": "error", "message": ["Password is required"]}, 400
             user = User.query_one_by_field(
                 "username", request.json.get("username"))
-            if user is None:
-                return {"status": "error", "message": "Username does not exist"}, 400
-            elif not bcrypt.verify(request.json.get("password"), user.password):
-                return {"status": "error", "message": "Wrong password"}, 400
+            if user is None or not bcrypt.verify(request.json.get("password"), user.password):
+                return {"status": "error", "message": "Invalid credentials"}, 400
             access_token = create_access_token(identity=user.id)
             return {"status": "success",
                     "data": {"token": access_token, "user": user.to_json_object_filter_fields(get_fields())}}, 200
@@ -173,13 +171,12 @@ class UserMaintenanceRequest(Resource):
     @staticmethod
     def is_valid(item):
         """Check if a request has valid fields"""
-        errors = {}
+        errors = []
         if not item.get("product_name"):
-            errors["product_name"] = "Product name must be provided"
+            errors.append("Product name must be provided")
 
         if not item.get("description"):
-            errors[
-                "description"] = "Maintenance/Repair request description must be provided"
+            errors.append("Maintenance/Repair request description must be provided")
 
         return len(errors) == 0, errors
 
@@ -188,7 +185,7 @@ class UserMaintenanceRequest(Resource):
         if request.is_json:
             valid, errors = self.is_valid(request.json)
             if not valid:
-                return {"status": "error", "data": errors}, 400
+                return {"status": "error", "message": errors}, 400
             result = request.json
             maintenance_request = Request(product_name=result['product_name'],
                                           description=result['description'],
@@ -222,17 +219,16 @@ class UserMaintenanceRequest(Resource):
 class UserModifyRequest(Resource):
 
     def is_valid(self, maintenance_request, item):
-        errors = {}
+        errors = []
         if not item.get("product_name"):
-            errors["product_name"] = "Product name must be provided"
+            errors.append("Product name must be provided")
 
         if not item.get("description"):
-            errors[
-                "description"] = "Maintenance/Repair request description must be provided"
+            errors.append("Maintenance/Repair request description must be provided")
 
         if maintenance_request.product_name == item.get("product_name") and \
                 maintenance_request.description == item.get("description"):
-            errors['fields'] = "The details entered already exist."
+            errors.append("The details entered already exist.")
 
         return len(errors) == 0, errors
 
@@ -261,7 +257,7 @@ class UserModifyRequest(Resource):
                         "message": "A maintenance request can only be edited if pending."}, 400
             valid, errors = self.is_valid(maintenance_request, request.json)
             if not valid:
-                return {"status": "error", "data": errors}, 400
+                return {"status": "error", "message": errors}, 400
             result = request.json
 
             maintenance_request.product_name = result['product_name']
@@ -338,9 +334,9 @@ class AdminFeedback(Resource):
     @staticmethod
     def is_valid(item):
         """Check whether a feedback object has valid fields"""
-        errors = {}
+        errors = []
         if not item.get("message"):
-            errors["message"] = "Feedback message must be provided"
+            errors.append("Feedback message must be provided")
 
         return len(errors) == 0, errors
 
