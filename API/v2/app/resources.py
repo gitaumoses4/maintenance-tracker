@@ -1,14 +1,16 @@
 """
 The main resources for the API endpoints
 """
+import os
 import re
 from datetime import datetime
 from functools import wraps
 
-from flask import request
+from flask import request, url_for
 from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, get_jwt_identity
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
+from werkzeug.utils import secure_filename
 
 from v2.app.models import User, Blacklist, Request, Feedback, Notification
 
@@ -164,6 +166,40 @@ class UserLogout(Resource):
         blacklist = Blacklist(jti)
         blacklist.save()
         return {"status": "success", "message": "Successfully logged out"}, 200
+
+
+class RequestPhoto(Resource):
+    ALLOWED_EXTENSIONS = ('jpg', 'jpeg', 'gif', 'png')
+    UPLOAD_FOLDER = "uploads"
+
+    @jwt_required
+    def post(self, request_id):
+        maintenance_request = Request.query_by_id(request_id)
+        if maintenance_request is None:
+            return {"status": "error", "message": "Maintenance request does not exist"}, 404
+        elif maintenance_request.created_by != get_jwt_identity():
+            return {"status": "error",
+                    "message": "You are not allowed to modify or view this maintenance request"}, 401
+
+        if 'photo' not in request.files:
+            return {"status": "error", "message": "No photo uploaded"}, 400
+        file = request.files['photo']
+
+        if file.filename == "":
+            return {"status": "error", "message": "No photo selected"}, 400
+
+        if file and file.filename.rsplit('.', 1)[1].lower() in RequestPhoto.ALLOWED_EXTENSIONS:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(RequestPhoto.UPLOAD_FOLDER, filename))
+
+            maintenance_request.photo = os.path.join(RequestPhoto.UPLOAD_FOLDER, filename)
+            maintenance_request.update()
+
+            return {"status": "success", "data": {
+                "request": maintenance_request.to_json_object_filter_fields(get_fields())
+            }}, 200
+        else:
+            return {"status": "error", "message": "Error uploading photo"}, 400
 
 
 class UserMaintenanceRequest(Resource):
