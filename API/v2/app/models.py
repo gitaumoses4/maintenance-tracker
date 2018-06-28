@@ -1,4 +1,6 @@
 """Creates the database models with ability to perform SQL functions"""
+import psycopg2
+
 from passlib.handlers.bcrypt import bcrypt
 
 import v1.models
@@ -50,9 +52,14 @@ class DBBaseModel(v1.models.BaseModel):
         :return:
         """
         offset = number_of_items * (int(page) - 1)
-        db.cursor.execute("SELECT * FROM {} LIMIT {} OFFSET {}".format(cls.__table__, number_of_items, offset))
-        items = db.cursor.fetchall()
-        return [cls.deserialize(x) for x in items]
+        db.cursor.execute(
+            "SELECT * FROM {}  ORDER BY updated_at DESC LIMIT {} OFFSET {}".format(cls.__table__, number_of_items,
+                                                                                   offset))
+        try:
+            items = db.cursor.fetchall()
+            return [cls.deserialize(x) for x in items]
+        except psycopg2.ProgrammingError:
+            return []
 
     @classmethod
     def query_one_by_field(cls, field, value):
@@ -97,12 +104,16 @@ class DBBaseModel(v1.models.BaseModel):
         """
         offset = number_of_items * (int(page) - 1)
         db.cursor.execute(
-            "SELECT * FROM {0} WHERE {1} = %s LIMIT {2} OFFSET {3}".format(cls.__table__,
-                                                                           field, number_of_items,
-                                                                           offset), (value,))
-        items = db.cursor.fetchall()
+            "SELECT * FROM {0} WHERE {1} = %s  ORDER BY updated_at DESC LIMIT {2} OFFSET {3}".format(cls.__table__,
+                                                                                                     field,
+                                                                                                     number_of_items,
+                                                                                                     offset), (value,))
+        try:
+            items = db.cursor.fetchall()
 
-        return [cls.deserialize(x) for x in items]
+            return [cls.deserialize(x) for x in items]
+        except psycopg2.ProgrammingError:
+            return []
 
     @classmethod
     def query_by_id(cls, _id):
@@ -112,10 +123,13 @@ class DBBaseModel(v1.models.BaseModel):
         :return:
         """
         db.cursor.execute("SELECT * FROM {} WHERE id = %s".format(cls.__table__), (_id,))
-        item = db.cursor.fetchone()
-        if item is None:
+        try:
+            item = db.cursor.fetchone()
+            if item is None:
+                return None
+            return cls.deserialize(item)
+        except psycopg2.ProgrammingError:
             return None
-        return cls.deserialize(item)
 
     def save(self):
         """ Save an item to the database"""
@@ -240,14 +254,14 @@ class User(v1.models.User, DBBaseModel):
         Get all the read notifications
         :return:
         """
-        return [x for x in self.notifications() if x.read]
+        return [x for x in self.notifications() if x.read == 1]
 
     def unread_notifications(self):
         """
         Get all the unread notifications for this user
         :return:
         """
-        return [x for x in self.notifications() if not x.read]
+        return [x for x in self.notifications() if not x.read == 1]
 
 
 class Admin(User):
@@ -443,12 +457,29 @@ class Feedback(v1.models.Feedback, DBBaseModel):
                 self.id
             ))
 
+    def created_by(self):
+        """
+        Returns the admin who posted the feedback
+        :return:
+        """
+        return User.query_by_id(self.admin)
+
     def maintenance_request(self):
         """
         Returns the request for this Feedback
         :return:
         """
         return Request.query_by_id(self.request)
+
+    @classmethod
+    def all_for_user(cls, user_id):
+        """
+        Query items from the database based on a particular field
+        :param user_id:
+        :return:
+        """
+        return [x for x in Feedback.query_all() if
+                x.maintenance_request() and x.maintenance_request().created_by == user_id]
 
 
 class Notification(v1.models.Notification, DBBaseModel):
@@ -468,7 +499,7 @@ class Notification(v1.models.Notification, DBBaseModel):
             admin_id INTEGER,
             user_id INTEGER,
             message varchar,
-            read boolean,
+            read integer,
             created_at timestamp,
             updated_at timestamp,
             FOREIGN KEY (admin_id) references users(id),
@@ -501,7 +532,7 @@ class Notification(v1.models.Notification, DBBaseModel):
                 self.admin,
                 self.user,
                 self.message,
-                False,
+                0,
                 self.created_at,
                 self.updated_at
             ))
@@ -513,9 +544,10 @@ class Notification(v1.models.Notification, DBBaseModel):
         :return:
         """
         super().update()
-        db.cursor.execute("UPDATE notifications SET message = %s, read = %s, updated_at = now()", (
+        db.cursor.execute("UPDATE notifications SET message = %s, read = %s, updated_at = now() WHERE id = %s", (
             self.message,
-            self.read
+            self.read,
+            self.id
         ))
         db.connection.commit()
 
@@ -524,7 +556,7 @@ class Notification(v1.models.Notification, DBBaseModel):
         Mark a notification as read
         :return:
         """
-        self.read = True
+        self.read = 1
         self.update()
 
     def get_admin(self):

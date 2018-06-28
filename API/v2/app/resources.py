@@ -24,17 +24,8 @@ def get_page():
 
 
 def paginated_results(total_results, items, items_key="items"):
-    previous_page = None
-    next_page = None
-    if get_page() > 1:
-        previous_page = "{0}?page={1}".format(request.url_rule, (get_page() - 1))
-
-    if get_page() < (total_results / RESULTS_PER_PAGE):
-        next_page = "{0}?page={1}".format(request.url_rule, (get_page() + 1))
     return {"status": "success", "data": {
         "current_page": get_page(),
-        "previous_page": previous_page,
-        "next_page": next_page,
         "num_results": len(items),
         "total_results": total_results,
         items_key: [x.to_json_object_filter_fields(get_fields()) for x in items]
@@ -73,6 +64,11 @@ class UserResource(Resource):
             return {"status": "error", "message": "User not found"}, 404
         user.role = User.ROLE_ADMINISTRATOR
         user.update()
+
+        notification = Notification(
+            admin=get_jwt_identity(), user=user.id,
+            message="You have been upgraded to be an Administrator")
+        notification.save()
 
         return {"status": "success", "message": "User is now an admin"}, 200
 
@@ -150,7 +146,7 @@ class UserLogin(Resource):
             user = User.query_one_by_field(
                 "username", request.json.get("username"))
             if user is None or not bcrypt.verify(request.json.get("password"), user.password):
-                return {"status": "error", "message": "Invalid credentials"}, 400
+                return {"status": "error", "message": ["Invalid credentials"]}, 400
             access_token = create_access_token(identity=user.id)
             return {"status": "success",
                     "data": {"token": access_token, "user": user.to_json_object_filter_fields(get_fields())}}, 200
@@ -351,6 +347,7 @@ class AdminManageRequest(Resource):
         if status not in statuses.keys():
             return {"status": "error",
                     "message": "Request status can only be [approve,resolve,disapprove]"}, 400
+
         maintenance_request = Request.query_by_id(request_id)
         if maintenance_request is None:
             return {"status": "error", "message": "Maintenance request does not exist"}, 404
@@ -361,6 +358,11 @@ class AdminManageRequest(Resource):
         maintenance_request.status = statuses[status]
 
         maintenance_request.update()
+
+        notification = Notification(
+            admin=get_jwt_identity(), user=maintenance_request.created_by,
+            message="Maintenance Request with ID #{0} has been {1}".format(request_id, statuses[status]))
+        notification.save()
         return {"status": "success",
                 "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
 
@@ -392,10 +394,27 @@ class AdminFeedback(Resource):
                         admin=get_jwt_identity(), request=maintenance_request.id,
                         message=request.json.get("message"))
                     feedback.save()
+                    notification = Notification(
+                        admin=get_jwt_identity(), user=maintenance_request.created_by,
+                        message="Feedback provided for Request #{0}".format(request_id))
+                    notification.save()
                     return {"status": "success",
                             "data": {"feedback": feedback.to_json_object_filter_fields(get_fields())}}, 201
         else:
             return {"message": "Request should be in JSON", "status": "error"}, 400
+
+
+class UserAllFeedbackResource(Resource):
+    @jwt_required
+    def get(self):
+        feedback = [{"feedback": x.to_json_object_filter_fields(get_fields()),
+                     "created_by": x.created_by().to_json_object_filter_fields(["id", "firstname", "lastname"])} for x
+                    in Feedback.all_for_user(get_jwt_identity())]
+
+        return {
+                   "status": "success",
+                   "data": feedback[:3]
+               }, 200
 
 
 class UserFeedbackResource(Resource):
@@ -425,6 +444,10 @@ class NotificationResource(Resource):
             notifications = user.unread_notifications()
         else:
             notifications = user.notifications()
+
+        for notification in notifications:
+            notification.admin = notification.get_admin().to_json_object_filter_fields(
+                ['firstname', 'lastname', 'id'])
 
         return paginated_results(len(notifications), items=notifications, items_key="notifications")
 

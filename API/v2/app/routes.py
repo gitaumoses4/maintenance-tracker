@@ -6,7 +6,7 @@ from flask import Blueprint, send_from_directory
 
 from v2.app.resources import UserSignUp, UserLogin, UserLogout, UserMaintenanceRequest, UserModifyRequest, \
     AdminMaintenanceRequest, AdminManageRequest, AdminFeedback, UserFeedbackResource, UserResource, \
-    ManageNotifications, NotificationResource, UsersResource, RequestPhoto
+    ManageNotifications, NotificationResource, UsersResource, RequestPhoto, UserAllFeedbackResource
 
 resource_routes = Blueprint("resource_routes", __name__)
 
@@ -34,3 +34,4 @@ api.add_resource(UserFeedbackResource, "/users/requests/<int:request_id>/feedbac
 api.add_resource(NotificationResource, "/users/notifications/<string:status>")
 api.add_resource(ManageNotifications, "/users/notifications/<int:notification_id>", "/notifications/<int:user_id>")
 api.add_resource(RequestPhoto, "/users/requests/<int:request_id>/photo")
+api.add_resource(UserAllFeedbackResource, "/users/feedback")
