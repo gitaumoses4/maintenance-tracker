@@ -428,9 +428,12 @@ class UserFeedbackResource(Resource):
             return {"status": "error",
                     "message": "You are not allowed to modify or view this maintenance request"}, 401
         else:
-            feedback = maintenance_request.feedback()
+            feedback = [{"feedback": x.to_json_object_filter_fields(get_fields()),
+                         "created_by": x.created_by().to_json_object_filter_fields(["id", "firstname", "lastname"])} for
+                        x
+                        in maintenance_request.feedback()];
             return {"status": "success",
-                    "data": {"feedback": [x.to_json_object_filter_fields(get_fields()) for x in feedback]}}, 200
+                    "data": feedback }, 200
 
 
 class NotificationResource(Resource):
