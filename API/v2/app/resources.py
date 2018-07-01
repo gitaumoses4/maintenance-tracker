@@ -1,6 +1,7 @@
 """
 The main resources for the API endpoints
 """
+import math
 import os
 import re
 from datetime import datetime
@@ -14,7 +15,7 @@ from werkzeug.utils import secure_filename
 
 from v2.app.models import User, Blacklist, Request, Feedback, Notification
 
-RESULTS_PER_PAGE = 10  # define the maximum results per page
+RESULTS_PER_PAGE = 8  # define the maximum results per page
 
 
 def get_page():
@@ -27,6 +28,7 @@ def paginated_results(total_results, items, items_key="items"):
     return {"status": "success", "data": {
         "current_page": get_page(),
         "num_results": len(items),
+        "last_page": math.ceil(total_results / RESULTS_PER_PAGE),
         "total_results": total_results,
         items_key: [x.to_json_object_filter_fields(get_fields()) for x in items]
     }}, 200
@@ -433,7 +435,7 @@ class UserFeedbackResource(Resource):
                         x
                         in maintenance_request.feedback()];
             return {"status": "success",
-                    "data": feedback }, 200
+                    "data": feedback}, 200
 
 
 class NotificationResource(Resource):
