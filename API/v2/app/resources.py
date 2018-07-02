@@ -202,17 +202,11 @@ class UserMaintenanceRequest(Resource):
 
     @jwt_required
     def get(self, status):
-        if status == "pending" or status == "approved" or status == "disapproved" or status == "resolved":
-            requests = [x for x in
-                        Request.query_by_field("created_by", get_jwt_identity(), get_page(), RESULTS_PER_PAGE) if
-                        x.status.lower() == status]
-            num_results = len([x for x in Request.query_for_user(get_jwt_identity()) if x.status.lower() == status])
-        elif status == "all":
-            num_results = Request.count_all_by_field("created_by", get_jwt_identity())
-            requests = Request.query_by_field("created_by", get_jwt_identity(), get_page(), RESULTS_PER_PAGE)
-        else:
-            num_results = 0
-            requests = []
+        requests, num_results = Request.query_and_filter(request.args.get("from"), request.args.get("to"),
+                                                         request.args.get("query"), status,
+                                                         number_of_items=RESULTS_PER_PAGE, page=get_page(),
+                                                         user_id=get_jwt_identity())
+
         return paginated_results(total_results=num_results, items=requests, items_key="requests")
 
 
@@ -280,7 +274,8 @@ class AdminMaintenanceRequest(Resource):
     @admin_guard
     def get(self, status):
         requests, total_results = Request.query_and_filter(request.args.get("from"), request.args.get("to"),
-                                                           request.args.get("query"), status, number_of_items=RESULTS_PER_PAGE, page=get_page())
+                                                           request.args.get("query"), status,
+                                                           number_of_items=RESULTS_PER_PAGE, page=get_page())
 
         return paginated_results(total_results=total_results,
                                  items=requests,
@@ -358,14 +353,12 @@ class AdminFeedback(Resource):
 class UserAllFeedbackResource(Resource):
     @jwt_required
     def get(self):
-        feedback = [{"feedback": x.to_json_object_filter_fields(get_fields()),
-                     "created_by": x.created_by().to_json_object_filter_fields(["id", "firstname", "lastname"])} for x
-                    in Feedback.all_for_user(get_jwt_identity())]
+        feedback, num_results = Feedback.all_for_user(get_jwt_identity(), number_of_items=RESULTS_PER_PAGE,
+                                                      page=get_page())
+        for f in feedback:
+            f.admin = f.created_by().to_json_object_filter_fields(['id', 'firstname', 'lastname'])
 
-        return {
-                   "status": "success",
-                   "data": feedback[:3]
-               }, 200
+        return paginated_results(num_results, items=feedback, items_key="feedback")
 
 
 class UserFeedbackResource(Resource):

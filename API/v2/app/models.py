@@ -394,7 +394,7 @@ class Request(v1.models.Request, DBBaseModel):
         return Request.query_by_field("created_by", user_id)
 
     @classmethod
-    def query_and_filter(cls, from_date, to_date, query='', status='all', page=1, number_of_items=100):
+    def query_and_filter(cls, from_date, to_date, query='', status='all', page=1, number_of_items=100, user_id=-1):
         """
         Query the requests and filter them
         :param from_date:
@@ -406,20 +406,23 @@ class Request(v1.models.Request, DBBaseModel):
         :return:
         """
 
-        data = {"from_date": from_date, "to_date": to_date, "query": "%{}%".format(query), "status": status}
+        data = {"from_date": from_date, "to_date": to_date, "query": "%{}%".format(query), "status": status,
+                "user_id": user_id}
         offset = number_of_items * (int(page) - 1)
         sql = "SELECT * FROM {} ".format(cls.__table__)
         count_sql = "SELECT COUNT(*) as count from {} ".format(cls.__table__)
 
         queries = []
         if status != "all":
-            queries.append(" status = %(status)s")
+            queries.append(" LOWER(status) = LOWER(%(status)s)")
         if from_date:
             queries.append(" CAST(created_at AS DATE) >= %(from_date)s")
         if to_date:
             queries.append(" CAST(created_at AS DATE) <= %(to_date)s")
         if query:
             queries.append(" product_name LIKE %(query)s")
+        if user_id != -1:
+            queries.append(" created_by = %(user_id)s")
 
         for i in range(len(queries)):
             if i == 0:
@@ -433,7 +436,6 @@ class Request(v1.models.Request, DBBaseModel):
 
         db.cursor.execute(sql, data)
 
-        print(sql)
         items = db.cursor.fetchall()
 
         db.cursor.execute(count_sql, data)
@@ -520,14 +522,28 @@ class Feedback(v1.models.Feedback, DBBaseModel):
         return Request.query_by_id(self.request)
 
     @classmethod
-    def all_for_user(cls, user_id):
+    def all_for_user(cls, user_id, page, number_of_items):
         """
         Query items from the database based on a particular field
         :param user_id:
         :return:
         """
-        return [x for x in Feedback.query_all() if
-                x.maintenance_request() and x.maintenance_request().created_by == user_id]
+        offset = number_of_items * (int(page) - 1)
+
+        count_sql = "SELECT COUNT(feedback.*) as count from feedback inner join requests on " \
+                    "requests.created_by = %s and requests.id = feedback.request;"
+
+        sql = "SELECT feedback.*  from feedback inner join requests on " \
+              "requests.created_by = %s and requests.id = feedback.request ORDER BY updated_at LIMIT {} OFFSET {};" \
+            .format(number_of_items, offset)
+
+        db.cursor.execute(sql, (user_id,))
+
+        items = db.cursor.fetchall()
+
+        db.cursor.execute(count_sql, (user_id,))
+        count = db.cursor.fetchone()
+        return [cls.deserialize(x) for x in items], count['count']
 
 
 class Notification(v1.models.Notification, DBBaseModel):
