@@ -393,6 +393,54 @@ class Request(v1.models.Request, DBBaseModel):
         """
         return Request.query_by_field("created_by", user_id)
 
+    @classmethod
+    def query_and_filter(cls, from_date, to_date, query='', status='all', page=1, number_of_items=100):
+        """
+        Query the requests and filter them
+        :param from_date:
+        :param to_date:
+        :param query:
+        :param status:
+        :param page:
+        :param number_of_items:
+        :return:
+        """
+
+        data = {"from_date": from_date, "to_date": to_date, "query": "%{}%".format(query), "status": status}
+        offset = number_of_items * (int(page) - 1)
+        sql = "SELECT * FROM {} ".format(cls.__table__)
+        count_sql = "SELECT COUNT(*) as count from {} ".format(cls.__table__)
+
+        queries = []
+        if status != "all":
+            queries.append(" status = %(status)s")
+        if from_date:
+            queries.append(" CAST(created_at AS DATE) >= %(from_date)s")
+        if to_date:
+            queries.append(" CAST(created_at AS DATE) <= %(to_date)s")
+        if query:
+            queries.append(" product_name LIKE %(query)s")
+
+        for i in range(len(queries)):
+            if i == 0:
+                sql = sql + " WHERE " + queries[i]
+                count_sql = count_sql + " WHERE " + queries[i]
+            else:
+                sql = sql + " AND " + queries[i]
+                count_sql = count_sql + " AND " + queries[i]
+
+        sql = sql + " ORDER BY updated_at DESC LIMIT {} OFFSET {}".format(number_of_items, offset)
+
+        db.cursor.execute(sql, data)
+
+        print(sql)
+        items = db.cursor.fetchall()
+
+        db.cursor.execute(count_sql, data)
+        count = db.cursor.fetchone()
+
+        return [cls.deserialize(x) for x in items], count['count']
+
 
 class Feedback(v1.models.Feedback, DBBaseModel):
     """

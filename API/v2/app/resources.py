@@ -166,40 +166,6 @@ class UserLogout(Resource):
         return {"status": "success", "message": "Successfully logged out"}, 200
 
 
-class RequestPhoto(Resource):
-    ALLOWED_EXTENSIONS = ('jpg', 'jpeg', 'gif', 'png')
-    UPLOAD_FOLDER = "uploads"
-
-    @jwt_required
-    def post(self, request_id):
-        maintenance_request = Request.query_by_id(request_id)
-        if maintenance_request is None:
-            return {"status": "error", "message": "Maintenance request does not exist"}, 404
-        elif maintenance_request.created_by != get_jwt_identity():
-            return {"status": "error",
-                    "message": "You are not allowed to modify or view this maintenance request"}, 401
-
-        if 'photo' not in request.files:
-            return {"status": "error", "message": "No photo uploaded"}, 400
-        file = request.files['photo']
-
-        if file.filename == "":
-            return {"status": "error", "message": "No photo selected"}, 400
-
-        if file and file.filename.rsplit('.', 1)[1].lower() in RequestPhoto.ALLOWED_EXTENSIONS:
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(RequestPhoto.UPLOAD_FOLDER, filename))
-
-            maintenance_request.photo = os.path.join(RequestPhoto.UPLOAD_FOLDER, filename)
-            maintenance_request.update()
-
-            return {"status": "success", "data": {
-                "request": maintenance_request.to_json_object_filter_fields(get_fields())
-            }}, 200
-        else:
-            return {"status": "error", "message": "Error uploading photo"}, 400
-
-
 class UserMaintenanceRequest(Resource):
 
     @staticmethod
@@ -271,11 +237,15 @@ class UserModifyRequest(Resource):
         maintenance_request = Request.query_by_id(request_id)
         if maintenance_request is None:
             return {"status": "error", "message": "Maintenance request does not exist"}, 404
-        elif maintenance_request.created_by != get_jwt_identity():
-            return {"status": "error", "message": "You are not allowed to modify or view this maintenance request"}, 401
-        else:
+        elif maintenance_request.created_by == get_jwt_identity() or User.query_by_id(
+                get_jwt_identity()).is_admin():
+            maintenance_request.created_by = User.query_by_id(get_jwt_identity()).to_json_object_filter_fields(
+                ["id", "firstname", "lastname"])
             return {"status": "success",
                     "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 200
+        else:
+            return {"status": "error",
+                    "message": "You are not allowed to modify or view this maintenance request "}, 401
 
     @jwt_required
     def put(self, request_id):
@@ -306,35 +276,14 @@ class UserModifyRequest(Resource):
 
 class AdminMaintenanceRequest(Resource):
 
-    @staticmethod
-    def filter_requests(requests):
-        if request.args.get("from"):
-            date_from = datetime.strptime(request.args.get("from"), "%Y-%m-%d")
-            requests = [x for x in requests if x.created_at >= date_from]
-        if request.args.get("to"):
-            date_to = datetime.strptime(request.args.get("to"), "%Y-%m-%d")
-            requests = [x for x in requests if x.created_at <= date_to]
-        if request.args.get("query"):
-            requests = [x for x in requests if request.args.get("query").lower() in x.product_name.lower()]
-
-        return requests
-
     @jwt_required
     @admin_guard
     def get(self, status):
-        if status in ["pending", "approved", "disapproved", "resolved"]:
-            requests = [x for x in Request.query_all(page=get_page(), number_of_items=RESULTS_PER_PAGE)
-                        if x.status.lower() == status]
-            total_results = len([x for x in Request.query_all() if x.status.lower() == status])
-        elif status == "all":
-            requests = Request.query_all(page=get_page(), number_of_items=RESULTS_PER_PAGE)
-            total_results = Request.count_all()
-        else:
-            requests = []
-            total_results = 0
+        requests, total_results = Request.query_and_filter(request.args.get("from"), request.args.get("to"),
+                                                           request.args.get("query"), status, number_of_items=RESULTS_PER_PAGE, page=get_page())
 
         return paginated_results(total_results=total_results,
-                                 items=AdminMaintenanceRequest.filter_requests(requests),
+                                 items=requests,
                                  items_key="requests")
 
 
@@ -426,16 +375,17 @@ class UserFeedbackResource(Resource):
         maintenance_request = Request.query_by_id(request_id)
         if maintenance_request is None:
             return {"status": "error", "message": "Maintenance request does not exist"}, 404
-        elif maintenance_request.created_by != get_jwt_identity():
-            return {"status": "error",
-                    "message": "You are not allowed to modify or view this maintenance request"}, 401
-        else:
+        elif maintenance_request.created_by != get_jwt_identity() or not User.query_by_id(
+                get_jwt_identity()).is_admin():
             feedback = [{"feedback": x.to_json_object_filter_fields(get_fields()),
                          "created_by": x.created_by().to_json_object_filter_fields(["id", "firstname", "lastname"])} for
                         x
-                        in maintenance_request.feedback()];
+                        in maintenance_request.feedback()]
             return {"status": "success",
                     "data": feedback}, 200
+        else:
+            return {"status": "error",
+                    "message": "You are not allowed to modify or view this maintenance request"}, 401
 
 
 class NotificationResource(Resource):
