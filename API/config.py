@@ -22,6 +22,13 @@ class Configuration:
     DATABASE_USER = os.getenv("DATABASE_USER")
     DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
     DATABASE_HOST = os.getenv("DATABASE_HOST")
+    MAIL_SERVER = "smtp.gmail.com"
+    MAIL_PORT = 465
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = os.getenv("GMAIL_EMAIL")
+    MAIL_PASSWORD = os.getenv("GMAIL_PASSWORD")
+
     JWT_ACCESS_TOKEN_EXPIRES = False
 
 

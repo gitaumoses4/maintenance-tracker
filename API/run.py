@@ -2,15 +2,16 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 
 import v1
 from config import config
 from v1 import user_routes, admin_routes, web
-from v2.app.database import Database
+from v2.app.database import Database, MailSender
 from flask_cors import CORS
 
 db = Database()
-
+mail_sender = MailSender()
 import v2.app.routes
 from migrate import Migration
 
@@ -28,6 +29,7 @@ def create_app(config_name="DEVELOPMENT"):
     app.register_blueprint(web)
     app.register_blueprint(v2.app.routes.resource_routes, url_prefix="/api/v2")
     db.init_app(app)
+    mail_sender.init_app(app)
 
     jwt = JWTManager(app)
 

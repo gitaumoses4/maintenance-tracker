@@ -1,19 +1,19 @@
 """
 The main resources for the API endpoints
 """
+import html
 import math
-import os
 import re
-from datetime import datetime
 from functools import wraps
 
-from flask import request, url_for
+from flask import request
 from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt, get_jwt_identity
+from flask_mail import Message, Mail
 from flask_restful import Resource
 from passlib.handlers.bcrypt import bcrypt
-from werkzeug.utils import secure_filename
 
 from v2.app.models import User, Blacklist, Request, Feedback, Notification
+from run import mail_sender
 
 RESULTS_PER_PAGE = 8  # define the maximum results per page
 
@@ -51,6 +51,21 @@ def admin_guard(f):
     return wrapped
 
 
+class VerifyAccountResource(Resource):
+
+    @jwt_required
+    def post(self):
+        user = User.query_by_id(get_jwt_identity())
+        if user.verify_user(request.json.get("pin")):
+            user.verified = 1
+            user.update()
+            return {"status": "success", "data": {
+                "user": user.to_json_object_filter_fields(get_fields())
+            }}
+        else:
+            return {"status": "error", "message": ['Invalid verification PIN']}, 400
+
+
 class UserResource(Resource):
 
     @jwt_required
@@ -69,6 +84,7 @@ class UserResource(Resource):
 
         notification = Notification(
             admin=get_jwt_identity(), user=user.id,
+            action="upgrade",
             message="You have been upgraded to be an Administrator")
         notification.save()
 
@@ -96,14 +112,20 @@ class UserSignUp(Resource):
         errors = []
         if not item.get("firstname"):
             errors.append("First name is required")
+        elif len(item.get("firstname").strip()) == 0:
+            errors.append("Invalid first name provided.")
 
         if not item.get("lastname"):
             errors.append("Last name is required")
+        elif len(item.get("lastname").strip()) == 0:
+            errors.append("Invalid last name provided.")
 
         if not item.get("username"):
             errors.append("Username is required")
         elif len(User.query_by_field(field="username", value=item.get("username"))) != 0:
             errors.append("Username is already in use")
+        elif len(item.get("username").strip()) == 0:
+            errors.append("Invalid username")
 
         if not item.get("email"):
             errors.append("Email is required")
@@ -114,7 +136,7 @@ class UserSignUp(Resource):
 
         if not item.get("password"):
             errors.append("Password is required")
-        elif len(item.get("password")) < 8:
+        elif len(item.get("password").strip()) < 8:
             errors.append("Password must be more than 8 characters long")
 
         return len(errors) == 0, errors
@@ -131,6 +153,27 @@ class UserSignUp(Resource):
                     'email'], result['username'],
                 bcrypt.encrypt(result['password']))
             user.save()
+
+            notification = Notification(admin=user.id,
+                                        message="New user ({}) created a new account.".format(user.username),
+                                        action="signup", user=1)
+            notification.save()
+
+            mail = Mail(mail_sender.app)
+            msg = Message(subject="Email Verification",
+                          sender=mail_sender.app.config.get("MAIL_USERNAME"),
+                          recipients=[user.email],
+                          html="<html>"
+                               "<body>"
+                               "Hello {} {}<br/><br/>"
+                               "Thank you for registering.<br/>"
+                               "Use the following PIN to verify your account.<br/></br>"
+                               "<h1>{}</h1>"
+                               "</body>"
+                               "</html>".format(user.firstname, user.lastname,
+                                                user.verify_token))
+
+            mail.send(msg)
 
             return {"data": {"user": user.to_json_object_filter_fields(get_fields())}, "status": "success"}, 201
         else:
@@ -174,9 +217,13 @@ class UserMaintenanceRequest(Resource):
         errors = []
         if not item.get("product_name"):
             errors.append("Product name must be provided")
+        elif len(item.get("product_name").strip()) == 0:
+            errors.append("Invalid product name provided.")
 
         if not item.get("description"):
             errors.append("Maintenance/Repair request description must be provided")
+        elif len(item.get("description").strip()) == 0:
+            errors.append("Please provide a maintenance/repair request description")
 
         return len(errors) == 0, errors
 
@@ -188,13 +235,18 @@ class UserMaintenanceRequest(Resource):
                 return {"status": "error", "message": errors}, 400
             result = request.json
             maintenance_request = Request(product_name=result['product_name'],
-                                          description=result['description'],
+                                          description=html.escape(result['description']),
                                           created_by=get_jwt_identity())
             if result.get('photo'):
                 maintenance_request.photo = result['photo']
 
             maintenance_request.save()
 
+            notification = Notification(admin=get_jwt_identity(), user=1,
+                                        message="{} created a new maintenance/repair request.".format(
+                                            User.query_by_id(get_jwt_identity()).username
+                                        ), action=maintenance_request.id)
+            notification.save()
             return {"status": "success",
                     "data": {"request": maintenance_request.to_json_object_filter_fields(get_fields())}}, 201
         else:
@@ -216,12 +268,17 @@ class UserModifyRequest(Resource):
         errors = []
         if not item.get("product_name"):
             errors.append("Product name must be provided")
+        elif len(item.get("product_name").strip()) == 0:
+            errors.append("Invalid product name provided.")
 
         if not item.get("description"):
             errors.append("Maintenance/Repair request description must be provided")
+        elif len(item.get("description").strip()) == 0:
+            errors.append("Please provide a maintenance/repair request description")
 
         if maintenance_request.product_name == item.get("product_name") and \
-                maintenance_request.description == item.get("description"):
+                maintenance_request.description == item.get("description") and \
+                maintenance_request.photo == item.get("photo"):
             errors.append("The details entered already exist.")
 
         return len(errors) == 0, errors
@@ -260,6 +317,14 @@ class UserModifyRequest(Resource):
 
             maintenance_request.product_name = result['product_name']
             maintenance_request.description = result['description']
+            if result['photo'].strip() != '':
+                maintenance_request.photo = result['photo']
+
+            notification = Notification(admin=get_jwt_identity(),
+                                        message="Request #{} details have been updated.".format(maintenance_request.id),
+                                        user=1,
+                                        action=maintenance_request.id)
+            notification.save()
 
             maintenance_request.update()
             return {"status": "success",
@@ -307,6 +372,7 @@ class AdminManageRequest(Resource):
 
         notification = Notification(
             admin=get_jwt_identity(), user=maintenance_request.created_by,
+            action=request_id,
             message="Maintenance Request with ID #{0} has been {1}".format(request_id, statuses[status]))
         notification.save()
         return {"status": "success",
@@ -341,6 +407,7 @@ class AdminFeedback(Resource):
                         message=request.json.get("message"))
                     feedback.save()
                     notification = Notification(
+                        action=request_id,
                         admin=get_jwt_identity(), user=maintenance_request.created_by,
                         message="Feedback provided for Request #{0}".format(request_id))
                     notification.save()
@@ -370,12 +437,12 @@ class UserFeedbackResource(Resource):
             return {"status": "error", "message": "Maintenance request does not exist"}, 404
         elif maintenance_request.created_by != get_jwt_identity() or not User.query_by_id(
                 get_jwt_identity()).is_admin():
-            feedback = [{"feedback": x.to_json_object_filter_fields(get_fields()),
-                         "created_by": x.created_by().to_json_object_filter_fields(["id", "firstname", "lastname"])} for
-                        x
-                        in maintenance_request.feedback()]
+            feedback = maintenance_request.feedback()
+            for f in feedback:
+                f.admin = f.created_by().to_json_object_filter_fields(['id', 'firstname', 'lastname'])
+
             return {"status": "success",
-                    "data": feedback}, 200
+                    "data": {"feedback": [x.to_json_object_filter_fields(get_fields()) for x in feedback]}}, 200
         else:
             return {"status": "error",
                     "message": "You are not allowed to modify or view this maintenance request"}, 401
@@ -419,7 +486,8 @@ class ManageNotifications(Resource):
         notification = Notification.query_by_id(notification_id)
         if not notification:
             return {"status": "error", "message": "Notification not found"}, 404
-        if notification.user != get_jwt_identity():
+        if not User.query_by_id(
+                get_jwt_identity()).is_admin() and not notification.user == get_jwt_identity():
             return {"status": "error",
                     "message": "You are not allowed to modify or view this notification"}, 401
         else:

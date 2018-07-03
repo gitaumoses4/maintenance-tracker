@@ -1,4 +1,6 @@
 """Creates the database models with ability to perform SQL functions"""
+import uuid
+
 import psycopg2
 
 from passlib.handlers.bcrypt import bcrypt
@@ -161,6 +163,14 @@ class User(v1.models.User, DBBaseModel):
     """
     __table__ = "users"
 
+    def __init__(self, firstname="", lastname="", email="", username="", password="", profile_picture="",
+                 created_at=datetime.now(), updated_at=datetime.now()):
+        super().__init__(firstname=firstname, lastname=lastname, email=email, password=password, username=username,
+                         created_at=created_at, updated_at=updated_at, profile_picture=profile_picture)
+
+        self.verify_token = uuid.uuid4().hex[:6].upper()
+        self.verified = 0
+
     @classmethod
     def migrate(cls):
         db.cursor.execute("""CREATE TABLE IF NOT EXISTS users(
@@ -172,6 +182,8 @@ class User(v1.models.User, DBBaseModel):
             password varchar,
             created_at timestamp,
             updated_at timestamp,
+            verify_token varchar,
+            verified integer,
             role varchar)""")
         db.connection.commit()
 
@@ -187,6 +199,8 @@ class User(v1.models.User, DBBaseModel):
         user.created_at = dictionary['created_at']
         user.updated_at = dictionary['updated_at']
         user.role = dictionary['role']
+        user.verify_token = dictionary['verify_token']
+        user.verified = dictionary['verified']
 
         return user
 
@@ -206,10 +220,11 @@ class User(v1.models.User, DBBaseModel):
         """
         db.cursor.execute(
             "INSERT INTO users(firstname,lastname,username,email,"
-            "password,created_at,updated_at, role) VALUES(%s,%s,%s,%s,%s,%s,%s, %s) RETURNING id", (
+            "password,created_at,updated_at,verify_token, verified, role) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s, %s) RETURNING id", (
                 self.firstname, self.lastname, self.username, self.email,
                 self.password, self.created_at,
-                self.updated_at, self.role
+                self.updated_at, self.verify_token, self.verified, self.role
             ))
         super().save()
 
@@ -221,9 +236,11 @@ class User(v1.models.User, DBBaseModel):
         super().update()
         db.cursor.execute(
             "UPDATE users SET firstname = %s, lastname = %s, username = %s,"
-            "email = %s, password = %s, updated_at = now(), role = %s where id = %s", (
+            "email = %s, password = %s, updated_at = now(), role = %s, verify_token = %s, verified = %s where id = %s",
+            (
                 self.firstname, self.lastname, self.username,
                 self.email, self.password, self.role,
+                self.verify_token, self.verified,
                 self.id))
         db.connection.commit()
 
@@ -247,7 +264,12 @@ class User(v1.models.User, DBBaseModel):
         :return:
         """
 
-        return Notification.query_by_field("user_id", self.id)
+        items = []
+        if self.id != 1:
+            items = Notification.query_by_field("user_id", self.id)
+        if User.query_by_id(self.id).is_admin():
+            items = items + Notification.query_by_field("user_id", 1)
+        return items
 
     def read_notifications(self):
         """
@@ -262,6 +284,15 @@ class User(v1.models.User, DBBaseModel):
         :return:
         """
         return [x for x in self.notifications() if not x.read == 1]
+
+    def verify_user(self, verify_token):
+        if self.verify_token == verify_token:
+            self.verified = 1
+            return True
+        return False
+
+    def excluded_fields(self):
+        return ['password', 'created_at', 'updated_at', "verify_token"]
 
 
 class Admin(User):
@@ -283,6 +314,7 @@ class Admin(User):
         admin.username = db.app.config['DEFAULT_ADMIN_USER_NAME']
         admin.password = bcrypt.encrypt(db.app.config['DEFAULT_ADMIN_PASSWORD'])
         admin.profile_picture = db.app.config['DEFAULT_ADMIN_PROFILE_PICTURE']
+        admin.verified = 1
 
         return admin
 
@@ -552,6 +584,11 @@ class Notification(v1.models.Notification, DBBaseModel):
     """
     __table__ = "notifications"
 
+    def __init__(self, admin=None, user=None, message="", action="", created_at=datetime.now(),
+                 updated_at=datetime.now()):
+        super().__init__(admin=admin, user=user, message=message, created_at=created_at, updated_at=updated_at);
+        self.action = action
+
     @classmethod
     def migrate(cls):
         """
@@ -563,6 +600,7 @@ class Notification(v1.models.Notification, DBBaseModel):
             admin_id INTEGER,
             user_id INTEGER,
             message varchar,
+            action varchar,
             read integer,
             created_at timestamp,
             updated_at timestamp,
@@ -579,6 +617,7 @@ class Notification(v1.models.Notification, DBBaseModel):
         notification.user = dictionary['user_id']
         notification.message = dictionary['message']
         notification.read = dictionary['read']
+        notification.action = dictionary['action'];
         notification.updated_at = dictionary['updated_at']
         notification.created_at = dictionary['created_at']
 
@@ -590,13 +629,14 @@ class Notification(v1.models.Notification, DBBaseModel):
         :return:
         """
         db.cursor.execute(
-            "INSERT INTO notifications(admin_id,user_id,message,read, created_at, updated_at) "
-            "VALUES(%s,%s,%s,%s,%s,%s) RETURNING id;",
+            "INSERT INTO notifications(admin_id,user_id,message,read,action, created_at, updated_at) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING id;",
             (
                 self.admin,
                 self.user,
                 self.message,
                 0,
+                self.action,
                 self.created_at,
                 self.updated_at
             ))
@@ -608,11 +648,13 @@ class Notification(v1.models.Notification, DBBaseModel):
         :return:
         """
         super().update()
-        db.cursor.execute("UPDATE notifications SET message = %s, read = %s, updated_at = now() WHERE id = %s", (
-            self.message,
-            self.read,
-            self.id
-        ))
+        db.cursor.execute(
+            "UPDATE notifications SET message = %s, read = %s, action = %s, updated_at = now() WHERE id = %s", (
+                self.message,
+                self.read,
+                self.action,
+                self.id
+            ))
         db.connection.commit()
 
     def mark_as_read(self):

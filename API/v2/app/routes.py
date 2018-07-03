@@ -6,7 +6,7 @@ from flask import Blueprint, send_from_directory
 
 from v2.app.resources import UserSignUp, UserLogin, UserLogout, UserMaintenanceRequest, UserModifyRequest, \
     AdminMaintenanceRequest, AdminManageRequest, AdminFeedback, UserFeedbackResource, UserResource, \
-    ManageNotifications, NotificationResource, UsersResource, UserAllFeedbackResource
+    ManageNotifications, NotificationResource, UsersResource, UserAllFeedbackResource, VerifyAccountResource
 
 resource_routes = Blueprint("resource_routes", __name__)
 
@@ -19,6 +19,7 @@ def docs():
 api = Api(resource_routes)
 
 api.add_resource(UserSignUp, "/auth/signup")
+api.add_resource(VerifyAccountResource, "/auth/verify")
 api.add_resource(UserLogin, "/auth/login")
 api.add_resource(UserLogout, "/auth/logout")
 api.add_resource(UserResource, "/users/details",

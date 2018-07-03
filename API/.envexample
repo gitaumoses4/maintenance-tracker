@@ -11,3 +11,5 @@ DATABASE_HOST = "localhost"
 DATABASE_NAME = "maintenance_tracker"
 TEST_DATABASE_NAME = "maintenance_tracker_test"
 
+GMAIL_EMAIL = "test@gmail.com"
+GMAIL_PASSWORD = "test_password"
