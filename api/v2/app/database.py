@@ -10,7 +10,7 @@ class Database:
 
     def __init__(self):
         self.connection = psycopg2.connect(dbname=config.DATABASE_NAME, user=config.DATABASE_USER,
-                                           password=config.DATABASE_PASSWORD, host=config.DATABASE_HOST)
+                                           password=config.DATABASE_PASSWORD, host=config.DATABASE_HOST,port=config.DATABASE_PORT)
         self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
 
 
