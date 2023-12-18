@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL = window.location.protocol + "//" + window.location.hostname + "/api"
 const HEADERS = {"Content-Type": "application/json", "Access-Control-Allow-Origin": "all"};
 
 let page = window.location.pathname;

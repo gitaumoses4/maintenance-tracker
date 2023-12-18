@@ -1,6 +1,6 @@
 from flask import Blueprint, send_from_directory
 
-web = Blueprint("routes.web", __name__)
+web = Blueprint("routes-web", __name__)
 
 
 @web.route('/api/v1')

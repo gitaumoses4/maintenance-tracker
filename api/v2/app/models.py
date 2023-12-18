@@ -3,7 +3,9 @@ from passlib.handlers.bcrypt import bcrypt
 
 import v1.models
 from datetime import datetime
-from run import db
+
+from config import config
+from v2.app.database import db
 
 
 class DBBaseModel(v1.models.BaseModel):
@@ -217,12 +219,12 @@ class Admin(User):
     @staticmethod
     def default():
         admin = Admin()
-        admin.firstname = db.app.config['DEFAULT_ADMIN_FIRST_NAME']
-        admin.lastname = db.app.config['DEFAULT_ADMIN_LAST_NAME']
-        admin.email = db.app.config['DEFAULT_ADMIN_EMAIL']
-        admin.username = db.app.config['DEFAULT_ADMIN_USER_NAME']
-        admin.password = bcrypt.encrypt(db.app.config['DEFAULT_ADMIN_PASSWORD'])
-        admin.profile_picture = db.app.config['DEFAULT_ADMIN_PROFILE_PICTURE']
+        admin.firstname = config.DEFAULT_ADMIN_FIRST_NAME
+        admin.lastname = config.DEFAULT_ADMIN_LAST_NAME
+        admin.email = config.DEFAULT_ADMIN_EMAIL
+        admin.username = config.DEFAULT_ADMIN_USER_NAME
+        admin.password = bcrypt.encrypt(config.DEFAULT_ADMIN_PASSWORD)
+        admin.profile_picture = config.DEFAULT_ADMIN_PROFILE_PICTURE
 
         return admin
 

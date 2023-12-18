@@ -6,9 +6,9 @@ from flask_jwt_extended import (
     jwt_required,
     create_access_token,
     get_jwt_identity,
-    get_raw_jwt)
+    get_jwt)
 
-user_routes = Blueprint("routes.user", __name__)
+user_routes = Blueprint("routes-user", __name__)
 
 
 @user_routes.route("/signup", methods=["POST"])
@@ -86,7 +86,7 @@ def login_user():
 @user_routes.route("/logout", methods=["DELETE"])
 @jwt_required
 def logout_user():
-    jti = get_raw_jwt()['jti']
+    jti = get_jwt()['jti']
     db.blacklist.add(jti)
     return jsonify({
         "status": "success",
@@ -94,7 +94,7 @@ def logout_user():
     }), 200
 
 
-@user_routes.route("/requests", methods=["POST"])
+@user_routes.route("/requests", methods=["POST"], endpoint="create_request")
 @jwt_required
 def create_request():
     if request.is_json:
@@ -126,7 +126,7 @@ def create_request():
         }), 400
 
 
-@user_routes.route("/requests", methods=["GET"])
+@user_routes.route("/requests", methods=["GET"], endpoint="get_all_requests")
 @jwt_required
 def get_all_requests():
     requests = [x.to_json_object() for x in db.requests.query_all().values() if
@@ -140,7 +140,7 @@ def get_all_requests():
     }), 200
 
 
-@user_routes.route("/requests/<int:_id>", methods=["PUT", "GET"])
+@user_routes.route("/requests/<int:_id>", methods=["PUT", "GET"], endpoint="modify_request")
 @jwt_required
 def modify_request(_id):
     maintenance_request = db.requests.query(_id)
@@ -180,7 +180,7 @@ def modify_request(_id):
         }), 200
 
 
-@user_routes.route("/requests/<int:_id>/feedback", methods=['GET'])
+@user_routes.route("/requests/<int:_id>/feedback", methods=['GET'], endpoint="get_feedback")
 @jwt_required
 def get_feedback_for_request(_id):
     maintenance_request = db.requests.query(_id)
@@ -204,7 +204,7 @@ def get_feedback_for_request(_id):
         }), 200
 
 
-@user_routes.route("/details", methods=['GET'])
+@user_routes.route("/details", methods=['GET'], endpoint="get_user_details")
 @jwt_required
 def get_user_details():
     return jsonify({
@@ -215,7 +215,7 @@ def get_user_details():
     }), 200
 
 
-@user_routes.route('/notifications/<int:_id>', methods=['GET'])
+@user_routes.route('/notifications/<int:_id>', methods=['GET'], endpoint="get_notification")
 @jwt_required
 def get_user_notification(_id):
     notification = db.notifications.query(_id)
@@ -233,7 +233,7 @@ def get_user_notification(_id):
         }), 200
 
 
-@user_routes.route('/notifications', methods=['GET'])
+@user_routes.route('/notifications', methods=['GET'], endpoint="get_all_notifications")
 @jwt_required
 def get_all_notifications():
     notifications = [x.to_json_object() for x in db.notifications.query_all().values() if
@@ -247,7 +247,7 @@ def get_all_notifications():
     }), 200
 
 
-@user_routes.route('/notifications/<int:_id>', methods=['PUT'])
+@user_routes.route('/notifications/<int:_id>', methods=['PUT'], endpoint="mark_as_read")
 @jwt_required
 def mark_as_read(_id):
     notification = db.notifications.query(_id)

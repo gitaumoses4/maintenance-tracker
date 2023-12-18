@@ -5,9 +5,9 @@ from passlib.hash import bcrypt
 from flask_jwt_extended import (
     jwt_required,
     create_access_token,
-    get_raw_jwt)
+    get_jwt)
 
-admin_routes = Blueprint("routes.admin", __name__)
+admin_routes = Blueprint("routes-admin", __name__)
 
 
 @admin_routes.route("/login", methods=['POST'])
@@ -62,7 +62,7 @@ def login_admin():
 @admin_routes.route("/logout", methods=["DELETE"])
 @jwt_required
 def logout_admin():
-    jti = get_raw_jwt()['jti']
+    jti = get_jwt()['jti']
     db.blacklist.add(jti)
     return jsonify({
         "status": "success",
@@ -70,7 +70,7 @@ def logout_admin():
     }), 200
 
 
-@admin_routes.route("/requests", methods=["GET"])
+@admin_routes.route("/requests", methods=["GET"], endpoint="get_all_requests")
 @jwt_required
 def get_all_requests():
     requests = [x.to_json_object() for x in db.requests.query_all().values()]
@@ -83,7 +83,7 @@ def get_all_requests():
     }), 200
 
 
-@admin_routes.route("/requests/<int:_id>", methods=["PUT", "GET"])
+@admin_routes.route("/requests/<int:_id>", methods=["PUT", "GET"], endpoint="modify_request")
 @jwt_required
 def modify_request(_id):
     maintenance_request = db.requests.query(_id)
@@ -119,7 +119,7 @@ def modify_request(_id):
         }), 200
 
 
-@admin_routes.route('/requests/<int:_id>/feedback', methods=['POST'])
+@admin_routes.route('/requests/<int:_id>/feedback', methods=['POST'], endpoint="write_feedback_for_request")
 @jwt_required
 def write_feedback_for_request(_id):
     if request.is_json:
@@ -153,7 +153,7 @@ def write_feedback_for_request(_id):
         }), 400
 
 
-@admin_routes.route('/users/<int:_id>/notifications', methods=['POST'])
+@admin_routes.route('/users/<int:_id>/notifications', methods=['POST'], endpoint="send_notification")
 @jwt_required
 def send_notification(_id):
     if request.is_json:

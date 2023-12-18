@@ -1,7 +1,7 @@
 """Models will be used to store the data in a data structure"""
 import json
 from datetime import datetime
-from config import default_config
+from config import config
 
 
 class BaseModel:
@@ -71,12 +71,12 @@ class Admin(User):
     @staticmethod
     def default():
         admin = Admin()
-        admin.firstname = default_config.DEFAULT_ADMIN_FIRST_NAME
-        admin.lastname = default_config.DEFAULT_ADMIN_LAST_NAME
-        admin.email = default_config.DEFAULT_ADMIN_EMAIL
-        admin.username = default_config.DEFAULT_ADMIN_USER_NAME
-        admin.password = default_config.DEFAULT_ADMIN_PASSWORD
-        admin.profile_picture = default_config.DEFAULT_ADMIN_PROFILE_PICTURE
+        admin.firstname = config.DEFAULT_ADMIN_FIRST_NAME
+        admin.lastname = config.DEFAULT_ADMIN_LAST_NAME
+        admin.email = config.DEFAULT_ADMIN_EMAIL
+        admin.username = config.DEFAULT_ADMIN_USER_NAME
+        admin.password = config.DEFAULT_ADMIN_PASSWORD
+        admin.profile_picture = config.DEFAULT_ADMIN_PROFILE_PICTURE
 
         return admin
 

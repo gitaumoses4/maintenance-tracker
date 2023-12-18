@@ -1,0 +1,66 @@
+version: '2.1'
+
+volumes:
+  maintenance-tracker-data:
+    external: true
+
+services:
+  maintenance-tracker:
+    image: maintenance-tracker:latest
+    build:
+      context: ./frontend
+    container_name: maintenance-tracker
+    ports:
+      - '3003:3003'
+    environment:
+      FRONTEND_PORT: 3003
+    env_file:
+      - .env
+    depends_on:
+      maintenance-tracker-api:
+        condition: service_started
+    healthcheck:
+      test: [ 'CMD-SHELL', 'curl -s -k http://localhost:3003' ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+  maintenance-tracker-api:
+    image: maintenance-tracker-api:latest
+    build:
+      context: ./api
+    container_name: maintenance-tracker-api
+    environment:
+      PORT: 3004
+      DATABASE_HOST: maintenance-tracker-database
+    ports:
+      - '3004:3004'
+    env_file:
+      - .env
+    depends_on:
+      maintenance-tracker-database:
+        condition: service_healthy
+    healthcheck:
+      test: [ 'CMD-SHELL', 'curl -s -k http://localhost:3004' ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+  maintenance-tracker-database:
+    image: postgres:13.3-alpine
+    container_name: maintenance-tracker-database
+    volumes:
+      - maintenance-tracker-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - '5432:5432'
+    expose:
+      - '5432'
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+

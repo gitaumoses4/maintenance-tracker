@@ -25,7 +25,9 @@ class Migration:
 
         # create default admin
         admin = Admin.default()
-        admin.save()
+        existing_admin = Admin.get_by_username(admin.username)
+        if existing_admin is None:
+            admin.save()
 
     @staticmethod
     def tear_down():

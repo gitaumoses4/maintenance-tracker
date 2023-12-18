@@ -1,5 +1,6 @@
 """Configuration classes for the application"""
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,6 +11,7 @@ class Configuration:
     DEBUG = False
     TESTING = False
     PROPAGATE_EXCEPTIONS = True
+    PORT = os.getenv("PORT") or 5000
     DEFAULT_ADMIN_FIRST_NAME = os.getenv("DEFAULT_ADMIN_FIRST_NAME")
     DEFAULT_ADMIN_LAST_NAME = os.getenv("DEFAULT_ADMIN_LAST_NAME")
     DEFAULT_ADMIN_USER_NAME = os.getenv("DEFAULT_ADMIN_USER_NAME")
@@ -41,10 +43,10 @@ class Testing(Development):
     DATABASE_NAME = os.getenv("TEST_DATABASE_NAME")
 
 
+environment = os.getenv("APP_ENVIRONMENT") or "DEVELOPMENT"
+
 config = {
     "TESTING": Testing,
     "DEVELOPMENT": Development,
     "PRODUCTION": Production
-}
-
-default_config = config['DEVELOPMENT']
+}[environment]

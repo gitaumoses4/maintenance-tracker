@@ -8,28 +8,25 @@ from config import config
 from v1 import user_routes, admin_routes, web
 from v2.app.database import Database
 
-db = Database()
-
 import v2.app.routes
 from migrate import Migration
 
 load_dotenv()
 
 
-def create_app(config_name="DEVELOPMENT"):
+def create_app():
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(config[config_name])
+    app.config.from_object(config)
 
     v1.initialize_app(app)
     app.register_blueprint(user_routes, url_prefix="/api/v1/users")
     app.register_blueprint(admin_routes, url_prefix="/api/v1/admin")
     app.register_blueprint(web)
     app.register_blueprint(v2.app.routes.resource_routes, url_prefix="/api/v2")
-    db.init_app(app)
 
     jwt = JWTManager(app)
 
-    @jwt.token_in_blacklist_loader
+    @jwt.token_in_blocklist_loader
     def check_token(token):
         from v2.app.models import Blacklist
         """check if the token is blacklisted"""
@@ -82,4 +79,6 @@ app = create_app()
 migration = Migration()
 migration.set_up()
 if __name__ == '__main__':
-    app.run()
+    from waitress import serve
+
+    serve(app, host="0.0.0.0", port=config.PORT)

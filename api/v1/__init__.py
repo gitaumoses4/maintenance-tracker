@@ -10,7 +10,7 @@ def initialize_app(app):
     # initialize JWT
     jwt = JWTManager(app)
 
-    @jwt.token_in_blacklist_loader
+    @jwt.token_in_blocklist_loader
     def check_token(token):
         """check if the token is blacklisted"""
         return token['jti'] in db.blacklist
