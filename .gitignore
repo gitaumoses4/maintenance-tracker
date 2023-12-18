@@ -1,7 +1,6 @@
 .idea
 node_modules
 *.log
-server.js
 venv
 .env
 __pycache__/
