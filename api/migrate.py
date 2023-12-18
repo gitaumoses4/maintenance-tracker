@@ -26,7 +26,7 @@ class Migration:
         # create default admin
         admin = Admin.default()
         existing_admin = Admin.get_by_username(admin.username)
-        if existing_admin is None:
+        if len(existing_admin) == 0:
             admin.save()
 
     @staticmethod
