@@ -32,7 +32,7 @@ services:
     environment:
       PORT: 3004
       DATABASE_HOST: maintenance-tracker-database
-      DATABASE_PORT: 5433
+      DATABASE_PORT: 5432
     ports:
       - '3004:3004'
     env_file:
